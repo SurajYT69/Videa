@@ -2,20 +2,21 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { Section } from "@/components/Section";
-import { MediaGrid } from "@/components/MediaGrid";
+import { Browse, type BrowseSearchParams } from "@/components/Browse";
 import { TrendingRail } from "@/components/TrendingRail";
 import { ErrorState } from "@/components/ErrorState";
 import {
-  GridSkeleton,
   SectionSkeleton,
   TrendingRailSkeleton,
 } from "@/components/LoadingSkeleton";
-import { ConfigError, getPopularTV, getTrendingByType } from "@/lib/tmdb";
+import { ConfigError, getTrendingByType } from "@/lib/tmdb";
 
 export const metadata: Metadata = {
   title: "TV",
-  description: "Trending and popular series, updated weekly.",
+  description: "Browse series by genre, year and rating.",
 };
+
+type Props = { searchParams: Promise<BrowseSearchParams> };
 
 async function TrendingShows() {
   let trending;
@@ -38,24 +39,7 @@ async function TrendingShows() {
   );
 }
 
-async function PopularShows() {
-  const popular = await getPopularTV().catch(() => []);
-  if (!popular.length) return null;
-
-  return (
-    <Section
-      title="Popular now"
-      eyebrow="Long-running"
-      lead="Series people keep returning to, season after season."
-      tone="band"
-    >
-      {/* Below the fold behind the page header and the trending rail. */}
-      <MediaGrid items={popular.slice(0, 24)} />
-    </Section>
-  );
-}
-
-export default function TVPage() {
+export default async function TVPage({ searchParams }: Props) {
   return (
     <>
       <PageHeader
@@ -74,15 +58,14 @@ export default function TVPage() {
         <TrendingShows />
       </Suspense>
 
-      <Suspense
-        fallback={
-          <SectionSkeleton>
-            <GridSkeleton count={12} />
-          </SectionSkeleton>
-        }
+      <Section
+        title="Every series"
+        eyebrow="Browse"
+        lead="Narrow by genre, year or rating. Filters live in the address bar, so a list stays shareable."
+        tone="band"
       >
-        <PopularShows />
-      </Suspense>
+        <Browse type="tv" searchParams={await searchParams} />
+      </Section>
     </>
   );
 }

@@ -38,6 +38,12 @@ export type TVDetails = MediaItem & {
   lastAirDate: string | null;
 };
 
+/** A filterable genre, as offered by the browse pages. */
+export type Genre = {
+  id: number;
+  name: string;
+};
+
 export type CastMember = {
   id: number;
   name: string;

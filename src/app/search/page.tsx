@@ -1,11 +1,23 @@
+import { Suspense } from "react";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { MediaGrid } from "@/components/MediaGrid";
 import { SearchBar } from "@/components/SearchBar";
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorState } from "@/components/ErrorState";
-import { ConfigError, searchMulti } from "@/lib/tmdb";
+import { GridSkeleton } from "@/components/LoadingSkeleton";
+import { ConfigError, searchMovies, searchMulti, searchTV } from "@/lib/tmdb";
 
-type Props = { searchParams: Promise<{ q?: string }> };
+type Props = { searchParams: Promise<{ q?: string; type?: string }> };
+
+/** `all` is the absence of the param, so the plain /search?q= link stays clean. */
+const FILTERS = [
+  { value: "all", label: "All" },
+  { value: "movie", label: "Movies" },
+  { value: "tv", label: "Series" },
+] as const;
+
+type Filter = (typeof FILTERS)[number]["value"];
 
 export async function generateMetadata({
   searchParams,
@@ -24,8 +36,9 @@ export async function generateMetadata({
 }
 
 export default async function SearchPage({ searchParams }: Props) {
-  const { q } = await searchParams;
+  const { q, type } = await searchParams;
   const query = q?.trim() ?? "";
+  const filter: Filter = type === "movie" || type === "tv" ? type : "all";
 
   if (!query) {
     return (
@@ -53,9 +66,73 @@ export default async function SearchPage({ searchParams }: Props) {
     );
   }
 
+  return (
+    <div className="pt-32 pb-20 md:pt-40">
+      <header className="page">
+        <div className="flex items-center gap-3">
+          <span className="h-px w-8 bg-fg-3/50" />
+          <span className="eyebrow">Search</span>
+        </div>
+        <h1 className="display display-page mt-5 max-w-[18ch] text-fg text-balance">
+          &ldquo;{query}&rdquo;
+        </h1>
+
+        {/*
+          Plain links: switching the type needs no state, so it needs no client
+          component. They sit outside the boundary below, so they stay visible
+          and clickable while the results they change are loading.
+        */}
+        <nav aria-label="Filter results by type" className="mt-8 flex gap-2">
+          {FILTERS.map((option) => {
+            const on = option.value === filter;
+            return (
+              <Link
+                key={option.value}
+                href={`/search?q=${encodeURIComponent(query)}${
+                  option.value === "all" ? "" : `&type=${option.value}`
+                }`}
+                scroll={false}
+                aria-current={on ? "page" : undefined}
+                className={`rounded-card border px-4 py-2 text-sm transition duration-200 hover:-translate-y-px ${
+                  on
+                    ? "border-fg bg-fg text-ink"
+                    : "border-line-strong text-fg-2 hover:border-fg-3"
+                }`}
+              >
+                {option.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </header>
+
+      <div className="page mt-12">
+        <Suspense
+          key={`${query}~${filter}`}
+          fallback={<GridSkeleton count={12} />}
+        >
+          <SearchResults query={query} filter={filter} />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+
+async function SearchResults({
+  query,
+  filter,
+}: {
+  query: string;
+  filter: Filter;
+}) {
   let results;
   try {
-    results = await searchMulti(query);
+    results =
+      filter === "movie"
+        ? await searchMovies(query)
+        : filter === "tv"
+          ? await searchTV(query)
+          : await searchMulti(query);
   } catch (error) {
     if (error instanceof ConfigError) throw error;
     return (
@@ -66,36 +143,27 @@ export default async function SearchPage({ searchParams }: Props) {
     );
   }
 
-  return (
-    <div className="pt-32 pb-20 md:pt-40">
-      <header className="page">
-        <div className="flex items-center gap-3">
-          <span className="h-px w-8 bg-fg-3/50" />
-          <span className="eyebrow">
-            {results.length === 0
-              ? "No results"
-              : `${results.length} result${results.length === 1 ? "" : "s"}`}
-          </span>
+  if (!results.length) {
+    return (
+      <EmptyState
+        title="No titles found."
+        description="Check the spelling, or try a shorter version of the name."
+      >
+        <div className="mt-7 w-full max-w-md">
+          <SearchBar variant="block" placeholder="Try another search" />
         </div>
-        <h1 className="display display-page mt-5 max-w-[18ch] text-fg text-balance">
-          &ldquo;{query}&rdquo;
-        </h1>
-      </header>
+      </EmptyState>
+    );
+  }
 
-      <div className="page mt-12">
-        {results.length === 0 ? (
-          <EmptyState
-            title="No titles found."
-            description="Check the spelling, or try a shorter version of the name."
-          >
-            <div className="mt-7 w-full max-w-md">
-              <SearchBar variant="block" placeholder="Try another search" />
-            </div>
-          </EmptyState>
-        ) : (
-          <MediaGrid items={results} priorityCount={6} />
-        )}
+  return (
+    <>
+      <p className="meta">
+        {results.length} result{results.length === 1 ? "" : "s"}
+      </p>
+      <div className="mt-6">
+        <MediaGrid items={results} priorityCount={6} />
       </div>
-    </div>
+    </>
   );
 }

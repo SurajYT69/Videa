@@ -2,20 +2,21 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { Section } from "@/components/Section";
-import { MediaGrid } from "@/components/MediaGrid";
+import { Browse, type BrowseSearchParams } from "@/components/Browse";
 import { PosterRail } from "@/components/PosterRail";
 import { ErrorState } from "@/components/ErrorState";
 import {
-  GridSkeleton,
   PosterRailSkeleton,
   SectionSkeleton,
 } from "@/components/LoadingSkeleton";
-import { ConfigError, getPopularMovies, getTrendingByType } from "@/lib/tmdb";
+import { ConfigError, getTrendingByType } from "@/lib/tmdb";
 
 export const metadata: Metadata = {
   title: "Movies",
-  description: "Trending and popular films, updated weekly.",
+  description: "Browse films by genre, year and rating.",
 };
+
+type Props = { searchParams: Promise<BrowseSearchParams> };
 
 async function TrendingMovies() {
   let trending;
@@ -38,34 +39,13 @@ async function TrendingMovies() {
   );
 }
 
-async function PopularMovies() {
-  const popular = await getPopularMovies().catch(() => []);
-  if (!popular.length) return null;
-
-  return (
-    <Section
-      title="Popular now"
-      eyebrow="Steady favourites"
-      lead="Films that hold their audience after the release week noise dies down."
-      tone="band"
-    >
-      {/*
-        No priority. Measured, this grid starts around 1140px on a 900px-tall
-        window: it is below the fold behind the page header and the trending
-        rail, so eager posters here only crowd the optimizer.
-      */}
-      <MediaGrid items={popular.slice(0, 24)} />
-    </Section>
-  );
-}
-
-export default function MoviesPage() {
+export default async function MoviesPage({ searchParams }: Props) {
   return (
     <>
       <PageHeader
         eyebrow="Film"
         title="Movies"
-        description="What the world is watching this week, and what stays popular long after."
+        description="What the world is watching this week, and the whole catalogue behind it."
       />
 
       <Suspense
@@ -78,15 +58,14 @@ export default function MoviesPage() {
         <TrendingMovies />
       </Suspense>
 
-      <Suspense
-        fallback={
-          <SectionSkeleton>
-            <GridSkeleton count={12} />
-          </SectionSkeleton>
-        }
+      <Section
+        title="Every film"
+        eyebrow="Browse"
+        lead="Narrow by genre, year or rating. Filters live in the address bar, so a list stays shareable."
+        tone="band"
       >
-        <PopularMovies />
-      </Suspense>
+        <Browse type="movie" searchParams={await searchParams} />
+      </Section>
     </>
   );
 }

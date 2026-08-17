@@ -8,6 +8,7 @@
 import type {
   CastMember,
   Episode,
+  Genre,
   MediaItem,
   MediaType,
   MovieDetails,
@@ -114,7 +115,12 @@ type RawMedia = {
   popularity?: number;
 };
 
-type RawPage = { results?: RawMedia[]; total_results?: number };
+type RawPage = {
+  results?: RawMedia[];
+  page?: number;
+  total_pages?: number;
+  total_results?: number;
+};
 
 type RawCredits = {
   cast?: Array<{
@@ -130,13 +136,18 @@ type RawCredits = {
    Genre resolution — search results carry ids, not names.
    ------------------------------------------------------------------------- */
 
-async function genreMap(type: MediaType): Promise<Map<number, string>> {
+/** The filter bar's genre list. Same request as `genreMap`, so same cache entry. */
+export async function getGenres(type: MediaType): Promise<Genre[]> {
   const data = await tmdb<{ genres?: RawGenre[] }>(
     `/genre/${type}/list`,
     {},
     60 * 60 * 24 * 7,
   );
-  return new Map((data.genres ?? []).map((g) => [g.id, g.name]));
+  return data.genres ?? [];
+}
+
+async function genreMap(type: MediaType): Promise<Map<number, string>> {
+  return new Map((await getGenres(type)).map((g) => [g.id, g.name]));
 }
 
 /* -------------------------------------------------------------------------
@@ -407,6 +418,106 @@ export async function getPopularMovies(): Promise<MediaItem[]> {
 export async function getPopularTV(): Promise<MediaItem[]> {
   const page = await tmdb<RawPage>("/tv/popular", {}, 60 * 60 * 6);
   return normalizePage(page, "tv");
+}
+
+/* -------------------------------------------------------------------------
+   Discover — the filtered, paginated listing behind /movie and /tv.
+   ------------------------------------------------------------------------- */
+
+/**
+ * TMDB refuses anything past page 500 with status code 22, however large
+ * `total_pages` claims to be. The claim is a real count of matches; it is not
+ * a page ceiling, so it is clamped before it ever reaches the UI.
+ */
+const MAX_DISCOVER_PAGE = 500;
+
+/** What `normalizePage` throws away: the response envelope. */
+export type Paged<T> = {
+  items: T[];
+  page: number;
+  /** Already clamped to what TMDB will actually serve. */
+  totalPages: number;
+  /** The true match count, for display only. */
+  totalResults: number;
+};
+
+export type DiscoverParams = {
+  page?: number;
+  sort?: string;
+  genres?: number[];
+  /**
+   * Quality floor. Defaults to 200: without it `vote_average.desc` returns a
+   * page of 10.0-from-four-votes obscurities instead of recognisable titles.
+   * Pass 0 to turn it off.
+   */
+  minVotes?: number;
+  minRating?: number;
+  year?: number;
+  language?: string;
+};
+
+/**
+ * The sorts each endpoint accepts. The UI reads this instead of hardcoding a
+ * list, so it cannot offer `revenue` or `title` on a series — TV quietly
+ * ignores those and returns popularity order, which looks like a broken sort.
+ */
+export const SORT_OPTIONS: Record<
+  MediaType,
+  Array<{ value: string; label: string }>
+> = {
+  movie: [
+    { value: "popularity.desc", label: "Most popular" },
+    { value: "vote_average.desc", label: "Highest rated" },
+    { value: "primary_release_date.desc", label: "Newest first" },
+    { value: "primary_release_date.asc", label: "Oldest first" },
+    { value: "revenue.desc", label: "Highest grossing" },
+    { value: "title.asc", label: "Title A–Z" },
+  ],
+  tv: [
+    { value: "popularity.desc", label: "Most popular" },
+    { value: "vote_average.desc", label: "Highest rated" },
+    { value: "first_air_date.desc", label: "Newest first" },
+    { value: "first_air_date.asc", label: "Oldest first" },
+    { value: "name.asc", label: "Title A–Z" },
+  ],
+};
+
+export async function discover(
+  type: MediaType,
+  params: DiscoverParams,
+): Promise<Paged<MediaItem>> {
+  const page = Math.min(Math.max(1, params.page ?? 1), MAX_DISCOVER_PAGE);
+  /* The one filter whose parameter name differs between the two endpoints. */
+  const yearParam =
+    type === "movie" ? "primary_release_year" : "first_air_date_year";
+
+  const raw = await tmdb<RawPage>(
+    `/discover/${type}`,
+    {
+      page,
+      sort_by: params.sort || "popularity.desc",
+      /* Pipe is OR. Comma would be AND, which empties most genre pairs. */
+      with_genres: params.genres?.length ? params.genres.join("|") : undefined,
+      "vote_count.gte": params.minVotes ?? 200,
+      "vote_average.gte": params.minRating,
+      with_original_language: params.language,
+      [yearParam]: params.year,
+      include_adult: false,
+    },
+    60 * 60 * 6,
+  );
+
+  return {
+    /*
+     * Discover returns `genre_ids`, not `genres`, so normalizing costs one
+     * extra call to the genre list. That list is cached for seven days; it is
+     * cheaper than the alternative of letting raw ids reach a card.
+     */
+    items: await normalizePage(raw, type),
+    page,
+    totalPages: Math.min(raw.total_pages ?? 1, MAX_DISCOVER_PAGE),
+    totalResults: raw.total_results ?? 0,
+  };
 }
 
 /**
