@@ -47,7 +47,8 @@ export function VideoPlayer({
 
   return (
     <div>
-      <div className="relative aspect-video w-full overflow-hidden rounded-card bg-fg shadow-lift">
+      {/* Letterbox backing: wants the darkest surface, which is the ground. */}
+      <div className="relative aspect-video w-full overflow-hidden rounded-card bg-ink shadow-lift">
         {!loaded && (
           <div className="skeleton absolute inset-0" aria-hidden="true" />
         )}

@@ -65,7 +65,7 @@ export function TrendingRail({
               {String(index + 1).padStart(2, "0")}
             </span>
 
-            <span className="pointer-events-none absolute top-3 right-3 grid size-10 scale-90 place-items-center rounded-full bg-white text-fg opacity-0 transition duration-300 ease-out-expo group-hover:scale-100 group-hover:opacity-100">
+            <span className="pointer-events-none absolute top-3 right-3 grid size-10 scale-90 place-items-center rounded-full bg-fg text-ink opacity-0 transition duration-300 ease-out-expo group-hover:scale-100 group-hover:opacity-100">
               <Play weight="fill" className="size-4 translate-x-px" aria-hidden="true" />
             </span>
 

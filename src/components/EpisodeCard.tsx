@@ -43,7 +43,7 @@ export function EpisodeCard({ episode, tvId, isResume = false }: Props) {
         )}
 
         <span className="absolute inset-0 grid place-items-center bg-black/25 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <span className="grid size-10 place-items-center rounded-full bg-white text-fg">
+          <span className="grid size-10 place-items-center rounded-full bg-fg text-ink">
             <Play weight="fill" className="size-4 translate-x-px" aria-hidden="true" />
           </span>
         </span>

@@ -156,7 +156,10 @@ export function Header() {
           <button
             type="button"
             onClick={() => setMenuOpen(false)}
-            className="animate-fade absolute inset-0 bg-fg/25 backdrop-blur-sm"
+            /* Scrim behind the drawer: it has to dim the page, so it takes the
+               ground rather than the foreground. `bg-fg` only read as a dim
+               because the foreground happened to be the dark end of the pair. */
+            className="animate-fade absolute inset-0 bg-ink/70 backdrop-blur-sm"
           >
             <span className="sr-only">Close menu</span>
           </button>

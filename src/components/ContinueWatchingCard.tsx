@@ -56,7 +56,7 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
           <div className="scrim-media pointer-events-none absolute inset-x-0 bottom-0 h-1/2 opacity-70 transition-opacity duration-300 group-hover:opacity-100" />
 
           <span className="pointer-events-none absolute inset-0 grid place-items-center">
-            <span className="grid size-14 scale-90 place-items-center rounded-full bg-white text-fg opacity-0 shadow-lift transition duration-300 ease-out-expo group-hover:scale-100 group-hover:opacity-100">
+            <span className="grid size-14 scale-90 place-items-center rounded-full bg-fg text-ink opacity-0 shadow-lift transition duration-300 ease-out-expo group-hover:scale-100 group-hover:opacity-100">
               <Play weight="fill" className="size-5 translate-x-px" aria-hidden="true" />
             </span>
           </span>

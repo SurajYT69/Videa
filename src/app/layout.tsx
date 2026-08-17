@@ -56,9 +56,10 @@ export const metadata: Metadata = {
   },
 };
 
+/* Both track `--color-ink`. A stale themeColor is a white flash on first paint. */
 export const viewport: Viewport = {
-  themeColor: "#f5f6f8",
-  colorScheme: "light",
+  themeColor: "#0f1116",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
@@ -74,6 +75,11 @@ export default function RootLayout({
           The brand ramp, defined once. <Wordmark> renders three times per page
           and duplicating a gradient id would be invalid markup. Coordinates are
           userSpaceOnUse and resolve against the referencing SVG's viewBox.
+
+          These five stops must byte-match --color-g1..g5 in globals.css. SVG
+          gradients cannot read Tailwind theme tokens, so the ramp is duplicated
+          here and the two copies have to move in the same commit or the logo
+          drifts out of the palette it is supposed to define.
         */}
         <svg
           width="0"
@@ -91,11 +97,11 @@ export default function RootLayout({
               x2="152"
               y2="344"
             >
-              <stop offset="0" stopColor="#FFB627" />
-              <stop offset="0.25" stopColor="#FF6B3D" />
-              <stop offset="0.5" stopColor="#ED2E7E" />
-              <stop offset="0.75" stopColor="#A42FC1" />
-              <stop offset="1" stopColor="#4739D9" />
+              <stop offset="0" stopColor="#FFC03D" />
+              <stop offset="0.25" stopColor="#FF8A52" />
+              <stop offset="0.5" stopColor="#FF4E96" />
+              <stop offset="0.75" stopColor="#BE58E3" />
+              <stop offset="1" stopColor="#7B6EF6" />
             </linearGradient>
           </defs>
         </svg>

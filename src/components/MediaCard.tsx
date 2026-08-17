@@ -46,7 +46,7 @@ export function MediaCard({ media, sizes, priority, seasonCount }: Props) {
 
         <div className="scrim-media pointer-events-none absolute inset-x-0 bottom-0 h-1/2 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-        <span className="pointer-events-none absolute right-2.5 bottom-2.5 grid size-9 translate-y-2 place-items-center rounded-full bg-white text-fg opacity-0 shadow-soft transition duration-300 ease-out-expo group-hover:translate-y-0 group-hover:opacity-100">
+        <span className="pointer-events-none absolute right-2.5 bottom-2.5 grid size-9 translate-y-2 place-items-center rounded-full bg-fg text-ink opacity-0 shadow-soft transition duration-300 ease-out-expo group-hover:translate-y-0 group-hover:opacity-100">
           {/* A right-pointing triangle is left-heavy; nudged right to read centred. */}
           <Play weight="fill" className="size-4 translate-x-px" aria-hidden="true" />
         </span>

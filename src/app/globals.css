@@ -2,34 +2,80 @@
 
 /* ==========================================================================
    VIDEA — design tokens
-   Light theme. One accent for signal, one five-stop brand gradient for
+   Dark theme. One accent for signal, one five-stop brand gradient for
    identity. Both are drawn from the same ramp so the page reads as one palette.
    ========================================================================== */
 
 @theme {
-  /* Brand ramp ------------------------------------------------------------ */
-  --color-g1: #ffb627; /* marigold */
-  --color-g2: #ff6b3d; /* tangerine */
-  --color-g3: #ed2e7e; /* raspberry */
-  --color-g4: #a42fc1; /* orchid */
-  --color-g5: #4739d9; /* indigo */
+  /*
+   * Brand ramp — lifted for a dark ground.
+   *
+   * The hues and their order are unchanged; only luminance moved. The old
+   * values were tuned against a near-white page, where the dark end could sit
+   * low: #4739d9 measured 2.0:1 on this ground and read as a bruise rather
+   * than a colour. Every stop now clears 3:1 against `--color-ink`, which is
+   * the non-text threshold the ramp actually needs — it is a logo, a 3px nav
+   * indicator and a progress fill, never body copy.
+   *
+   * Measured on --color-ink: g1 11.6, g2 8.1, g3 6.1, g4 5.1, g5 4.9.
+   */
+  --color-g1: #ffc03d; /* marigold */
+  --color-g2: #ff8a52; /* tangerine */
+  --color-g3: #ff4e96; /* raspberry */
+  --color-g4: #be58e3; /* orchid */
+  --color-g5: #7b6ef6; /* indigo */
 
-  /* Surfaces -------------------------------------------------------------- */
-  --color-ink: #f5f6f8; /* page ground */
-  --color-ink-2: #edeff4; /* recessed band, one step below the ground */
-  --color-surface: #fcfcfe; /* resting surface */
-  --color-raised: #ffffff; /* elevated surface */
-  --color-line: #e4e7ec; /* hairline */
-  --color-line-strong: #d3d8e0; /* hairline on raised */
+  /*
+   * Surfaces — near-neutral with a cool cast, never pure black.
+   *
+   * On a light ground the steps could be tiny (1.06 ground-to-band) because
+   * shadow did the separating. Shadow does not read on a dark ground, so the
+   * work moves into lightness and hairlines and the steps open up a little:
+   * 1.08 to the band, 1.12 to a resting surface, 1.25 to a raised one.
+   *
+   * `--color-ink-2` goes LIGHTER than the ground here, not darker. It is still
+   * "one value away, no border" — but on dark, receding means coming forward.
+   * The blue channel leads every value, which is where the "colourful" in a
+   * dark surface comes from; a pure grey ramp would read as switched-off.
+   */
+  --color-ink: #0f1116; /* page ground */
+  --color-ink-2: #171a21; /* band, one step above the ground */
+  --color-surface: #191d27; /* resting surface */
+  --color-raised: #212632; /* elevated surface */
+  --color-line: #272d3a; /* hairline */
+  --color-line-strong: #3a4252; /* hairline on raised */
 
-  /* Text ------------------------------------------------------------------ */
-  --color-fg: #111318;
-  --color-fg-2: #454c5a;
-  --color-fg-3: #5f6675; /* clears WCAG AA at 11px on the page ground */
+  /*
+   * Text — recomputed against the new grounds, not inverted from the old ones.
+   *
+   * `--color-fg-3` carries `.meta` and `.eyebrow` at 11px, so it is the value
+   * that decides whether the small type is readable. Measured against the four
+   * grounds it can land on: ink 7.26:1, ink-2 6.70:1, surface 6.48:1,
+   * raised 5.82:1 — all clear WCAG AA. It sits higher than the light theme's
+   * 5.33:1 on purpose: light text on dark blooms optically at small sizes, and
+   * the extra headroom pays for that. Do not darken it.
+   *
+   * fg measures 17.15 / 15.81 / 15.30 / 13.74 and fg-2 10.53 / 9.71 / 9.40 /
+   * 8.44 across the same four grounds.
+   */
+  --color-fg: #f2f4f8;
+  --color-fg-2: #bac2d0;
+  --color-fg-3: #98a1b2;
 
-  /* Accent — signal only. Stop 2, deepened for contrast on light. --------- */
-  --color-accent: #e0552b;
-  --color-accent-soft: #fdeee7;
+  /*
+   * Accent — signal only. Stop 2, lifted for contrast on dark.
+   *
+   * The light theme deepened this stop to hold up against white. Dark needs
+   * the opposite move: lighter and more saturated, or the focus ring vanishes
+   * into the ground. 7.3:1 on `--color-ink`, which is what makes it usable as
+   * both the focus outline and the rating mark.
+   *
+   * `--color-accent-soft` is now a dark accent-tinted surface rather than a
+   * pale one. It backs `text-accent` in the rating chip and the saved state,
+   * and that pairing measures 6.48:1.
+   */
+  --color-accent: #ff7a45;
+  --color-accent-soft: #2e1810;
 
   /*
    * Radius — one system.
@@ -51,9 +97,19 @@
   /* Container ------------------------------------------------------------- */
   --container-page: 1440px;
 
-  /* Shadows — tinted to the ground hue, never pure black. ----------------- */
-  --shadow-soft: 0 1px 2px rgb(17 19 24 / 0.04), 0 8px 24px rgb(17 19 24 / 0.06);
-  --shadow-lift: 0 2px 4px rgb(17 19 24 / 0.05), 0 18px 40px rgb(17 19 24 / 0.1);
+  /*
+   * Shadows — a hover cue, no longer the elevation.
+   *
+   * On the light theme a 6% tinted shadow was what lifted a card off the page.
+   * That does not transfer: a shadow can only darken, and there is very little
+   * room left to darken below `--color-ink`. Separation is therefore carried by
+   * the surface steps and the hairlines above, and these are demoted to what
+   * still works on dark — a near-black pool under a raised element, deep enough
+   * to register as the card moves. Raising the alpha further does not help;
+   * past this point it reads as a smudge rather than depth.
+   */
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.55), 0 8px 24px rgb(0 0 0 / 0.4);
+  --shadow-lift: 0 2px 6px rgb(0 0 0 / 0.6), 0 18px 40px rgb(0 0 0 / 0.5);
 
   /* Keyframes ------------------------------------------------------------- */
   --animate-rise: rise 0.5s var(--ease-out-expo) both;
@@ -109,7 +165,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    color-scheme: light;
+    color-scheme: dark;
     -webkit-tap-highlight-color: transparent;
   }
 
@@ -134,9 +190,14 @@
     outline-offset: 0;
   }
 
+  /*
+   * The accent is light enough on this theme that white on it measures
+   * 2.59:1 — unreadable. Selected text takes the ground colour instead,
+   * which measures 7.3:1 against the same fill.
+   */
   ::selection {
     background: var(--color-accent);
-    color: #ffffff;
+    color: var(--color-ink);
   }
 
   /* Scrollbar tuned to the ground, not the browser default. */
@@ -147,13 +208,18 @@
   ::-webkit-scrollbar-track {
     background: transparent;
   }
+  /*
+   * Lifted a little further off the track than the light thumb was: 1.87:1
+   * against the ground where the light pair managed 1.48:1. A thumb is a
+   * 4px-wide shape, and a dark ground gives back less of it than a white one.
+   */
   ::-webkit-scrollbar-thumb {
-    background: #c8cdd6;
+    background: #3a4252;
     border-radius: 999px;
     border: 3px solid var(--color-ink);
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #aab1bd;
+    background: #4b5468;
   }
 }
 
@@ -274,32 +340,40 @@
   );
 }
 
-/* Five overlapping radial stops. Low opacity so text stays the loudest thing. */
+/*
+ * Five overlapping radial stops. Low opacity so text stays the loudest thing —
+ * but "low" is relative to the ground. On white, 30% of a marigold was already
+ * most of the way to competing with a heading; on this ground the same stop
+ * barely registers, because the wash is adding light rather than removing it.
+ * Each stop is raised by roughly a third for that reason, which is the whole
+ * of the "more colourful" brief: the same four sanctioned placements, carrying
+ * more saturation because the ground can now absorb it.
+ */
 @utility brand-wash {
   background-image:
     radial-gradient(
       58% 84% at 4% 0%,
-      color-mix(in oklab, var(--color-g1) 30%, transparent),
+      color-mix(in oklab, var(--color-g1) 40%, transparent),
       transparent 68%
     ),
     radial-gradient(
       48% 72% at 30% 4%,
-      color-mix(in oklab, var(--color-g2) 24%, transparent),
+      color-mix(in oklab, var(--color-g2) 33%, transparent),
       transparent 68%
     ),
     radial-gradient(
       44% 66% at 54% 0%,
-      color-mix(in oklab, var(--color-g3) 18%, transparent),
+      color-mix(in oklab, var(--color-g3) 26%, transparent),
       transparent 68%
     ),
     radial-gradient(
       48% 70% at 77% 3%,
-      color-mix(in oklab, var(--color-g4) 16%, transparent),
+      color-mix(in oklab, var(--color-g4) 24%, transparent),
       transparent 68%
     ),
     radial-gradient(
       56% 80% at 100% 0%,
-      color-mix(in oklab, var(--color-g5) 18%, transparent),
+      color-mix(in oklab, var(--color-g5) 26%, transparent),
       transparent 68%
     );
 }
@@ -308,27 +382,43 @@
    Surfaces and states
    ========================================================================== */
 
+/*
+ * A skeleton stands in for content that has not arrived, so it has to sit at
+ * the same depth as the thing it replaces: one step above the ground, matching
+ * `--color-surface`. The sweep is a 6% white rather than the light theme's 72%
+ * — at anything near that, a grid of loading posters strobes.
+ */
 @utility skeleton {
-  background-color: #e9ecf1;
+  background-color: #191d27;
   background-image: linear-gradient(
     90deg,
     transparent 0%,
-    rgb(255 255 255 / 0.72) 45%,
+    rgb(255 255 255 / 0.06) 45%,
     transparent 90%
   );
   background-size: 180% 100%;
   animation: var(--animate-shimmer);
 }
 
-/* Hairline inset that reads as an edge on artwork without darkening it. */
+/*
+ * Hairline inset that reads as an edge on artwork without darkening it. On a
+ * light ground that meant a dark line; here it inverts to a light one, because
+ * the job is to separate the artwork from the ground and the ground is now the
+ * dark side of the pair.
+ */
 @utility art-edge {
-  box-shadow: inset 0 0 0 1px rgb(17 19 24 / 0.08);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
 }
 
 /*
- * Recessed band. Sections alternate between the page ground and this so the
+ * Section band. Sections alternate between the page ground and this so the
  * homepage reads as stacked chapters rather than one continuous scroll. The
- * step is deliberately small: one value below the ground, no border.
+ * step is deliberately small: one value away from the ground, no border.
+ *
+ * On this theme "away" means lighter. A band that recedes on a white page has
+ * to come forward on a dark one — take it darker than `--color-ink` and the
+ * alternation stops reading, because there is almost nothing below the ground
+ * left to use.
  */
 @utility band {
   background-color: var(--color-ink-2);

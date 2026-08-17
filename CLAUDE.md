@@ -91,25 +91,49 @@ comes from an `IntersectionObserver` on a sentinel in `layout.tsx`.
 Tokens live in `src/app/globals.css` under `@theme`. Use them; do not hardcode
 hex values in components.
 
-Light theme, locked. `color-scheme: light`, one theme for the whole page, no
+Dark theme, locked. `color-scheme: dark`, one theme for the whole page, no
 section inverts. This is a deliberate override of the usual dual-mode default,
-requested explicitly. The token layer is inversion-safe (`bg-ink` is the page
-ground, `bg-fg text-ink` is the inverted button), so adding a dark variant means
-redefining tokens in one block, not touching components.
+requested explicitly. There is no toggle and no `prefers-color-scheme` variant;
+`dark:` utilities have no meaning here.
+
+The theme was converted from a locked light theme, and the token layer mostly
+held up: the palette below is a drop-in replacement and the great majority of
+components needed no edit, because `bg-ink` is the page ground and
+`bg-fg text-ink` is the inverted pair. Mostly is not entirely — the seven
+things that did not survive inversion are recorded under "Gotchas already paid
+for", and they are the list to check first if the theme is ever changed again.
 
 **Palette.** A five-stop brand ramp plus one solid accent, all from the same
 family so the page reads as one palette.
 
 | Token | Value | Role |
 | --- | --- | --- |
-| `--color-g1` .. `--color-g5` | `#FFB627` `#FF6B3D` `#ED2E7E` `#A42FC1` `#4739D9` | Brand ramp |
-| `--color-accent` | `#E0552B` | Signal only: rating star, focus ring, saved state |
-| `--color-ink` | `#F5F6F8` | Page ground |
-| `--color-ink-2` | `#EDEFF4` | Recessed section band |
-| `--color-fg` / `-2` / `-3` | `#111318` `#454C5A` `#5F6675` | Text |
+| `--color-g1` .. `--color-g5` | `#FFC03D` `#FF8A52` `#FF4E96` `#BE58E3` `#7B6EF6` | Brand ramp |
+| `--color-accent` | `#FF7A45` | Signal only: rating star, focus ring, saved state |
+| `--color-accent-soft` | `#2E1810` | Accent-tinted surface behind `text-accent` |
+| `--color-ink` | `#0F1116` | Page ground |
+| `--color-ink-2` | `#171A21` | Section band — one step *lighter* than the ground |
+| `--color-surface` / `--color-raised` | `#191D27` `#212632` | Resting / elevated surface |
+| `--color-line` / `-strong` | `#272D3A` `#3A4252` | Hairline / hairline on raised |
+| `--color-fg` / `-2` / `-3` | `#F2F4F8` `#BAC2D0` `#98A1B2` | Text |
 
-`--color-fg-3` is `#5F6675` rather than something lighter because `.meta` renders
-at 11px and needs to clear WCAG AA against the ground. Do not lighten it.
+Every value was recomputed against the new grounds, not inverted from the old
+ones. `--color-fg-3` carries `.meta` and `.eyebrow` at 11px and measures 7.26:1
+on the ground, 6.70:1 on the band, 6.48:1 on a surface and 5.82:1 on a raised
+one. It sits above the light theme's 5.33:1 deliberately: light-on-dark blooms
+optically at small sizes and the headroom pays for that. Do not darken it.
+
+`--color-ink-2` going *lighter* than the ground is the one inversion that is
+not symmetric. On dark, receding means coming forward; flip it darker and the
+alternating sections stop reading as separate chapters.
+
+The ramp moved for luminance only — same hues, same order. `#4739D9` measured
+2.0:1 on this ground and read as a bruise; every stop now clears 3:1, which is
+the non-text threshold the ramp actually needs.
+
+The accent moved the opposite way to the light theme's: that one *deepened*
+stop 2 to hold up against white, and dark needs it lighter and more saturated
+or the focus ring disappears. It measures 7.3:1 on the ground.
 
 **The brand gradient has exactly four sanctioned placements:** the logo lockup,
 the active nav indicator, the Continue Watching progress fill, and the ambient
@@ -138,9 +162,15 @@ Alternate it down a page so the scroll reads as stacked chapters. Do not wrap
 sections in cards, and do not give every section the same eyebrow-plus-lead
 treatment — the lead line is for the one or two sections that earn it.
 
-**Primary CTAs are `bg-fg text-ink`.** Never add a lightening hover to them on
-this theme; that is how you get white text on a white fill. They lift
+**Primary CTAs are `bg-fg text-ink`.** On this theme that is a near-white fill
+with dark text. Never add a hover that moves the fill toward the text colour —
+on light that meant no lightening hover, and on dark it means no darkening one;
+either way you end up with the label dissolving into its own button. They lift
 (`hover:-translate-y-px hover:shadow-lift`) instead.
+
+The same pair does the play discs on artwork (`MediaCard`, `TrendingRail`,
+`EpisodeCard`, `ContinueWatchingCard`). Those used to be a hardcoded `bg-white
+text-fg`, which is the one thing that cannot survive an inversion.
 
 **Text on artwork stays white over `scrim-media`.** Image legibility is not a
 page-theme decision. Text below artwork uses `text-fg`. Do not use `.meta` on
@@ -248,6 +278,61 @@ The mark is a continuous gradient rather than five discrete bands on purpose. At
 16px, banded gaps fall below one device pixel and alias into a smudge.
 
 ## Gotchas already paid for
+
+**What was not inversion-safe.** Converting the locked light theme to a locked
+dark one was mostly a token swap, but these did not come along for free. If the
+palette is ever changed again, this is the checklist.
+
+*Outside the token block entirely:*
+
+- `html { color-scheme }` in `@layer base`, and the `viewport` export in
+  `layout.tsx` (`themeColor`, `colorScheme`). A stale `themeColor` is a white
+  flash on first paint on mobile, which no amount of correct CSS hides.
+- The `#videa-ramp` `<linearGradient>` in `layout.tsx` hardcodes the five ramp
+  stops, because SVG gradients cannot read Tailwind theme tokens. It has to move
+  in the same commit as `--color-g1..g5` or the logo drifts out of the palette it
+  is supposed to define. `src/app/icon.svg` carries a third copy of the same
+  ramp and is still on the old values — it is generated from `logos/` via
+  `scripts/export-logo.mjs`, so fixing it means regenerating, not editing.
+
+*Hardcoded colours inside utilities:*
+
+- `skeleton` was a `#e9ecf1` base with a 72% white sweep. Left alone that is a
+  strobe light on a dark grid of loading posters. Now `--color-surface`'s value
+  with a 6% sweep.
+- `art-edge` was a dark inset hairline, which is invisible against a dark
+  ground. It has to invert to a light one — the job is separating artwork from
+  the ground, and the ground changed sides.
+- `::-webkit-scrollbar-thumb` and its hover, and the `::selection` text colour.
+  Selection is the subtle one: the accent is light enough on this theme that
+  white on it measures 2.59:1, so selected text takes `--color-ink` instead.
+
+*Assumptions rather than hardcodes:*
+
+- **Shadows stopped being the elevation.** A shadow can only darken, and there
+  is very little room below `--color-ink` to darken into. Card separation moved
+  into surface lightness and hairlines; the shadow tokens are now just the hover
+  cue. Do not answer "the card looks flat" by raising the alpha again.
+- **Four play discs paired a hardcoded `bg-white` with a themed `text-fg`.** On
+  light that is a dark glyph on a white disc; invert `--color-fg` and it becomes
+  a white glyph on a white disc. Now `bg-fg text-ink`, which is the same
+  documented inverted pair the CTAs use.
+- **`bg-fg` was being used to mean "the darkest thing available".** The mobile
+  menu scrim (`Header`) and the player letterbox (`VideoPlayer`) both did this.
+  It only ever read as dark because the foreground happened to be the dark end
+  of the pair; both now take `bg-ink`, which is what they actually meant.
+
+Everything else inverted for free, including every scrim built on
+`var(--color-ink)`. `scrim-media` is deliberately exempt in both directions —
+it is `rgb(10 12 16 / …)` because text on artwork is not a page-theme decision.
+
+**`transition-colors` makes focus rings unmeasurable in a background tab.**
+Reading `outlineColor` right after `.focus()` returns a value part-way between
+`currentColor` and `--color-accent`, and a backgrounded tab throttles the
+transition so it never finishes while you sample. It looks exactly like the
+focus ring resolving to the wrong colour. Inject
+`* { transition: none !important }` before measuring, or you will go hunting for
+a cascade bug that is not there.
 
 **`scroll-snap-align: start` cancels a rail's `padding-inline`.** The snap
 position aligns the first card to the scrollport edge, eating the gutter. The
