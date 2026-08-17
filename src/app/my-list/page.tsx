@@ -16,11 +16,12 @@ export default function MyListPage() {
   return (
     <>
       <PageHeader
+        eyebrow="On this device"
         title="My List"
-        description="Saved on this device. Nothing here leaves your browser."
+        description="Saved locally in this browser. No account, no server copy, nothing to sign into."
       />
       <ContinueWatchingSection showWhenEmpty />
-      <FavoritesSection showWhenEmpty />
+      <FavoritesSection showWhenEmpty tone="band" />
       <RecentlyViewedSection showWhenEmpty />
     </>
   );

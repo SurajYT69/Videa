@@ -34,14 +34,18 @@ export default async function SearchPage({ searchParams }: Props) {
           aria-hidden="true"
           className="brand-wash pointer-events-none absolute inset-0 -z-10 opacity-70"
         />
-        <div className="page flex min-h-[78dvh] flex-col justify-center pt-28 pb-24">
-          <h1 className="display text-4xl text-fg md:text-6xl">
+        <div className="page flex min-h-[80dvh] flex-col justify-center pt-32 pb-24">
+          <div className="flex items-center gap-3">
+            <span className="h-px w-8 bg-fg-3/50" />
+            <span className="eyebrow">Search</span>
+          </div>
+          <h1 className="display display-page mt-5 max-w-[14ch] text-fg text-balance">
             What do you want to watch?
           </h1>
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-fg-2">
+          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-fg-2">
             Type a title. Everything else is handled for you.
           </p>
-          <div className="mt-8 max-w-xl">
+          <div className="mt-9 max-w-xl">
             <SearchBar autoFocus variant="block" />
           </div>
         </div>
@@ -63,19 +67,22 @@ export default async function SearchPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="pt-28 pb-16 md:pt-36">
+    <div className="pt-32 pb-20 md:pt-40">
       <header className="page">
-        <h1 className="display text-3xl text-fg text-balance md:text-5xl">
+        <div className="flex items-center gap-3">
+          <span className="h-px w-8 bg-fg-3/50" />
+          <span className="eyebrow">
+            {results.length === 0
+              ? "No results"
+              : `${results.length} result${results.length === 1 ? "" : "s"}`}
+          </span>
+        </div>
+        <h1 className="display display-page mt-5 max-w-[18ch] text-fg text-balance">
           &ldquo;{query}&rdquo;
         </h1>
-        <p className="meta mt-4">
-          {results.length === 0
-            ? "No results"
-            : `${results.length} result${results.length === 1 ? "" : "s"}`}
-        </p>
       </header>
 
-      <div className="page mt-10">
+      <div className="page mt-12">
         {results.length === 0 ? (
           <EmptyState
             title="No titles found."

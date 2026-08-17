@@ -266,6 +266,11 @@ export async function getMovie(id: number): Promise<MovieDetails | null> {
     };
   };
 
+  /*
+   * One request. The IMDb id, cast and certification all ride along on the
+   * details response, so opening a title never costs a second round trip to
+   * resolve a playback id.
+   */
   const raw = await tmdbOrNull<Raw>(`/movie/${id}`, {
     append_to_response: "credits,release_dates",
   });
@@ -332,24 +337,6 @@ export async function getTV(id: number): Promise<TVDetails | null> {
     status: raw.status ?? null,
     lastAirDate: raw.last_air_date ?? null,
   };
-}
-
-/* -------------------------------------------------------------------------
-   External IDs — IMDb resolution
-   ------------------------------------------------------------------------- */
-
-export async function getMovieExternalIds(id: number): Promise<string | null> {
-  const raw = await tmdbOrNull<{ imdb_id?: string | null }>(
-    `/movie/${id}/external_ids`,
-  );
-  return raw?.imdb_id || null;
-}
-
-export async function getTVExternalIds(id: number): Promise<string | null> {
-  const raw = await tmdbOrNull<{ imdb_id?: string | null }>(
-    `/tv/${id}/external_ids`,
-  );
-  return raw?.imdb_id || null;
 }
 
 /* -------------------------------------------------------------------------
@@ -430,19 +417,20 @@ export async function getSimilar(
   type: MediaType,
   id: number,
 ): Promise<MediaItem[]> {
-  const recs = await tmdbOrNull<RawPage>(
-    `/${type}/${id}/recommendations`,
-    {},
-    60 * 60 * 12,
-  );
+  /*
+   * Both are requested together rather than similar being fetched only after
+   * recommendations comes back thin. The backfill is needed often enough that
+   * the serial round trip cost more than the extra request does, and the
+   * responses are cached for twelve hours either way.
+   */
+  const [recs, similar] = await Promise.all([
+    tmdbOrNull<RawPage>(`/${type}/${id}/recommendations`, {}, 60 * 60 * 12),
+    tmdbOrNull<RawPage>(`/${type}/${id}/similar`, {}, 60 * 60 * 12),
+  ]);
+
   const items = recs ? await normalizePage(recs, type) : [];
   if (items.length >= 6) return items.slice(0, 18);
 
-  const similar = await tmdbOrNull<RawPage>(
-    `/${type}/${id}/similar`,
-    {},
-    60 * 60 * 12,
-  );
   const extra = similar ? await normalizePage(similar, type) : [];
   const seen = new Set(items.map((i) => i.tmdbId));
   for (const item of extra) {

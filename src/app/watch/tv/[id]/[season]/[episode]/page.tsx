@@ -83,11 +83,14 @@ export default async function WatchEpisodePage({ params }: Props) {
   const episodeNumber = parseInt10(episode);
   if (!tvId || !seasonNumber || !episodeNumber) notFound();
 
-  const show = await getTV(tvId);
-  if (!show) notFound();
-
-  const seasonData = await getSeason(tvId, seasonNumber);
-  if (!seasonData) notFound();
+  /* The season request does not depend on the show request: both keys are
+     already in the URL. Running them together saves a full round trip before
+     the player can mount. */
+  const [show, seasonData] = await Promise.all([
+    getTV(tvId),
+    getSeason(tvId, seasonNumber),
+  ]);
+  if (!show || !seasonData) notFound();
 
   const current = seasonData.episodes.find(
     (item) => item.episodeNumber === episodeNumber,
@@ -100,6 +103,8 @@ export default async function WatchEpisodePage({ params }: Props) {
     episodeNumber,
   );
   const code = episodeCode(seasonNumber, episodeNumber);
+  const runtime = runtimeLabel(current.runtime);
+  const aired = airDateLabel(current.airDate);
 
   return (
     <>
@@ -109,7 +114,7 @@ export default async function WatchEpisodePage({ params }: Props) {
         episode={episodeNumber}
       />
 
-      <div className="page pt-20 md:pt-24">
+      <div className="mx-auto w-full max-w-[1360px] px-4 pt-20 md:px-8 md:pt-24">
         <Link
           href={detailsHref("tv", show.tmdbId)}
           className="group inline-flex items-center gap-2 py-4 text-sm text-fg-3 transition-colors hover:text-fg"
@@ -121,35 +126,41 @@ export default async function WatchEpisodePage({ params }: Props) {
           Back to {show.title}
         </Link>
 
-        <div className="mt-2">
-          <VideoPlayer
-            type="tv"
-            imdbId={show.imdbId}
-            tmdbId={show.tmdbId}
-            season={seasonNumber}
-            episode={episodeNumber}
-            title={`${show.title} ${code}`}
-          />
-        </div>
+        <VideoPlayer
+          type="tv"
+          imdbId={show.imdbId}
+          tmdbId={show.tmdbId}
+          season={seasonNumber}
+          episode={episodeNumber}
+          title={`${show.title} ${code}`}
+        />
 
         <div className="mt-10 border-t border-line pt-8">
           <div className="flex flex-wrap items-start justify-between gap-6">
-            <div className="max-w-[62ch]">
-              <p className="meta">
+            <div className="max-w-[64ch]">
+              <p className="eyebrow">
                 {show.title}
-                {"  ·  "}
+                <span className="mx-2 text-fg-3/50" aria-hidden="true">
+                  /
+                </span>
                 <span className="text-accent">{code}</span>
               </p>
-              <h1 className="display mt-2 text-2xl text-fg md:text-3xl">
+              <h1 className="display mt-2.5 text-2xl text-fg md:text-3xl">
                 {current.name}
               </h1>
-              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+              <div className="mt-3.5 flex flex-wrap items-center gap-x-3 gap-y-2">
                 <Rating value={current.rating} />
-                {runtimeLabel(current.runtime) && (
-                  <span className="meta">{runtimeLabel(current.runtime)}</span>
+                {runtime && (
+                  <>
+                    <Dot />
+                    <span className="meta">{runtime}</span>
+                  </>
                 )}
-                {airDateLabel(current.airDate) && (
-                  <span className="meta">{airDateLabel(current.airDate)}</span>
+                {aired && (
+                  <>
+                    <Dot />
+                    <span className="meta">{aired}</span>
+                  </>
                 )}
               </div>
             </div>
@@ -157,50 +168,81 @@ export default async function WatchEpisodePage({ params }: Props) {
             <FavoriteButton stub={toStub(show)} />
           </div>
 
+          {current.overview && (
+            <p className="mt-6 max-w-[64ch] text-sm leading-relaxed text-fg-2">
+              {current.overview}
+            </p>
+          )}
+
           {(previous || next) && (
             <nav
               aria-label="Episode navigation"
-              className="mt-8 flex flex-wrap gap-3"
+              className="mt-9 grid gap-3 sm:grid-cols-2"
             >
-              {previous && (
-                <Link
-                  href={watchHref(
-                    "tv",
-                    show.tmdbId,
-                    previous.season,
-                    previous.episode,
-                  )}
-                  className="inline-flex items-center gap-2 rounded-card border border-line-strong px-4 py-2.5 text-sm whitespace-nowrap text-fg-2 transition duration-200 hover:border-fg-3 hover:bg-raised hover:text-fg active:translate-y-px"
-                >
-                  <CaretLeft className="size-3.5" aria-hidden="true" />
-                  Previous
-                  <span className="font-mono text-[11px] text-fg-3">
-                    {episodeCode(previous.season, previous.episode)}
-                  </span>
-                </Link>
+              {previous ? (
+                <EpisodeStep
+                  href={watchHref("tv", show.tmdbId, previous.season, previous.episode)}
+                  direction="previous"
+                  code={episodeCode(previous.season, previous.episode)}
+                />
+              ) : (
+                <span />
               )}
               {next && (
-                <Link
+                <EpisodeStep
                   href={watchHref("tv", show.tmdbId, next.season, next.episode)}
-                  className="inline-flex items-center gap-2 rounded-card border border-line-strong px-4 py-2.5 text-sm whitespace-nowrap text-fg-2 transition duration-200 hover:border-fg-3 hover:bg-raised hover:text-fg active:translate-y-px"
-                >
-                  Next
-                  <span className="font-mono text-[11px] text-fg-3">
-                    {episodeCode(next.season, next.episode)}
-                  </span>
-                  <CaretRight className="size-3.5" aria-hidden="true" />
-                </Link>
+                  direction="next"
+                  code={episodeCode(next.season, next.episode)}
+                />
               )}
             </nav>
-          )}
-
-          {current.overview && (
-            <p className="mt-8 max-w-[62ch] text-sm leading-relaxed text-fg-2">
-              {current.overview}
-            </p>
           )}
         </div>
       </div>
     </>
+  );
+}
+
+function EpisodeStep({
+  href,
+  direction,
+  code,
+}: {
+  href: string;
+  direction: "previous" | "next";
+  code: string;
+}) {
+  const isNext = direction === "next";
+  return (
+    <Link
+      href={href}
+      className={`group flex items-center gap-3 rounded-card border border-line-strong px-5 py-4 transition duration-200 hover:border-fg-3 hover:bg-raised active:translate-y-px ${
+        isNext ? "sm:flex-row-reverse sm:text-right" : ""
+      }`}
+    >
+      {isNext ? (
+        <CaretRight
+          className="size-4 shrink-0 text-fg-3 transition-transform duration-300 ease-out-expo group-hover:translate-x-0.5"
+          aria-hidden="true"
+        />
+      ) : (
+        <CaretLeft
+          className="size-4 shrink-0 text-fg-3 transition-transform duration-300 ease-out-expo group-hover:-translate-x-0.5"
+          aria-hidden="true"
+        />
+      )}
+      <span className="min-w-0">
+        <span className="eyebrow block">
+          {isNext ? "Next episode" : "Previous episode"}
+        </span>
+        <span className="mt-1 block font-mono text-sm text-fg">{code}</span>
+      </span>
+    </Link>
+  );
+}
+
+function Dot() {
+  return (
+    <span aria-hidden="true" className="size-[3px] rounded-full bg-fg-3/50" />
   );
 }

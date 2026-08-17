@@ -15,7 +15,8 @@ export function CastRail({ cast }: { cast: CastMember[] }) {
                   src={src}
                   alt={person.name}
                   fill
-                  sizes="128px"
+                  /* Measured: 112px phone, 128px md up. */
+                  sizes="(min-width: 768px) 128px, 112px"
                   className="object-cover"
                 />
               ) : (

@@ -22,8 +22,12 @@ export function DetailBackdrop({ path }: { path: string | null }) {
       ) : (
         <div className="absolute inset-0 bg-surface" />
       )}
-      <div className="scrim-bottom absolute inset-x-0 bottom-0 h-3/4" />
-      <div className="absolute inset-0 bg-ink/25" />
+      {/*
+        The scrim alone carries the hand-off. A flat tint across the whole
+        frame on top of it bleached the still into a faded print.
+      */}
+      <div className="scrim-bottom absolute inset-x-0 bottom-0 h-4/5" />
+      <div className="scrim-left absolute inset-y-0 left-0 w-1/2 opacity-40" />
     </div>
   );
 }

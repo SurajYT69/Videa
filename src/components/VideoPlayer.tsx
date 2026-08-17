@@ -18,6 +18,10 @@ type Props = {
 /**
  * Responsive 16:9 provider embed. The source URL is built by `lib/playback`,
  * so swapping providers does not touch this component.
+ *
+ * The iframe is keyed on the retry counter alone. Nothing else in this
+ * component's state can remount it, so metadata changing around the player
+ * never restarts playback.
  */
 export function VideoPlayer({
   type,
@@ -43,7 +47,7 @@ export function VideoPlayer({
 
   return (
     <div>
-      <div className="relative aspect-video w-full overflow-hidden rounded-card bg-surface ring-1 ring-line ring-inset">
+      <div className="relative aspect-video w-full overflow-hidden rounded-card bg-fg shadow-lift">
         {!loaded && (
           <div className="skeleton absolute inset-0" aria-hidden="true" />
         )}
@@ -59,17 +63,19 @@ export function VideoPlayer({
         />
       </div>
 
-      <button
-        type="button"
-        onClick={() => {
-          setLoaded(false);
-          setAttempt((n) => n + 1);
-        }}
-        className="mt-3 inline-flex items-center gap-2 text-xs text-fg-3 transition-colors hover:text-fg"
-      >
-        <ArrowClockwise className="size-3.5" aria-hidden="true" />
-        Reload player
-      </button>
+      <div className="mt-3 flex justify-end">
+        <button
+          type="button"
+          onClick={() => {
+            setLoaded(false);
+            setAttempt((n) => n + 1);
+          }}
+          className="inline-flex items-center gap-2 rounded-mini px-2 py-1 text-xs text-fg-3 transition-colors hover:text-fg"
+        >
+          <ArrowClockwise className="size-3.5" aria-hidden="true" />
+          Reload player
+        </button>
+      </div>
     </div>
   );
 }

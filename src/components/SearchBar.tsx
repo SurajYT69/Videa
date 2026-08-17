@@ -23,10 +23,7 @@ export function SearchBar({
   variant = "header",
   onNavigate,
 }: Props) {
-  /* The header field is narrow until focused, so it gets the shorter prompt. */
-  const prompt =
-    placeholder ??
-    (variant === "header" ? "Search titles" : "Search movies & TV shows");
+  const prompt = placeholder ?? "Search movies & TV shows";
 
   const router = useRouter();
   const listId = useId();
@@ -75,6 +72,22 @@ export function SearchBar({
       window.clearTimeout(timer);
     };
   }, [query]);
+
+  /* ⌘K / Ctrl+K focuses the field from anywhere. Only the header field claims
+     the shortcut; the block variant is already the page's focus. */
+  useEffect(() => {
+    if (variant !== "header") return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() !== "k" || !(event.metaKey || event.ctrlKey)) {
+        return;
+      }
+      event.preventDefault();
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [variant]);
 
   /* Dismiss on outside pointer down. */
   useEffect(() => {
@@ -138,7 +151,7 @@ export function SearchBar({
   const showDropdown = open && status !== "idle";
   const width =
     variant === "header"
-      ? "w-56 focus-within:w-80 transition-[width] duration-400 ease-out-expo"
+      ? "w-full max-w-sm focus-within:max-w-lg transition-[max-width] duration-500 ease-out-expo"
       : "w-full";
 
   return (
@@ -181,10 +194,10 @@ export function SearchBar({
           aria-activedescendant={
             activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined
           }
-          className="w-full rounded-card border border-line-strong bg-surface py-2.5 pr-9 pl-10 text-sm text-fg placeholder:text-fg-3 transition-colors duration-200 hover:border-fg-3/60 focus:border-fg-3 focus:bg-raised [&::-webkit-search-cancel-button]:appearance-none"
+          className="w-full rounded-card border border-line-strong bg-surface py-3 pr-14 pl-11 text-sm text-fg placeholder:text-fg-3 transition-colors duration-200 hover:border-fg-3/60 focus:border-fg-3 focus:bg-raised [&::-webkit-search-cancel-button]:appearance-none"
         />
 
-        {query && (
+        {query ? (
           <button
             type="button"
             onClick={() => {
@@ -193,11 +206,20 @@ export function SearchBar({
               setStatus("idle");
               inputRef.current?.focus();
             }}
-            className="absolute top-1/2 right-2.5 grid size-6 -translate-y-1/2 place-items-center rounded-card text-fg-3 transition-colors hover:text-fg"
+            className="absolute top-1/2 right-2.5 grid size-7 -translate-y-1/2 place-items-center rounded-mini text-fg-3 transition-colors hover:text-fg"
           >
             <X className="size-3.5" aria-hidden="true" />
             <span className="sr-only">Clear search</span>
           </button>
+        ) : (
+          variant === "header" && (
+            <kbd
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 right-3 hidden -translate-y-1/2 rounded-mini border border-line-strong px-1.5 py-0.5 font-mono text-[10px] text-fg-3 lg:block"
+            >
+              ⌘K
+            </kbd>
+          )
         )}
       </form>
 

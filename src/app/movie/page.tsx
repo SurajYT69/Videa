@@ -1,9 +1,15 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
 import { Section } from "@/components/Section";
 import { MediaGrid } from "@/components/MediaGrid";
 import { PosterRail } from "@/components/PosterRail";
 import { ErrorState } from "@/components/ErrorState";
+import {
+  GridSkeleton,
+  PosterRailSkeleton,
+  SectionSkeleton,
+} from "@/components/LoadingSkeleton";
 import { ConfigError, getPopularMovies, getTrendingByType } from "@/lib/tmdb";
 
 export const metadata: Metadata = {
@@ -11,14 +17,10 @@ export const metadata: Metadata = {
   description: "Trending and popular films, updated weekly.",
 };
 
-export default async function MoviesPage() {
-  let trending, popular;
-
+async function TrendingMovies() {
+  let trending;
   try {
-    [trending, popular] = await Promise.all([
-      getTrendingByType("movie"),
-      getPopularMovies(),
-    ]);
+    trending = await getTrendingByType("movie");
   } catch (error) {
     if (error instanceof ConfigError) throw error;
     return (
@@ -30,19 +32,61 @@ export default async function MoviesPage() {
   }
 
   return (
+    <Section title="Trending this week" eyebrow="Right now" bleed>
+      <PosterRail items={trending.slice(0, 16)} label="Trending movies" />
+    </Section>
+  );
+}
+
+async function PopularMovies() {
+  const popular = await getPopularMovies().catch(() => []);
+  if (!popular.length) return null;
+
+  return (
+    <Section
+      title="Popular now"
+      eyebrow="Steady favourites"
+      lead="Films that hold their audience after the release week noise dies down."
+      tone="band"
+    >
+      {/*
+        No priority. Measured, this grid starts around 1140px on a 900px-tall
+        window: it is below the fold behind the page header and the trending
+        rail, so eager posters here only crowd the optimizer.
+      */}
+      <MediaGrid items={popular.slice(0, 24)} />
+    </Section>
+  );
+}
+
+export default function MoviesPage() {
+  return (
     <>
       <PageHeader
+        eyebrow="Film"
         title="Movies"
-        description="What the world is watching this week, and what stays popular after the noise dies down."
+        description="What the world is watching this week, and what stays popular long after."
       />
 
-      <Section title="Trending this week" bleed>
-        <PosterRail items={trending.slice(0, 16)} />
-      </Section>
+      <Suspense
+        fallback={
+          <SectionSkeleton bleed>
+            <PosterRailSkeleton />
+          </SectionSkeleton>
+        }
+      >
+        <TrendingMovies />
+      </Suspense>
 
-      <Section title="Popular now">
-        <MediaGrid items={popular.slice(0, 24)} priorityCount={6} />
-      </Section>
+      <Suspense
+        fallback={
+          <SectionSkeleton>
+            <GridSkeleton count={12} />
+          </SectionSkeleton>
+        }
+      >
+        <PopularMovies />
+      </Suspense>
     </>
   );
 }

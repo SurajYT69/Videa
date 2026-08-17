@@ -75,11 +75,7 @@ export function SeasonSelector({ tvId, seasons, initialSeason }: Props) {
 
   return (
     <div>
-      <div
-        role="tablist"
-        aria-label="Seasons"
-        className="rail gap-2 pb-2"
-      >
+      <div role="tablist" aria-label="Seasons" className="rail gap-2 pb-2">
         {seasons.map((item) => {
           const active = item.seasonNumber === selected;
           return (
@@ -89,7 +85,7 @@ export function SeasonSelector({ tvId, seasons, initialSeason }: Props) {
               role="tab"
               aria-selected={active}
               onClick={() => setSelected(item.seasonNumber)}
-              className={`rail-item rounded-card border px-4 py-2 text-sm whitespace-nowrap transition duration-200 ${
+              className={`rail-item rounded-card border px-5 py-2.5 text-sm whitespace-nowrap transition duration-200 ${
                 active
                   ? "border-fg bg-fg text-ink"
                   : "border-line-strong text-fg-2 hover:border-fg-3 hover:bg-raised hover:text-fg"
@@ -97,7 +93,7 @@ export function SeasonSelector({ tvId, seasons, initialSeason }: Props) {
             >
               {item.name}
               <span
-                className={`ml-2 font-mono text-[11px] ${
+                className={`ml-2.5 font-mono text-[11px] tabular-nums ${
                   active ? "text-ink/60" : "text-fg-3"
                 }`}
               >
@@ -108,7 +104,7 @@ export function SeasonSelector({ tvId, seasons, initialSeason }: Props) {
         })}
       </div>
 
-      <div className="mt-8">
+      <div className="mt-10">
         {status === "loading" && <EpisodeListSkeleton />}
 
         {status === "error" && (

@@ -1,6 +1,6 @@
+import { Suspense } from "react";
 import { Hero } from "@/components/Hero";
 import { Section } from "@/components/Section";
-import { MediaGrid } from "@/components/MediaGrid";
 import { PosterRail } from "@/components/PosterRail";
 import { TrendingRail } from "@/components/TrendingRail";
 import {
@@ -9,23 +9,29 @@ import {
 } from "@/components/LibrarySections";
 import { ErrorState } from "@/components/ErrorState";
 import {
+  HeroSkeleton,
+  PosterRailSkeleton,
+  SectionSkeleton,
+  TrendingRailSkeleton,
+} from "@/components/LoadingSkeleton";
+import {
   ConfigError,
   getPopularMovies,
   getPopularTV,
   getTrending,
 } from "@/lib/tmdb";
 
-export default async function HomePage() {
-  let trending, movies, shows;
+/*
+ * Each block awaits only its own request and streams in on its own. The hero
+ * no longer waits for the popular-movie and popular-series lists, so first
+ * paint is one TMDB round trip rather than the slowest of three.
+ */
 
+async function HeroAndTrending() {
+  let trending;
   try {
-    [trending, movies, shows] = await Promise.all([
-      getTrending(),
-      getPopularMovies(),
-      getPopularTV(),
-    ]);
+    trending = await getTrending();
   } catch (error) {
-    /* A misconfigured key must fail loudly rather than cache an error page. */
     if (error instanceof ConfigError) throw error;
     return (
       <ErrorState
@@ -37,10 +43,6 @@ export default async function HomePage() {
 
   /* The hero needs artwork wide enough to hold a composition. */
   const hero = trending.find((item) => item.backdropPath) ?? trending[0];
-  const rest = hero
-    ? trending.filter((item) => item.tmdbId !== hero.tmdbId)
-    : trending;
-
   if (!hero) {
     return (
       <ErrorState
@@ -50,23 +52,88 @@ export default async function HomePage() {
     );
   }
 
+  const rest = trending.filter((item) => item.tmdbId !== hero.tmdbId);
+
   return (
     <>
       <Hero media={hero} />
-
-      <Section title="Trending this week" bleed>
-        <TrendingRail items={rest.slice(0, 14)} />
+      <Section
+        title="Trending this week"
+        eyebrow="Right now"
+        lead="The titles the most people are opening, ranked, refreshed every week."
+        bleed
+      >
+        <TrendingRail items={rest.slice(0, 12)} label="Trending this week" />
       </Section>
+    </>
+  );
+}
 
-      <Section title="Popular movies" href="/movie">
-        <MediaGrid items={movies.slice(0, 18)} />
-      </Section>
+async function PopularMovies() {
+  const movies = await getPopularMovies().catch(() => []);
+  if (!movies.length) return null;
 
-      <Section title="Popular series" href="/tv" bleed>
-        <PosterRail items={shows.slice(0, 16)} />
-      </Section>
+  /*
+   * A rail, not a grid. Three rows of posters made the homepage tall enough to
+   * read as a catalogue dump; one scrolling row keeps discovery horizontal and
+   * cuts the images the browser has to fetch before the next section is
+   * reachable.
+   */
+  return (
+    <Section title="Popular movies" eyebrow="Film" href="/movie" tone="band" bleed>
+      <PosterRail items={movies.slice(0, 18)} label="Popular movies" />
+    </Section>
+  );
+}
 
-      <ContinueWatchingSection />
+async function PopularSeries() {
+  const shows = await getPopularTV().catch(() => []);
+  if (!shows.length) return null;
+
+  return (
+    <Section title="Popular series" eyebrow="Television" href="/tv" bleed>
+      <PosterRail items={shows.slice(0, 16)} label="Popular series" />
+    </Section>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <>
+      <Suspense
+        fallback={
+          <>
+            <HeroSkeleton />
+            <SectionSkeleton bleed>
+              <TrendingRailSkeleton />
+            </SectionSkeleton>
+          </>
+        }
+      >
+        <HeroAndTrending />
+      </Suspense>
+
+      <Suspense
+        fallback={
+          <SectionSkeleton bleed>
+            <PosterRailSkeleton />
+          </SectionSkeleton>
+        }
+      >
+        <PopularMovies />
+      </Suspense>
+
+      <Suspense
+        fallback={
+          <SectionSkeleton bleed>
+            <PosterRailSkeleton />
+          </SectionSkeleton>
+        }
+      >
+        <PopularSeries />
+      </Suspense>
+
+      <ContinueWatchingSection tone="band" />
       <RecentlyViewedSection />
     </>
   );

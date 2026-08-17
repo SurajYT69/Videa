@@ -61,7 +61,7 @@ export function Header() {
     <header
       className={`fixed inset-x-0 top-0 z-40 transition-colors duration-300 ${
         scrolled || searchOpen
-          ? "border-b border-line bg-ink/75 backdrop-blur-xl"
+          ? "border-b border-line bg-ink/80 backdrop-blur-xl"
           : "border-b border-transparent bg-transparent"
       }`}
     >
@@ -73,7 +73,7 @@ export function Header() {
         />
       )}
 
-      <div className="page flex h-16 items-center gap-8 md:h-[72px]">
+      <div className="page flex h-16 items-center gap-6 md:h-[76px] lg:gap-10">
         <Link href="/" className="shrink-0 rounded-mini">
           <Wordmark />
           <span className="sr-only">Videa home</span>
@@ -94,7 +94,7 @@ export function Header() {
                   >
                     {item.label}
                     {active && (
-                      <span className="brand-bar absolute -bottom-1 left-0 h-[3px] w-full rounded-full" />
+                      <span className="brand-bar absolute -bottom-1.5 left-0 h-[3px] w-full rounded-full" />
                     )}
                   </Link>
                 </li>
@@ -103,14 +103,15 @@ export function Header() {
           </ul>
         </nav>
 
-        <div className="ml-auto flex items-center gap-2 md:gap-4">
-          <div className="hidden md:block">
-            <SearchBar />
-          </div>
+        {/* Search is the product's main verb, so it gets the centre weight. */}
+        <div className="ml-auto hidden min-w-0 flex-1 justify-end md:flex lg:mx-4 lg:justify-center">
+          <SearchBar />
+        </div>
 
+        <div className="ml-auto flex items-center gap-1 md:ml-0 md:gap-2">
           <Link
             href="/my-list"
-            className="hidden items-center gap-2 text-sm text-fg-3 transition-colors hover:text-fg md:inline-flex"
+            className="hidden items-center gap-2 rounded-card px-3 py-2 text-sm text-fg-3 transition-colors hover:text-fg md:inline-flex"
           >
             <BookmarkSimple className="size-4" aria-hidden="true" />
             My List
@@ -120,7 +121,7 @@ export function Header() {
             type="button"
             onClick={() => setSearchOpen((open) => !open)}
             aria-expanded={searchOpen}
-            className="grid size-10 place-items-center rounded-card text-fg-2 transition-colors hover:text-fg md:hidden"
+            className="grid size-11 place-items-center rounded-card text-fg-2 transition-colors hover:text-fg md:hidden"
           >
             {searchOpen ? (
               <X className="size-5" aria-hidden="true" />
@@ -136,7 +137,7 @@ export function Header() {
             type="button"
             onClick={() => setMenuOpen(true)}
             aria-expanded={menuOpen}
-            className="grid size-10 place-items-center rounded-card text-fg-2 transition-colors hover:text-fg md:hidden"
+            className="grid size-11 place-items-center rounded-card text-fg-2 transition-colors hover:text-fg md:hidden"
           >
             <ListIcon className="size-5" aria-hidden="true" />
             <span className="sr-only">Open menu</span>
@@ -162,26 +163,26 @@ export function Header() {
 
           <nav
             aria-label="Mobile"
-            className="animate-drop absolute inset-x-0 top-0 border-b border-line bg-raised px-5 pt-5 pb-8"
+            className="animate-drop absolute inset-x-0 top-0 border-b border-line bg-raised px-5 pt-5 pb-10"
           >
             <div className="flex items-center justify-between">
               <Wordmark />
               <button
                 type="button"
                 onClick={() => setMenuOpen(false)}
-                className="grid size-10 place-items-center rounded-card text-fg-2 hover:text-fg"
+                className="grid size-11 place-items-center rounded-card text-fg-2 hover:text-fg"
               >
                 <X className="size-5" aria-hidden="true" />
                 <span className="sr-only">Close menu</span>
               </button>
             </div>
 
-            <ul className="mt-8 space-y-1">
+            <ul className="mt-8 divide-y divide-line">
               {[...NAV, { href: "/my-list", label: "My List" }].map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="display block py-3 text-2xl text-fg"
+                    className="display block py-4 text-2xl text-fg"
                   >
                     {item.label}
                   </Link>
