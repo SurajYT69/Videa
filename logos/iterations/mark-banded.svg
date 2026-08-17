@@ -1,0 +1,23 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Videa">
+  <title>Videa mark</title>
+
+  <defs>
+    <clipPath id="mb-play">
+      <path d="M163.79 177.27 L252.21 246.73 Q264 256 252.21 265.27 L163.79 334.73 Q152 344 152 329 L152 183 Q152 168 163.79 177.27 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- Outer group scales the mark to 78% of the square (a favicon gets browser padding
+       already, so 60% left it a sliver in a padded box) and nudges it right
+       for optical balance; the inner group carries the clip so it resolves in
+       the same coordinate space as the lockup. -->
+  <g transform="translate(271 256) scale(2.44) translate(-205.1 -256)">
+    <g clip-path="url(#mb-play)">
+      <rect x="150" y="168.0" width="116" height="31.2" fill="#FFB627"/>
+      <rect x="150" y="204.2" width="116" height="31.2" fill="#FF6B3D"/>
+      <rect x="150" y="240.4" width="116" height="31.2" fill="#ED2E7E"/>
+      <rect x="150" y="276.6" width="116" height="31.2" fill="#A42FC1"/>
+      <rect x="150" y="312.8" width="116" height="31.2" fill="#4739D9"/>
+    </g>
+  </g>
+</svg>

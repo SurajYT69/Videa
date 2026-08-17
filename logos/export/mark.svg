@@ -1,0 +1,19 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Videa">
+  <title>Videa mark</title>
+
+  <defs>
+    <linearGradient id="mr-ramp" gradientUnits="userSpaceOnUse" x1="152" y1="168" x2="152" y2="344">
+      <stop offset="0" stop-color="#FFB627"/>
+      <stop offset="0.25" stop-color="#FF6B3D"/>
+      <stop offset="0.5" stop-color="#ED2E7E"/>
+      <stop offset="0.75" stop-color="#A42FC1"/>
+      <stop offset="1" stop-color="#4739D9"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(271 256) scale(2.44) translate(-205.1 -256)">
+    <path
+      d="M163.79 177.27 L252.21 246.73 Q264 256 252.21 265.27 L163.79 334.73 Q152 344 152 329 L152 183 Q152 168 163.79 177.27 Z"
+      fill="url(#mr-ramp)"/>
+  </g>
+</svg>

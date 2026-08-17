@@ -1,0 +1,373 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   VIDEA — design tokens
+   Light theme. One accent for signal, one five-stop brand gradient for
+   identity. Both are drawn from the same ramp so the page reads as one palette.
+   ========================================================================== */
+
+@theme {
+  /* Brand ramp ------------------------------------------------------------ */
+  --color-g1: #ffb627; /* marigold */
+  --color-g2: #ff6b3d; /* tangerine */
+  --color-g3: #ed2e7e; /* raspberry */
+  --color-g4: #a42fc1; /* orchid */
+  --color-g5: #4739d9; /* indigo */
+
+  /* Surfaces -------------------------------------------------------------- */
+  --color-ink: #f5f6f8; /* page ground */
+  --color-surface: #fcfcfe; /* resting surface */
+  --color-raised: #ffffff; /* elevated surface */
+  --color-line: #e4e7ec; /* hairline */
+  --color-line-strong: #d3d8e0; /* hairline on raised */
+
+  /* Text ------------------------------------------------------------------ */
+  --color-fg: #111318;
+  --color-fg-2: #454c5a;
+  --color-fg-3: #5f6675; /* clears WCAG AA at 11px on the page ground */
+
+  /* Accent — signal only. Stop 2, deepened for contrast on light. --------- */
+  --color-accent: #e0552b;
+  --color-accent-soft: #fdeee7;
+
+  /*
+   * Radius — one system.
+   * 12px surfaces, 6px micro-surfaces under 48px, full for circular
+   * icon affordances.
+   */
+  --radius-card: 12px;
+  --radius-mini: 6px;
+
+  /* Motion ---------------------------------------------------------------- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Type — display carries character, sans carries text, mono carries data. */
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  /* Container ------------------------------------------------------------- */
+  --container-page: 1440px;
+
+  /* Shadows — tinted to the ground hue, never pure black. ----------------- */
+  --shadow-soft: 0 1px 2px rgb(17 19 24 / 0.04), 0 8px 24px rgb(17 19 24 / 0.06);
+  --shadow-lift: 0 2px 4px rgb(17 19 24 / 0.05), 0 18px 40px rgb(17 19 24 / 0.1);
+
+  /* Keyframes ------------------------------------------------------------- */
+  --animate-rise: rise 0.5s var(--ease-out-expo) both;
+  --animate-fade: fade 0.4s var(--ease-standard) both;
+  --animate-drop: drop 0.18s var(--ease-out-expo) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -180% 0;
+  }
+  to {
+    background-position: 180% 0;
+  }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  /* Visible, branded focus. Never removed. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  /* Inputs already carry a border, so the ring sits tight against it. */
+  input:focus-visible {
+    outline-offset: 0;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: #ffffff;
+  }
+
+  /* Scrollbar tuned to the ground, not the browser default. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #c8cdd6;
+    border-radius: 999px;
+    border: 3px solid var(--color-ink);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #aab1bd;
+  }
+}
+
+/* ==========================================================================
+   Layout utilities
+   ========================================================================== */
+
+@utility page {
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @media (min-width: 768px) {
+    padding-inline: 2rem;
+  }
+  @media (min-width: 1280px) {
+    padding-inline: 3rem;
+  }
+}
+
+/* Horizontal rails: scroll without a visible bar, snap to card starts. */
+@utility rail {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility rail-item {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+}
+
+/*
+ * Gutter for rails that bleed past the page container.
+ *
+ * `scroll-padding` has to match `padding`, otherwise scroll-snap aligns the
+ * first card to the scrollport edge and eats the gutter. The max() keeps cards
+ * aligned with the page container on displays wider than it.
+ */
+@utility rail-gutter {
+  --rail-overhang: max(0px, calc((100% - var(--container-page)) / 2));
+  --rail-gutter: calc(var(--rail-overhang) + 1.25rem);
+  padding-inline: var(--rail-gutter);
+  scroll-padding-inline: var(--rail-gutter);
+
+  @media (min-width: 768px) {
+    --rail-gutter: calc(var(--rail-overhang) + 2rem);
+  }
+  @media (min-width: 1280px) {
+    --rail-gutter: calc(var(--rail-overhang) + 3rem);
+  }
+}
+
+/* ==========================================================================
+   Type utilities
+   ========================================================================== */
+
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+}
+
+@utility meta {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-fg-3);
+}
+
+/* ==========================================================================
+   Brand gradient
+   Four sanctioned placements: the logo lockup (see components/Wordmark), the
+   active nav indicator, the Continue Watching progress fill, and the ambient
+   wash behind hero and page headers. Nothing else.
+   ========================================================================== */
+
+@utility brand-bar {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-g1),
+    var(--color-g2),
+    var(--color-g3),
+    var(--color-g4),
+    var(--color-g5)
+  );
+}
+
+/* Five overlapping radial stops. Low opacity so text stays the loudest thing. */
+@utility brand-wash {
+  background-image:
+    radial-gradient(
+      58% 84% at 4% 0%,
+      color-mix(in oklab, var(--color-g1) 30%, transparent),
+      transparent 68%
+    ),
+    radial-gradient(
+      48% 72% at 30% 4%,
+      color-mix(in oklab, var(--color-g2) 24%, transparent),
+      transparent 68%
+    ),
+    radial-gradient(
+      44% 66% at 54% 0%,
+      color-mix(in oklab, var(--color-g3) 18%, transparent),
+      transparent 68%
+    ),
+    radial-gradient(
+      48% 70% at 77% 3%,
+      color-mix(in oklab, var(--color-g4) 16%, transparent),
+      transparent 68%
+    ),
+    radial-gradient(
+      56% 80% at 100% 0%,
+      color-mix(in oklab, var(--color-g5) 18%, transparent),
+      transparent 68%
+    );
+}
+
+/* ==========================================================================
+   Surfaces and states
+   ========================================================================== */
+
+@utility skeleton {
+  background-color: #e9ecf1;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.72) 45%,
+    transparent 90%
+  );
+  background-size: 180% 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* Hairline inset that reads as an edge on artwork without darkening it. */
+@utility art-edge {
+  box-shadow: inset 0 0 0 1px rgb(17 19 24 / 0.08);
+}
+
+/*
+ * Scrims fade artwork into the page ground rather than into black, so a
+ * backdrop dissolves into the layout instead of stopping at a hard edge.
+ */
+@utility scrim-bottom {
+  background: linear-gradient(
+    to top,
+    var(--color-ink) 0%,
+    color-mix(in srgb, var(--color-ink) 94%, transparent) 20%,
+    color-mix(in srgb, var(--color-ink) 66%, transparent) 46%,
+    color-mix(in srgb, var(--color-ink) 22%, transparent) 72%,
+    transparent 100%
+  );
+}
+
+/*
+ * Corner-anchored wash for the hero. On a light ground, two crossed linear
+ * scrims bleach the whole frame and the still reads as a faded print. This
+ * keeps the ground opaque only under the type and clears the subject.
+ */
+@utility scrim-corner {
+  background: radial-gradient(
+    132% 106% at 0% 100%,
+    var(--color-ink) 0%,
+    color-mix(in srgb, var(--color-ink) 93%, transparent) 30%,
+    color-mix(in srgb, var(--color-ink) 70%, transparent) 48%,
+    color-mix(in srgb, var(--color-ink) 32%, transparent) 65%,
+    transparent 82%
+  );
+}
+
+@utility scrim-left {
+  background: linear-gradient(
+    to right,
+    var(--color-ink) 0%,
+    color-mix(in srgb, var(--color-ink) 92%, transparent) 28%,
+    color-mix(in srgb, var(--color-ink) 60%, transparent) 50%,
+    color-mix(in srgb, var(--color-ink) 16%, transparent) 74%,
+    transparent 100%
+  );
+}
+
+/*
+ * Text that sits ON artwork stays white over a dark veil, in both this theme
+ * and any future one. Image legibility is not a page-theme decision.
+ */
+@utility scrim-media {
+  background: linear-gradient(
+    to top,
+    rgb(10 12 16 / 0.88) 0%,
+    rgb(10 12 16 / 0.6) 38%,
+    rgb(10 12 16 / 0.16) 70%,
+    transparent 100%
+  );
+}
+
+/* ==========================================================================
+   Reduced motion — every animation above collapses to static.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

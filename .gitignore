@@ -1,0 +1,14 @@
+node_modules
+.next
+out
+.env
+.env.local
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+.vercel
+
+# Local agent skill library. Not application code; excluded from the public
+# repo by default. Remove these two lines if you want them published.
+.agents/
+skills-lock.json

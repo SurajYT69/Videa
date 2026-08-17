@@ -1,0 +1,36 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Videa">
+  <title>Videa</title>
+
+  <!-- Gap tightened to 58 units: the mark tapers to a point, so a measured
+       gap reads wider than it is. -->
+
+  <defs>
+    <!--
+      Same silhouette as iteration-2, filled with a continuous ramp instead of
+      discrete bands. Below roughly 48px the 5-unit gaps fall under a single
+      device pixel and alias into mush; a gradient keeps the spectrum reading
+      at any size. Mapped in user space so the stops land exactly on the mark.
+    -->
+    <linearGradient id="i3-ramp" gradientUnits="userSpaceOnUse" x1="152" y1="168" x2="152" y2="344">
+      <stop offset="0" stop-color="#FFB627"/>
+      <stop offset="0.25" stop-color="#FF6B3D"/>
+      <stop offset="0.5" stop-color="#ED2E7E"/>
+      <stop offset="0.75" stop-color="#A42FC1"/>
+      <stop offset="1" stop-color="#4739D9"/>
+    </linearGradient>
+  </defs>
+
+  <g id="icon">
+    <path
+      d="M163.79 177.27 L252.21 246.73 Q264 256 252.21 265.27 L163.79 334.73 Q152 344 152 329 L152 183 Q152 168 163.79 177.27 Z"
+      fill="url(#i3-ramp)"/>
+  </g>
+
+  <g id="wordmark" transform="translate(322 192) scale(1.28)" fill="#111318">
+    <path d="M0 0 H24 L44 68 L64 0 H88 L55 100 H33 Z"/>
+    <path transform="translate(102 0)" d="M0 0 H22 V100 H0 Z"/>
+    <path transform="translate(138 0)" fill-rule="evenodd" d="M0 0 H46 C72 0 88 22 88 50 C88 78 72 100 46 100 H0 Z M22 22 V78 H44 C58 78 66 66 66 50 C66 34 58 22 44 22 Z"/>
+    <path transform="translate(240 0)" d="M0 0 H80 V22 H22 V39 H70 V61 H22 V78 H80 V100 H0 Z"/>
+    <path transform="translate(334 0)" fill-rule="evenodd" d="M34 0 H54 L88 100 H64 L57 79 H31 L24 100 H0 Z M44 20 L53 57 H35 Z"/>
+  </g>
+</svg>

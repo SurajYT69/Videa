@@ -1,0 +1,25 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Videa">
+  <title>Videa - aperture prism</title>
+
+  <!-- A lens ring broken on one side. The wedge sits inside, the spectrum
+       leaves through the gap. Rounder and more app-icon than concept 1. -->
+  <g id="icon">
+    <path d="M273.5 194.3 A96 96 0 1 0 273.5 317.7" fill="none" stroke="#111318" stroke-width="26" stroke-linecap="round"/>
+    <path d="M200 196 L236 300 H164 Z" fill="#111318"/>
+    <g>
+      <rect x="292" y="250" width="46" height="12" rx="6" fill="#FFB627" transform="rotate(-32 292 256)"/>
+      <rect x="292" y="250" width="46" height="12" rx="6" fill="#FF6B3D" transform="rotate(-16 292 256)"/>
+      <rect x="292" y="250" width="46" height="12" rx="6" fill="#ED2E7E"/>
+      <rect x="292" y="250" width="46" height="12" rx="6" fill="#A42FC1" transform="rotate(16 292 256)"/>
+      <rect x="292" y="250" width="46" height="12" rx="6" fill="#4739D9" transform="rotate(32 292 256)"/>
+    </g>
+  </g>
+
+  <g id="wordmark" transform="translate(394 192) scale(1.28)" fill="#111318">
+    <path d="M0 0 H24 L44 68 L64 0 H88 L55 100 H33 Z"/>
+    <path transform="translate(102 0)" d="M0 0 H22 V100 H0 Z"/>
+    <path transform="translate(138 0)" fill-rule="evenodd" d="M0 0 H46 C72 0 88 22 88 50 C88 78 72 100 46 100 H0 Z M22 22 V78 H44 C58 78 66 66 66 50 C66 34 58 22 44 22 Z"/>
+    <path transform="translate(240 0)" d="M0 0 H80 V22 H22 V39 H70 V61 H22 V78 H80 V100 H0 Z"/>
+    <path transform="translate(334 0)" fill-rule="evenodd" d="M34 0 H54 L88 100 H64 L57 79 H31 L24 100 H0 Z M44 20 L53 57 H35 Z"/>
+  </g>
+</svg>
