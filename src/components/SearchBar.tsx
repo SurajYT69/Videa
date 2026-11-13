@@ -194,7 +194,7 @@ export function SearchBar({
           aria-activedescendant={
             activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined
           }
-          className="glass-panel w-full rounded-full py-3 pr-14 pl-11 text-sm text-fg placeholder:text-fg-3 transition-colors duration-200 focus:bg-ink/85 [&::-webkit-search-cancel-button]:appearance-none"
+          className="glass-panel w-full rounded-full py-3 pr-14 pl-11 text-base text-fg pointer-fine:text-sm placeholder:text-fg-3 transition-colors duration-200 focus:bg-ink/85 [&::-webkit-search-cancel-button]:appearance-none"
         />
 
         {query ? (

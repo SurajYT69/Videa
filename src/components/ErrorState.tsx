@@ -11,7 +11,7 @@ type Props = {
 /** Raw error text never reaches this component. */
 export function ErrorState({ title, description, action }: Props) {
   return (
-    <div className="page flex min-h-[60dvh] flex-col items-start justify-center py-24 md:items-center md:text-center">
+    <div className="page flex min-h-[60svh] flex-col items-start justify-center py-24 md:items-center md:text-center">
       <h1 className="display text-3xl text-fg md:text-4xl">{title}</h1>
       <p className="mt-4 max-w-md text-sm leading-relaxed text-fg-2">
         {description}

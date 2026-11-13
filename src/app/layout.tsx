@@ -59,17 +59,34 @@ export const metadata: Metadata = {
 /* Both track `--color-ink`. A stale themeColor is a white flash on first paint. */
 export const viewport: Viewport = {
   themeColor: "#0b0c0e",
-  colorScheme: "dark",
+  colorScheme: "dark light",
+  /* Paint under the notch; the phone header pads itself back out. */
+  viewportFit: "cover",
+  /* Android: the keyboard shrinks the layout like it does on iOS. */
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
+    /* data-mode is dark on the server; the script below switches it to the
+       saved choice before first paint, so a light reader never sees a dark
+       flash. That is the one attribute that differs, hence the warning
+       suppression on this element only. */
     <html
       lang="en"
+      data-mode="dark"
+      suppressHydrationWarning
       className={`${display.variable} ${sans.variable} ${mono.variable}`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem("oovi-theme")==="light"){document.documentElement.dataset.mode="light";document.querySelector('meta[name="theme-color"]')?.setAttribute("content","#f5f6f8")}}catch(e){}`,
+          }}
+        />
+      </head>
       {/* Browser extensions (e.g. ColorZilla's cz-shortcut-listen) add attributes
           to <body> before React hydrates. This silences that one element's
           attribute mismatch only; children are still checked. */}

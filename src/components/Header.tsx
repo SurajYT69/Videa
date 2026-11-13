@@ -16,6 +16,7 @@ import {
 import type { Icon } from "@phosphor-icons/react";
 import { SearchBar } from "./SearchBar";
 import { EyesMark, Wordmark } from "./Wordmark";
+import { ThemeSwitch } from "./ThemeSwitch";
 
 type Item = {
   href: string;
@@ -136,7 +137,11 @@ export function Header() {
           </ul>
         </nav>
 
-        <nav aria-label="Search and library" className="mt-auto">
+        <div className="mt-auto mb-2 grid place-items-center">
+          <ThemeSwitch />
+        </div>
+
+        <nav aria-label="Search and library">
           <ul className="flex flex-col gap-1">
             {TOOLS.map((item) => (
               <li key={item.href}>
@@ -171,13 +176,14 @@ export function Header() {
           />
         )}
 
-        <div className="page flex h-16 items-center gap-6">
+        <div className="page flex h-16 items-center gap-6 box-content pt-[env(safe-area-inset-top)]">
           <Link href="/" className="group shrink-0 rounded-mini">
             <Wordmark />
             <span className="sr-only">oovi home</span>
           </Link>
 
           <div className="ml-auto flex items-center gap-1">
+            <ThemeSwitch />
             <button
               type="button"
               onClick={() => setSearchOpen((open) => !open)}
@@ -226,7 +232,7 @@ export function Header() {
 
             <nav
               aria-label="Mobile"
-              className="animate-drop absolute inset-x-0 top-0 border-b border-line bg-raised px-5 pt-5 pb-10"
+              className="animate-drop absolute inset-x-0 top-0 border-b border-line bg-raised px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-10"
             >
               <div className="flex items-center justify-between">
                 <Wordmark />

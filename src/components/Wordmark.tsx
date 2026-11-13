@@ -18,7 +18,7 @@ export function Wordmark({ className = "h-7 w-auto" }: { className?: string }) {
       aria-label="oovi"
     >
       <Eyes />
-      <circle cx="337" cy="-28" r="16" fill="var(--color-accent)" />
+      <circle cx="337" cy="-28" r="16" fill="var(--color-mark)" />
       <g fill="currentColor">
         <path d="M216 0 H245 L265 64 L285 0 H314 L279 100 H251 Z" />
         <path d="M324 0 H350 V100 H324 Z" />
@@ -45,8 +45,8 @@ function Eyes() {
     <>
       {[50, 158].map((cx) => (
         <g key={cx} className="eye">
-          <circle cx={cx} cy="50" r="50" fill="var(--color-accent)" />
-          <circle className="eye-pupil" cx={cx + 16} cy="50" r="21" fill="var(--color-ink)" />
+          <circle cx={cx} cy="50" r="50" fill="var(--color-mark)" />
+          <circle className="eye-pupil" cx={cx + 16} cy="50" r="21" fill="var(--color-mark-ink)" />
         </g>
       ))}
     </>

@@ -96,6 +96,34 @@
   --animate-fade: fade 0.3s var(--ease-out-expo) both;
   --animate-drop: drop 0.18s var(--ease-out-expo) both;
   --animate-shimmer: shimmer 1.6s linear infinite;
+
+  /* Logo colours. Fixed in both modes: the eyes are the brand, not chrome. */
+  --color-mark: #c8f031;
+  --color-mark-ink: #0b0c0e;
+}
+
+/* ==========================================================================
+   Light mode. Dark is the default; `data-mode="light"` on <html> (set by the
+   theme toggle, restored before paint from LocalStorage) swaps the ramp.
+   The neutrals are the original light theme's. The accent cannot stay lime:
+   #c8f031 on a white ground is about 1.2:1, so here it is a deep olive-lime
+   at about 5:1, and the logo keeps its lime through --color-mark.
+   ========================================================================== */
+:root[data-mode="light"] {
+  color-scheme: light;
+  --color-ink: #f5f6f8;
+  --color-ink-2: #edeff4;
+  --color-surface: #fcfcfe;
+  --color-raised: #ffffff;
+  --color-line: #e4e7ec;
+  --color-line-strong: #d3d8e0;
+  --color-fg: #111318;
+  --color-fg-2: #454c5a;
+  --color-fg-3: #5f6675;
+  --color-accent: #5b7a00;
+  --color-accent-soft: #eef5d6;
+  --shadow-soft: 0 1px 2px rgb(17 19 24 / 0.04), 0 8px 24px rgb(17 19 24 / 0.06);
+  --shadow-lift: 0 2px 4px rgb(17 19 24 / 0.05), 0 18px 40px rgb(17 19 24 / 0.1);
 }
 
 @keyframes rise {
@@ -147,6 +175,25 @@
     scroll-behavior: smooth;
     color-scheme: dark;
     -webkit-tap-highlight-color: transparent;
+    /* No font inflation when a phone turns to landscape. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Fire taps immediately: these never double-tap-zoom. */
+  a,
+  button,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* A long press on a control should not select its label. Links stay
+     selectable and keep their callout: "open in new tab" is useful there. */
+  button,
+  [role="button"],
+  [role="option"] {
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   body {
@@ -223,6 +270,8 @@
 @utility rail {
   display: flex;
   overflow-x: auto;
+  /* Hitting the end of a rail must not turn into a browser back-swipe. */
+  overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -343,8 +392,10 @@
   letter-spacing: -0.06em;
   transition: -webkit-text-stroke-color 300ms;
 
-  .group:hover & {
-    -webkit-text-stroke-color: var(--color-accent);
+  @media (hover: hover) and (pointer: fine) {
+    .group:hover & {
+      -webkit-text-stroke-color: var(--color-accent);
+    }
   }
 }
 
@@ -508,11 +559,17 @@
     transform-origin: 50% 100%;
     transition: transform 500ms var(--ease-out-expo);
   }
-  .fan:hover > li {
-    transform: translateX(calc(var(--o) * 1.5rem)) translateY(calc(var(--lift) * 0.5))
-      rotate(calc(var(--o) * 4deg));
+  @media (hover: hover) and (pointer: fine) {
+    .fan:hover > li {
+      transform: translateX(calc(var(--o) * 1.5rem)) translateY(calc(var(--lift) * 0.5))
+        rotate(calc(var(--o) * 4deg));
+    }
+    .fan > li:hover {
+      z-index: 10;
+      transform: translateX(calc(var(--o) * 1.5rem)) translateY(-0.75rem) rotate(0deg)
+        scale(1.06);
+    }
   }
-  .fan > li:hover,
   .fan > li:focus-within {
     z-index: 10;
     transform: translateX(calc(var(--o) * 1.5rem)) translateY(-0.75rem) rotate(0deg)
@@ -602,4 +659,40 @@
       transition: none;
     }
   }
+}
+
+
+/* Light-mode versions of the utilities that hardcode a dark-theme colour.
+   The checklist in CLAUDE.md ("What was not inversion-safe") is this list. */
+@layer utilities {
+  :root[data-mode="light"] .skeleton {
+    background-color: #e9ecf1;
+  }
+  :root[data-mode="light"] .art-edge {
+    box-shadow: inset 0 0 0 1px rgb(17 19 24 / 0.08);
+  }
+  :root[data-mode="light"] .glass {
+    background-color: rgb(255 255 255 / 0.6);
+    border-color: rgb(17 19 24 / 0.08);
+  }
+  :root[data-mode="light"] .glass-panel {
+    background-color: rgb(255 255 255 / 0.78);
+    border-color: rgb(17 19 24 / 0.08);
+  }
+}
+:root[data-mode="light"] ::-webkit-scrollbar-thumb {
+  background: #c7ccd4;
+}
+:root[data-mode="light"] ::-webkit-scrollbar-thumb:hover {
+  background: #aab1bb;
+}
+
+/* Set by the theme reveal for the instant the mode flips, under the blob.
+   Without it every `transition-colors` element on the page (hundreds) starts
+   its own colour transition at once, and the page restyles every frame of the
+   fade. Measured as the main cause of the switch's stutter. */
+:root[data-theme-switching] *,
+:root[data-theme-switching] *::before,
+:root[data-theme-switching] *::after {
+  transition: none !important;
 }

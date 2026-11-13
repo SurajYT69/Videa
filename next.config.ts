@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
      * encode cost dominates the ~25% byte saving AVIF would give back.
      */
     formats: ["image/webp"],
+    /* 75 is the default; 90 is the hero backdrops (see CLAUDE.md, Images). */
+    qualities: [75, 90],
 
     /*
      * Never ask the optimizer for a width the source cannot supply.

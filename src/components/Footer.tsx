@@ -23,7 +23,7 @@ const COLUMNS = [
 /**
  * Quiet chrome, one moment. The links and credits sit in a compact row; the
  * wordmark below runs the full width and is cropped by the page's bottom edge,
- * so the lime eyes are the only colour here. The letters are one surface step
+ * so the lime eyes are the only colour here. The letters are one hairline step
  * above the ground: present, not competing with the eyes.
  */
 export function Footer() {
@@ -73,7 +73,7 @@ export function Footer() {
           124 of it shows, so the eyes stay whole while the letters run off
           the edge. Decorative here; the page already names itself. */}
       <div aria-hidden="true" className="page mt-10 md:mt-14">
-        <div className="group aspect-[350/124] overflow-hidden text-raised">
+        <div className="group aspect-[350/124] overflow-hidden text-line">
           <Wordmark className="block h-auto w-full" />
         </div>
       </div>

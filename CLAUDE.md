@@ -99,10 +99,26 @@ rail has no scroll state at all.
 Tokens live in `src/app/globals.css` under `@theme`. Use them; do not hardcode
 hex values in components.
 
-Dark theme, locked. `color-scheme: dark`, one theme for the whole page, no
-section inverts. This is a deliberate override of the usual dual-mode default,
-requested explicitly. There is no toggle and no `prefers-color-scheme` variant;
-`dark:` utilities have no meaning here.
+Dark by default, with a light mode the viewer chooses. One theme for the
+whole page, no section inverts. The mode lives in `data-mode` on `<html>`
+(`dark` from the server); `ThemeSwitch` (rail and phone header) renders the
+vendored 000h toggle from `components/ui/theme-toggle.tsx` for its button and
+sun/moon morph, runs its own reveal, and saves the mode under `oovi-theme`.
+The reveal is transform and opacity only, by measurement: the library's
+clip-path reveal ran on the main thread at ~30fps in Chrome 151. A blob of the
+new ground grows from the toggle, the mode flips while it covers the page
+(with `data-theme-switching` suspending every transition, or hundreds of
+`transition-colors` elements animate at once), then the blob fades. The
+toggle's jelly outline and click ripple are off (`data-morph="none"`,
+`data-flow="off"`): they wrote the button's transform every frame of the
+reveal. A
+script in `layout.tsx` restores a saved light choice before first paint. There
+is deliberately no `prefers-color-scheme` variant and `dark:` utilities have no
+meaning here: components use tokens, and `:root[data-mode="light"]` in
+`globals.css` swaps the ramp. The light accent is `#5B7A00`, because lime on
+white is about 1.2:1; the logo keeps its lime in both modes via `--color-mark`.
+Anything that hardcodes a dark-only colour needs a light override in the block
+at the end of `globals.css` (see "What was not inversion-safe").
 
 The theme was converted from a locked light theme, and the token layer mostly
 held up: the palette below is a drop-in replacement and the great majority of
