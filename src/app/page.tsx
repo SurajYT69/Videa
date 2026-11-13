@@ -5,7 +5,7 @@ import { DiscoverRail } from "@/components/DiscoverRail";
 import { NewEpisodes } from "@/components/NewEpisodes";
 import { Section } from "@/components/Section";
 import { PosterRail } from "@/components/PosterRail";
-import { TrendingRail } from "@/components/TrendingRail";
+import { Top10Rail } from "@/components/Top10Rail";
 import {
   ContinueWatchingSection,
   RecentlyViewedSection,
@@ -15,7 +15,6 @@ import {
   HeroSkeleton,
   PosterRailSkeleton,
   SectionSkeleton,
-  TrendingRailSkeleton,
 } from "@/components/LoadingSkeleton";
 import {
   ConfigError,
@@ -70,10 +69,10 @@ async function HeroAndTrending() {
       <NewEpisodes />
       <Section
         title="Trending this week"
-        lead="The titles the most people are opening, ranked, refreshed every week."
+        badge="Top 10"
         bleed
       >
-        <TrendingRail items={rest.slice(0, 12)} label="Trending this week" />
+        <Top10Rail items={rest} label="Trending this week" />
       </Section>
     </>
   );
@@ -115,7 +114,7 @@ export default function HomePage() {
           <>
             <HeroSkeleton />
             <SectionSkeleton bleed>
-              <TrendingRailSkeleton />
+              <PosterRailSkeleton />
             </SectionSkeleton>
           </>
         }

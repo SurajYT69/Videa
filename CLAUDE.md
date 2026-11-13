@@ -190,7 +190,9 @@ top of an image, since its colour is tuned for the page ground.
 below) for grids and poster rails; `TrendingRail`'s card (16:9, ranked, title on
 the artwork) for trending; `ContinueWatchingCard` (16:9, centred play disc,
 progress hairline) for resume. They share radius, hover physics and type, and
-differ in proportion and what sits on the image. Do not collapse them into one
+differ in proportion and what sits on the image. `Top10Rail` (homepage
+"Trending this week") is the poster shape with a hollow rank numeral behind
+its left edge, not a fourth card. Do not collapse them into one
 component, and do not add a fourth without a proportion that earns it.
 
 Hover is the same everywhere: one action affordance fades in and the shadow
@@ -444,7 +446,7 @@ a cascade bug that is not there.
 position aligns the first card to the scrollport edge, eating the gutter. The
 `rail-gutter` utility fixes it by matching `scroll-padding-inline` to
 `padding-inline`, and its `max()` keeps rails aligned with the page container
-above 1440px. Use `rail rail-gutter` on any bleed rail, never bare `px-*`.
+above 1920px. Use `rail rail-gutter` on any bleed rail, never bare `px-*`.
 
 **A corner scrim only works when the frame has a far side.** `scrim-corner` is a
 bottom-left radial on desktop, which keeps the type opaque and leaves the

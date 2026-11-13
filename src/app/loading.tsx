@@ -2,7 +2,7 @@ import {
   GridSkeleton,
   HeroSkeleton,
   SectionSkeleton,
-  TrendingRailSkeleton,
+  PosterRailSkeleton,
 } from "@/components/LoadingSkeleton";
 
 export default function HomeLoading() {
@@ -10,7 +10,7 @@ export default function HomeLoading() {
     <>
       <HeroSkeleton />
       <SectionSkeleton bleed>
-        <TrendingRailSkeleton />
+        <PosterRailSkeleton />
       </SectionSkeleton>
       <SectionSkeleton>
         <GridSkeleton count={12} />

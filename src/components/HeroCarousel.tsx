@@ -27,7 +27,7 @@ export function HeroCarousel({ slides }: { slides: ReactNode[] }) {
 
   return (
     <div
-      className="relative grid md:-ml-18"
+      className="relative grid"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}

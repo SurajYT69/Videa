@@ -21,27 +21,32 @@ type Item = {
   href: string;
   label: string;
   icon: Icon;
+  /** Hover gesture for the rail glyph, see `.rail-glyph` in globals.css. */
+  motion: "lift" | "clap" | "tune" | "float" | "seek" | "drop";
   match: (pathname: string) => boolean;
 };
 
 const NAV: Item[] = [
-  { href: "/", label: "Home", icon: House, match: (p) => p === "/" },
+  { href: "/", label: "Home", icon: House, motion: "lift", match: (p) => p === "/" },
   {
     href: "/movie",
     label: "Movies",
     icon: FilmSlate,
+    motion: "clap",
     match: (p) => p.startsWith("/movie") || p.startsWith("/watch/movie"),
   },
   {
     href: "/tv",
     label: "TV",
     icon: TelevisionSimple,
+    motion: "tune",
     match: (p) => p.startsWith("/tv") || p.startsWith("/watch/tv"),
   },
   {
     href: "/anime",
     label: "Anime",
     icon: Ghost,
+    motion: "float",
     match: (p) => p.startsWith("/anime"),
   },
 ];
@@ -51,12 +56,14 @@ const TOOLS: Item[] = [
     href: "/search",
     label: "Search",
     icon: MagnifyingGlass,
+    motion: "seek",
     match: (p) => p.startsWith("/search"),
   },
   {
     href: "/my-list",
     label: "My List",
     icon: BookmarkSimple,
+    motion: "drop",
     match: (p) => p.startsWith("/my-list"),
   },
 ];
@@ -114,7 +121,7 @@ export function Header() {
     <>
       {/* ---------------------------------------------------------------- rail */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-18 flex-col items-center bg-gradient-to-r from-ink via-ink/80 to-transparent py-5 md:flex">
-        <Link href="/" className="grid size-11 place-items-center rounded-card">
+        <Link href="/" className="group grid size-11 place-items-center rounded-card">
           <EyesMark className="h-4 w-auto" />
           <span className="sr-only">oovi home</span>
         </Link>
@@ -165,7 +172,7 @@ export function Header() {
         )}
 
         <div className="page flex h-16 items-center gap-6">
-          <Link href="/" className="shrink-0 rounded-mini">
+          <Link href="/" className="group shrink-0 rounded-mini">
             <Wordmark />
             <span className="sr-only">oovi home</span>
           </Link>
@@ -175,7 +182,7 @@ export function Header() {
               type="button"
               onClick={() => setSearchOpen((open) => !open)}
               aria-expanded={searchOpen}
-              className="grid size-11 place-items-center rounded-card text-fg-2 transition-colors hover:text-fg"
+              className="grid size-11 place-items-center rounded-card text-fg-2 transition-[color,scale] duration-100 hover:text-fg active:scale-90 motion-reduce:active:scale-100"
             >
               {searchOpen ? (
                 <X className="size-5" aria-hidden="true" />
@@ -191,7 +198,7 @@ export function Header() {
               type="button"
               onClick={() => setMenuOpen(true)}
               aria-expanded={menuOpen}
-              className="grid size-11 place-items-center rounded-card text-fg-2 transition-colors hover:text-fg"
+              className="grid size-11 place-items-center rounded-card text-fg-2 transition-[color,scale] duration-100 hover:text-fg active:scale-90 motion-reduce:active:scale-100"
             >
               <ListIcon className="size-5" aria-hidden="true" />
               <span className="sr-only">Open menu</span>
@@ -261,7 +268,7 @@ function RailLink({ item, active }: { item: Item; active: boolean }) {
       href={item.href}
       title={item.label}
       aria-current={active ? "page" : undefined}
-      className={`relative grid size-11 place-items-center rounded-card transition-colors duration-200 ${
+      className={`group relative grid size-11 place-items-center rounded-card transition-colors duration-200 ${
         active ? "text-fg" : "text-fg-3 hover:text-fg"
       }`}
     >
@@ -272,7 +279,9 @@ function RailLink({ item, active }: { item: Item; active: boolean }) {
           className="absolute top-1/2 -left-3.5 h-5 w-0.5 -translate-y-1/2 bg-accent"
         />
       )}
-      <Glyph weight={active ? "fill" : "regular"} className="size-5" aria-hidden="true" />
+      <span className="rail-glyph" data-motion={item.motion}>
+        <Glyph weight={active ? "fill" : "regular"} className="size-5" aria-hidden="true" />
+      </span>
       <span className="sr-only">{item.label}</span>
     </Link>
   );

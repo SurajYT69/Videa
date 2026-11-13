@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 
 type Props = {
   title: string;
+  /** Short chip after the title, e.g. "Top 10". */
+  badge?: string;
   /** One editorial line. Used sparingly; most sections carry none. */
   lead?: string;
   /** Optional destination for the section's own listing. */
@@ -22,6 +24,7 @@ type Props = {
  */
 export function Section({
   title,
+  badge,
   lead,
   href,
   hrefLabel = "Show more",
@@ -36,6 +39,11 @@ export function Section({
           <h2 className="display display-section flex items-center gap-3 text-fg">
             <span aria-hidden="true" className="h-5 w-1 shrink-0 rounded-full bg-accent" />
             {title}
+            {badge && (
+              <span className="rounded-mini bg-accent px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-[0.08em] text-ink uppercase">
+                {badge}
+              </span>
+            )}
           </h2>
           {lead && (
             <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-fg-3">

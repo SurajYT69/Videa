@@ -75,7 +75,7 @@
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
   /* Container ------------------------------------------------------------- */
-  --container-page: 1440px;
+  --container-page: 1920px;
 
   /*
    * Shadows — a hover cue, no longer the elevation.
@@ -336,6 +336,18 @@
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
 }
 
+/* Top 10 rank: hollow numeral on the page ground, lime on hover. */
+@utility top10-numeral {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--color-line-strong);
+  letter-spacing: -0.06em;
+  transition: -webkit-text-stroke-color 300ms;
+
+  .group:hover & {
+    -webkit-text-stroke-color: var(--color-accent);
+  }
+}
+
 /*
  * Section band. Sections alternate between the page ground and this so the
  * homepage reads as stacked chapters rather than one continuous scroll. The
@@ -505,5 +517,89 @@
     z-index: 10;
     transform: translateX(calc(var(--o) * 1.5rem)) translateY(-0.75rem) rotate(0deg)
       scale(1.06);
+  }
+}
+
+/* ==========================================================================
+   Logo eyes. Hovering any `.group` that holds the logo makes the pupils
+   glance up and forward and the eyes blink once. Pupils transition (so a
+   quick in-and-out retargets instead of snapping); the blink is a one-shot
+   keyframe. Pointer-only, and gone under reduced motion.
+   ========================================================================== */
+
+@layer components {
+  .eye {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .eye-pupil {
+    transition: transform 250ms var(--ease-out-expo);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .group:hover .eye-pupil {
+      transform: translate(6px, -10px);
+    }
+    .group:hover .eye {
+      animation: eye-blink 280ms ease 120ms 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .eye-pupil {
+      transition: none;
+    }
+    .group:hover .eye-pupil {
+      transform: none;
+    }
+    .group:hover .eye {
+      animation: none;
+    }
+  }
+}
+
+@keyframes eye-blink {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  45% {
+    transform: scaleY(0.1);
+  }
+}
+
+/* ==========================================================================
+   Rail icons. Each glyph has one small gesture on hover that suits it, and
+   every one presses in. Hovered tens of times a day, so the moves are a few
+   pixels or degrees at most and settle in 200ms.
+   ========================================================================== */
+
+@layer components {
+  .rail-glyph {
+    display: grid;
+    transition: transform 200ms var(--ease-out-expo);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .group:hover .rail-glyph[data-motion="lift"] { transform: translateY(-2px); }
+    .group:hover .rail-glyph[data-motion="clap"] { transform: rotate(-10deg); }
+    .group:hover .rail-glyph[data-motion="tune"] { transform: scale(1.1); }
+    .group:hover .rail-glyph[data-motion="float"] { transform: translateY(-3px) rotate(-6deg); }
+    .group:hover .rail-glyph[data-motion="seek"] { transform: rotate(-14deg); }
+    .group:hover .rail-glyph[data-motion="drop"] { transform: translateY(2px); }
+  }
+
+  .group:active .rail-glyph[data-motion] {
+    transform: scale(0.9);
+    transition-duration: 100ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rail-glyph,
+    .group:hover .rail-glyph[data-motion],
+    .group:active .rail-glyph[data-motion] {
+      transform: none;
+      transition: none;
+    }
   }
 }
