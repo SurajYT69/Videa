@@ -26,7 +26,10 @@ export type MovieDetails = MediaItem & {
   tagline: string | null;
   cast: CastMember[];
   certification: string | null;
-};
+  status: string | null;
+  /** Set when the film belongs to a series of films. */
+  collectionId: number | null;
+} & TitleExtras;
 
 export type TVDetails = MediaItem & {
   type: "tv";
@@ -36,6 +39,30 @@ export type TVDetails = MediaItem & {
   episodeRunTime: number | null;
   status: string | null;
   lastAirDate: string | null;
+  episodeCount: number;
+} & TitleExtras;
+
+/** Reference facts that ride along on the one details request. */
+export type TitleExtras = {
+  /** The title's own logo artwork, when TMDB has one. */
+  logoPath: string | null;
+  studios: string[];
+  languages: string[];
+  /** Subscription services carrying the title. Shown, never linked. */
+  providers: Provider[];
+};
+
+export type Provider = {
+  name: string;
+  logoPath: string;
+};
+
+/** A film series, e.g. a trilogy. Fetched on its own, behind Suspense. */
+export type Collection = {
+  name: string;
+  overview: string;
+  backdropPath: string | null;
+  parts: MediaItem[];
 };
 
 /** A filterable genre, as offered by the browse pages. */

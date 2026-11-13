@@ -1,30 +1,11 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   VIDEA — design tokens
-   Dark theme. One accent for signal, one five-stop brand gradient for
-   identity. Both are drawn from the same ramp so the page reads as one palette.
+   OOVI — design tokens
+   Dark theme. Neutral chrome and one solid accent. Artwork is the colour.
    ========================================================================== */
 
 @theme {
-  /*
-   * Brand ramp — lifted for a dark ground.
-   *
-   * The hues and their order are unchanged; only luminance moved. The old
-   * values were tuned against a near-white page, where the dark end could sit
-   * low: #4739d9 measured 2.0:1 on this ground and read as a bruise rather
-   * than a colour. Every stop now clears 3:1 against `--color-ink`, which is
-   * the non-text threshold the ramp actually needs — it is a logo, a 3px nav
-   * indicator and a progress fill, never body copy.
-   *
-   * Measured on --color-ink: g1 11.6, g2 8.1, g3 6.1, g4 5.1, g5 4.9.
-   */
-  --color-g1: #ffc03d; /* marigold */
-  --color-g2: #ff8a52; /* tangerine */
-  --color-g3: #ff4e96; /* raspberry */
-  --color-g4: #be58e3; /* orchid */
-  --color-g5: #7b6ef6; /* indigo */
-
   /*
    * Surfaces — near-neutral with a cool cast, never pure black.
    *
@@ -38,12 +19,12 @@
    * The blue channel leads every value, which is where the "colourful" in a
    * dark surface comes from; a pure grey ramp would read as switched-off.
    */
-  --color-ink: #0f1116; /* page ground */
-  --color-ink-2: #171a21; /* band, one step above the ground */
-  --color-surface: #191d27; /* resting surface */
-  --color-raised: #212632; /* elevated surface */
-  --color-line: #272d3a; /* hairline */
-  --color-line-strong: #3a4252; /* hairline on raised */
+  --color-ink: #0b0c0e; /* page ground */
+  --color-ink-2: #121316; /* band, one step above the ground */
+  --color-surface: #15171a; /* resting surface */
+  --color-raised: #1d1f23; /* elevated surface */
+  --color-line: #25282d; /* hairline */
+  --color-line-strong: #383c43; /* hairline on raised */
 
   /*
    * Text — recomputed against the new grounds, not inverted from the old ones.
@@ -58,12 +39,12 @@
    * fg measures 17.15 / 15.81 / 15.30 / 13.74 and fg-2 10.53 / 9.71 / 9.40 /
    * 8.44 across the same four grounds.
    */
-  --color-fg: #f2f4f8;
-  --color-fg-2: #bac2d0;
-  --color-fg-3: #98a1b2;
+  --color-fg: #f4f5f0;
+  --color-fg-2: #babcba;
+  --color-fg-3: #989b98;
 
   /*
-   * Accent — signal only. Stop 2, lifted for contrast on dark.
+   * Accent — the only colour in the chrome: logo mark, playhead, rating, focus.
    *
    * The light theme deepened this stop to hold up against white. Dark needs
    * the opposite move: lighter and more saturated, or the focus ring vanishes
@@ -74,20 +55,19 @@
    * pale one. It backs `text-accent` in the rating chip and the saved state,
    * and that pairing measures 6.48:1.
    */
-  --color-accent: #ff7a45;
-  --color-accent-soft: #2e1810;
+  --color-accent: #c8f031;
+  --color-accent-soft: #1e2410;
 
   /*
    * Radius — one system.
    * 12px surfaces, 6px micro-surfaces under 48px, full for circular
    * icon affordances.
    */
-  --radius-card: 12px;
-  --radius-mini: 6px;
+  --radius-card: 16px;
+  --radius-mini: 8px;
 
   /* Motion ---------------------------------------------------------------- */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Type — display carries character, sans carries text, mono carries data. */
   --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
@@ -113,7 +93,7 @@
 
   /* Keyframes ------------------------------------------------------------- */
   --animate-rise: rise 0.5s var(--ease-out-expo) both;
-  --animate-fade: fade 0.4s var(--ease-standard) both;
+  --animate-fade: fade 0.3s var(--ease-out-expo) both;
   --animate-drop: drop 0.18s var(--ease-out-expo) both;
   --animate-shimmer: shimmer 1.6s linear infinite;
 }
@@ -121,7 +101,7 @@
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translate3d(0, 14px, 0);
+    transform: translate3d(0, 8px, 0);
   }
   to {
     opacity: 1;
@@ -182,7 +162,7 @@
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
-    border-radius: 3px;
+    border-radius: 4px;
   }
 
   /* Inputs already carry a border, so the ring sits tight against it. */
@@ -214,12 +194,12 @@
    * 4px-wide shape, and a dark ground gives back less of it than a white one.
    */
   ::-webkit-scrollbar-thumb {
-    background: #3a4252;
+    background: #383c43;
     border-radius: 999px;
     border: 3px solid var(--color-ink);
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #4b5468;
+    background: #4a4f57;
   }
 }
 
@@ -283,28 +263,28 @@
 
 @utility display {
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.03em;
+  font-weight: 500;
+  /* Tight tracking is for large display only; the size steps opt in. */
+  letter-spacing: var(--display-tracking, 0);
   line-height: 1.04;
 }
 
 @utility meta {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.01em;
   color: var(--color-fg-3);
 }
 
 /*
- * Section and hero labels. Wider tracking than `.meta` because it is read as a
- * category marker rather than as data, and it never sits on artwork.
+ * Section and hero labels. Sentence case, a step heavier than `.meta`; it
+ * never sits on artwork.
  */
 @utility eyebrow {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 500;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-fg-3);
 }
@@ -312,70 +292,16 @@
 /* Fluid display sizes. One step per surface, so nothing is sized ad hoc. */
 @utility display-hero {
   font-size: clamp(2.75rem, 6.4vw, 5rem);
+  --display-tracking: -0.03em;
 }
 
 @utility display-page {
   font-size: clamp(2.25rem, 4.6vw, 3.75rem);
+  --display-tracking: -0.02em;
 }
 
 @utility display-section {
   font-size: clamp(1.375rem, 1.9vw, 1.75rem);
-}
-
-/* ==========================================================================
-   Brand gradient
-   Four sanctioned placements: the logo lockup (see components/Wordmark), the
-   active nav indicator, the Continue Watching progress fill, and the ambient
-   wash behind hero and page headers. Nothing else.
-   ========================================================================== */
-
-@utility brand-bar {
-  background-image: linear-gradient(
-    90deg,
-    var(--color-g1),
-    var(--color-g2),
-    var(--color-g3),
-    var(--color-g4),
-    var(--color-g5)
-  );
-}
-
-/*
- * Five overlapping radial stops. Low opacity so text stays the loudest thing —
- * but "low" is relative to the ground. On white, 30% of a marigold was already
- * most of the way to competing with a heading; on this ground the same stop
- * barely registers, because the wash is adding light rather than removing it.
- * Each stop is raised by roughly a third for that reason, which is the whole
- * of the "more colourful" brief: the same four sanctioned placements, carrying
- * more saturation because the ground can now absorb it.
- */
-@utility brand-wash {
-  background-image:
-    radial-gradient(
-      58% 84% at 4% 0%,
-      color-mix(in oklab, var(--color-g1) 40%, transparent),
-      transparent 68%
-    ),
-    radial-gradient(
-      48% 72% at 30% 4%,
-      color-mix(in oklab, var(--color-g2) 33%, transparent),
-      transparent 68%
-    ),
-    radial-gradient(
-      44% 66% at 54% 0%,
-      color-mix(in oklab, var(--color-g3) 26%, transparent),
-      transparent 68%
-    ),
-    radial-gradient(
-      48% 70% at 77% 3%,
-      color-mix(in oklab, var(--color-g4) 24%, transparent),
-      transparent 68%
-    ),
-    radial-gradient(
-      56% 80% at 100% 0%,
-      color-mix(in oklab, var(--color-g5) 26%, transparent),
-      transparent 68%
-    );
 }
 
 /* ==========================================================================
@@ -389,7 +315,7 @@
  * — at anything near that, a grid of loading posters strobes.
  */
 @utility skeleton {
-  background-color: #191d27;
+  background-color: #15171a;
   background-image: linear-gradient(
     90deg,
     transparent 0%,
@@ -519,4 +445,38 @@
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+/* ==========================================================================
+   Ambient tint
+   A soft wash in the colour of the page's hero artwork, set on <html> as
+   `--ambient` by components/AmbientTint. With no artwork it is transparent.
+   This is content colour, not brand colour: it changes with every title.
+   ========================================================================== */
+
+@utility ambient {
+  background: radial-gradient(
+    120% 90% at 30% 0%,
+    color-mix(in oklab, var(--ambient, transparent) 30%, transparent),
+    transparent 78%
+  );
+}
+/* ==========================================================================
+   Glass
+   Translucent surfaces for controls and panels that sit on artwork or on the
+   ambient tint. `glass` is the light film used for buttons, chips and tiles;
+   `glass-panel` is the darker one for cards that carry text over a still.
+   ========================================================================== */
+
+@utility glass {
+  background-color: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+
+@utility glass-panel {
+  background-color: rgb(14 15 18 / 0.62);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  backdrop-filter: blur(20px) saturate(1.2);
 }

@@ -1,0 +1,9 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="oovi">
+  <title>oovi mark</title>
+  <g id="eyes">
+    <circle cx="136" cy="256" r="112" fill="#C8F031"/>
+    <circle cx="376" cy="256" r="112" fill="#C8F031"/>
+    <circle cx="172" cy="256" r="47" fill="#0B0C0E"/>
+    <circle cx="412" cy="256" r="47" fill="#0B0C0E"/>
+  </g>
+</svg>

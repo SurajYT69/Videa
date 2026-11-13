@@ -6,6 +6,8 @@ export const POSTER = { sm: "w185", md: "w342", lg: "w500" } as const;
 export const BACKDROP = { md: "w780", lg: "w1280", xl: "original" } as const;
 export const STILL = { md: "w300", lg: "w500" } as const;
 export const PROFILE = { md: "w185" } as const;
+export const LOGO = { md: "w500" } as const;
+export const PROVIDER = { sm: "w92" } as const;
 
 export function tmdbImage(
   path: string | null | undefined,

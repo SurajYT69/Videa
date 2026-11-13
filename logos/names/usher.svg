@@ -1,0 +1,13 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Usher">
+  <title>Usher</title>
+  <g id="icon">
+    <g transform="rotate(-32 208 256)">
+      <rect x="112" y="238" width="64" height="36" rx="10" fill="#F2F4F8"/>
+      <path d="M176 226 H200 V286 H176 Z" fill="#F2F4F8"/>
+      <path d="M212 232 L304 190 V322 L212 280 Z" fill="#FF7A45"/>
+    </g>
+  </g>
+  <g id="wordmark">
+    <text x="340" y="308" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="150" font-weight="700" letter-spacing="-3" fill="#F2F4F8">Usher</text>
+  </g>
+</svg>

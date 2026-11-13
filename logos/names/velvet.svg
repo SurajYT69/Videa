@@ -1,0 +1,10 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Velvet">
+  <title>Velvet</title>
+  <g id="icon">
+    <path d="M120 168 H200 C200 244 152 284 120 344 Z" fill="#FF7A45"/>
+    <path d="M296 168 H216 C216 244 264 284 296 344 Z" fill="#FF7A45"/>
+  </g>
+  <g id="wordmark">
+    <text x="340" y="308" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="150" font-weight="700" letter-spacing="-3" fill="#F2F4F8">Velvet</text>
+  </g>
+</svg>

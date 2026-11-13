@@ -1,0 +1,10 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dimly">
+  <title>Dimly</title>
+  <g id="icon">
+    <circle cx="208" cy="256" r="78" fill="none" stroke="#3A4252" stroke-width="20"/>
+    <path d="M208 168 a88 88 0 0 0 0 176 Z" fill="#FF7A45"/>
+  </g>
+  <g id="wordmark">
+    <text x="340" y="308" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="150" font-weight="700" letter-spacing="-3" fill="#F2F4F8">Dimly</text>
+  </g>
+</svg>

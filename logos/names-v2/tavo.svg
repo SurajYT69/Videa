@@ -1,0 +1,10 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="tavo">
+  <title>tavo</title>
+  <g id="icon">
+    <rect x="120" y="168" width="176" height="60" rx="30" fill="#FF4B2B"/>
+    <path d="M178 244 H238 V314 a30 30 0 0 1 -60 0 Z" fill="#F5EBDD"/>
+  </g>
+  <g id="wordmark">
+    <text x="340" y="306" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="160" font-weight="700" letter-spacing="-4" fill="#F5EBDD">tavo</text>
+  </g>
+</svg>

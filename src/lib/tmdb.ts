@@ -15,6 +15,8 @@ import type {
   Season,
   SeasonSummary,
   TVDetails,
+  TitleExtras,
+  Collection,
 } from "./types";
 
 const BASE = "https://api.themoviedb.org/3";
@@ -216,6 +218,47 @@ async function normalizePage(
   return out;
 }
 
+type RawExtras = {
+  images?: {
+    logos?: Array<{ file_path: string; iso_639_1?: string | null }>;
+  };
+  production_companies?: Array<{ name: string }>;
+  spoken_languages?: Array<{ english_name?: string; name?: string }>;
+  "watch/providers"?: {
+    results?: Record<
+      string,
+      { flatrate?: Array<{ provider_name: string; logo_path: string | null }> }
+    >;
+  };
+};
+
+/*
+ * Logo, studios and languages. All three arrive on the details response the
+ * page already makes, so the richer title page costs no extra request.
+ */
+function normalizeExtras(raw: RawExtras): TitleExtras {
+  const logos = raw.images?.logos ?? [];
+  const logo = logos.find((l) => l.iso_639_1 === "en") ?? logos[0];
+  /* India first, then the US: the two regions this site is most used from. */
+  const regions = raw["watch/providers"]?.results ?? {};
+  const flatrate = (regions.IN ?? regions.US)?.flatrate ?? [];
+  return {
+    providers: flatrate
+      .filter((p): p is { provider_name: string; logo_path: string } =>
+        Boolean(p.logo_path),
+      )
+      .slice(0, 5)
+      .map((p) => ({ name: p.provider_name, logoPath: p.logo_path })),
+    /* TMDB lists vector logos as .svg but only serves them rasterised. */
+    logoPath: logo ? logo.file_path.replace(/\.svg$/, ".png") : null,
+    studios: (raw.production_companies ?? []).map((c) => c.name).slice(0, 2),
+    languages: (raw.spoken_languages ?? [])
+      .map((l) => l.english_name || l.name || "")
+      .filter(Boolean)
+      .slice(0, 3),
+  };
+}
+
 function normalizeCast(credits: RawCredits | undefined): CastMember[] {
   return (credits?.cast ?? []).slice(0, 12).map((c) => ({
     id: c.id,
@@ -264,7 +307,9 @@ export async function searchTV(query: string): Promise<MediaItem[]> {
    ------------------------------------------------------------------------- */
 
 export async function getMovie(id: number): Promise<MovieDetails | null> {
-  type Raw = RawMedia & {
+  type Raw = RawMedia & RawExtras & {
+    belongs_to_collection?: { id: number } | null;
+    status?: string;
     runtime?: number | null;
     tagline?: string | null;
     imdb_id?: string | null;
@@ -283,7 +328,8 @@ export async function getMovie(id: number): Promise<MovieDetails | null> {
    * resolve a playback id.
    */
   const raw = await tmdbOrNull<Raw>(`/movie/${id}`, {
-    append_to_response: "credits,release_dates",
+    append_to_response: "credits,release_dates,images,watch/providers",
+    include_image_language: "en,null",
   });
   if (!raw) return null;
 
@@ -299,11 +345,15 @@ export async function getMovie(id: number): Promise<MovieDetails | null> {
     tagline: raw.tagline || null,
     cast: normalizeCast(raw.credits),
     certification: cert || null,
+    status: raw.status ?? null,
+    collectionId: raw.belongs_to_collection?.id ?? null,
+    ...normalizeExtras(raw),
   };
 }
 
 export async function getTV(id: number): Promise<TVDetails | null> {
-  type Raw = RawMedia & {
+  type Raw = RawMedia & RawExtras & {
+    number_of_episodes?: number;
     seasons?: Array<{
       season_number: number;
       name?: string;
@@ -320,7 +370,8 @@ export async function getTV(id: number): Promise<TVDetails | null> {
   };
 
   const raw = await tmdbOrNull<Raw>(`/tv/${id}`, {
-    append_to_response: "credits,external_ids",
+    append_to_response: "credits,external_ids,images,watch/providers",
+    include_image_language: "en,null",
   });
   if (!raw) return null;
 
@@ -347,6 +398,31 @@ export async function getTV(id: number): Promise<TVDetails | null> {
     episodeRunTime: raw.episode_run_time?.[0] ?? null,
     status: raw.status ?? null,
     lastAirDate: raw.last_air_date ?? null,
+    episodeCount: raw.number_of_episodes ?? 0,
+    ...normalizeExtras(raw),
+  };
+}
+
+/* -------------------------------------------------------------------------
+   Collections — a second request, so callers stream it.
+   ------------------------------------------------------------------------- */
+
+export async function getCollection(id: number): Promise<Collection | null> {
+  type Raw = {
+    name?: string;
+    overview?: string;
+    backdrop_path?: string | null;
+    parts?: RawMedia[];
+  };
+
+  const raw = await tmdbOrNull<Raw>(`/collection/${id}`, {}, 60 * 60 * 24);
+  if (!raw) return null;
+
+  return {
+    name: raw.name ?? "Collection",
+    overview: raw.overview ?? "",
+    backdropPath: raw.backdrop_path ?? null,
+    parts: await normalizePage({ results: raw.parts ?? [] }, "movie"),
   };
 }
 

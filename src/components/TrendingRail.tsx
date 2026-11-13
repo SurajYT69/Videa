@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Play } from "@phosphor-icons/react/dist/ssr";
+import { Play, Star } from "@phosphor-icons/react/dist/ssr";
 import { Rail } from "./Rail";
 import { BACKDROP, tmdbImage } from "@/lib/images";
 import { ratingLabel, typeLabel, year } from "@/lib/format";
@@ -30,7 +30,7 @@ export function TrendingRail({
           <Link
             key={`${item.type}-${item.tmdbId}`}
             href={detailsHref(item.type, item.tmdbId)}
-            className="rail-item group relative aspect-video w-[280px] overflow-hidden rounded-card bg-surface transition-transform duration-300 ease-out-expo hover:-translate-y-1 sm:w-[360px] lg:w-[420px]"
+            className="rail-item group relative aspect-video w-[280px] overflow-hidden rounded-card bg-surface sm:w-[360px] lg:w-[420px]"
           >
             {src ? (
               <Image
@@ -45,7 +45,7 @@ export function TrendingRail({
                  * hero backdrop for the optimizer and for Chrome's six
                  * connections.
                  */
-                className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.06]"
+                className="object-cover"
               />
             ) : (
               <div className="absolute inset-0 grid place-items-center">
@@ -57,29 +57,29 @@ export function TrendingRail({
 
             <div className="scrim-media absolute inset-x-0 bottom-0 h-3/5 opacity-90 transition-opacity duration-300 group-hover:opacity-100" />
 
-            {/* Rank. Quiet chip so it marks position without competing. */}
-            <span
-              aria-hidden="true"
-              className="absolute top-3 left-3 rounded-mini bg-black/45 px-2 py-1 font-mono text-[11px] font-medium text-white/90 tabular-nums backdrop-blur-sm"
-            >
-              {String(index + 1).padStart(2, "0")}
-            </span>
-
             <span className="pointer-events-none absolute top-3 right-3 grid size-10 scale-90 place-items-center rounded-full bg-fg text-ink opacity-0 transition duration-300 ease-out-expo group-hover:scale-100 group-hover:opacity-100">
               <Play weight="fill" className="size-4 translate-x-px" aria-hidden="true" />
             </span>
 
             {/* Written out rather than reusing `.meta`, whose colour is tuned
                 for the page ground, not for sitting on artwork. */}
-            <div className="absolute inset-x-0 bottom-0 p-4 md:p-5">
+            <div className="absolute inset-x-0 bottom-0 flex items-end gap-3 p-4 md:p-5">
+              {/* Trending is an ordered list; the numeral says so. */}
+              <span
+                aria-hidden="true"
+                className="display text-6xl leading-none text-white/30 tabular-nums"
+              >
+                {index + 1}
+              </span>
+              <div className="min-w-0">
               <h3 className="display line-clamp-1 text-lg text-white md:text-xl">
                 {item.title}
               </h3>
-              <div className="mt-2 flex items-center gap-2.5 font-mono text-[11px] tracking-[0.06em] uppercase">
+              <div className="mt-2 flex items-center gap-2 font-mono text-xs">
                 <span className="text-white/70">{typeLabel(item.type)}</span>
                 {year(item.releaseDate) && (
                   <>
-                    <span aria-hidden="true" className="size-[3px] rounded-full bg-white/40" />
+                    <span aria-hidden="true" className="size-1 rounded-full bg-white/40" />
                     <span className="text-white/70 tabular-nums">
                       {year(item.releaseDate)}
                     </span>
@@ -87,10 +87,14 @@ export function TrendingRail({
                 )}
                 {rating && (
                   <>
-                    <span aria-hidden="true" className="size-[3px] rounded-full bg-white/40" />
-                    <span className="text-g1 tabular-nums">★ {rating}</span>
+                    <span aria-hidden="true" className="size-1 rounded-full bg-white/40" />
+                    <span className="inline-flex items-center gap-1 text-accent tabular-nums">
+                      <Star weight="fill" className="size-3" aria-hidden="true" />
+                      {rating}
+                    </span>
                   </>
                 )}
+              </div>
               </div>
             </div>
 

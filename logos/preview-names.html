@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Name and logo concepts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 2rem; background: #0F1116; color: #F2F4F8; }
+  h1 { font-size: 1.5rem; font-weight: 500; }
+  p.lead { margin: 0.5rem 0 2rem; font-size: 0.875rem; color: #98A1B2; max-width: 60ch; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+  .card { border: 1px solid #272D3A; border-radius: 12px; overflow: hidden; }
+  .card-img { display: flex; align-items: center; justify-content: center; padding: 1.5rem; min-height: 220px; background: #0F1116; }
+  .card-img img { max-width: 100%; max-height: 200px; }
+  .card-label { padding: 0.75rem 1rem; font-size: 0.875rem; border-top: 1px solid #272D3A; background: #171A21; }
+  .card-label strong { display: block; font-weight: 500; }
+  .card-label span { display: block; margin-top: 0.25rem; color: #98A1B2; }
+</style>
+</head>
+<body>
+  <h1>Name and logo concepts</h1>
+  <p class="lead">Five names from the world of going to the cinema, each with its own mark. Lettering is a system font for now; the chosen one gets drawn letterforms.</p>
+  <div class="grid">
+    <div class="card">
+      <div class="card-img"><img src="names/usher.svg" alt="Usher"></div>
+      <div class="card-label"><strong>Usher</strong><span>The person with the torch who walks you to your seat: you give a title, it takes you there</span></div>
+    </div>
+    <div class="card">
+      <div class="card-img"><img src="names/dimly.svg" alt="Dimly"></div>
+      <div class="card-label"><strong>Dimly</strong><span>The house lights going down: a lamp that is half lit, half already dark</span></div>
+    </div>
+    <div class="card">
+      <div class="card-img"><img src="names/stub.svg" alt="Stub"></div>
+      <div class="card-label"><strong>Stub</strong><span>The torn ticket you keep: a stub with its perforation</span></div>
+    </div>
+    <div class="card">
+      <div class="card-img"><img src="names/matinee.svg" alt="Matinee"></div>
+      <div class="card-label"><strong>Matinee</strong><span>The afternoon showing: a sun coming up behind a cinema screen</span></div>
+    </div>
+    <div class="card">
+      <div class="card-img"><img src="names/velvet.svg" alt="Velvet"></div>
+      <div class="card-label"><strong>Velvet</strong><span>The curtain before the film: two drapes parting</span></div>
+    </div>
+  </div>
+</body>
+</html>

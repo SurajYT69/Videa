@@ -1,0 +1,15 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stub">
+  <title>Stub</title>
+  <g id="icon">
+    <path d="M140 184 H276 a20 20 0 0 1 20 20 V238 a18 18 0 0 0 0 36 V308 a20 20 0 0 1 -20 20 H140 a20 20 0 0 1 -20 -20 V274 a18 18 0 0 0 0 -36 V204 a20 20 0 0 1 20 -20 Z" fill="#FF7A45"/>
+    <g fill="#0F1116">
+      <circle cx="240" cy="212" r="7"/>
+      <circle cx="240" cy="240" r="7"/>
+      <circle cx="240" cy="272" r="7"/>
+      <circle cx="240" cy="300" r="7"/>
+    </g>
+  </g>
+  <g id="wordmark">
+    <text x="340" y="308" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="150" font-weight="700" letter-spacing="-3" fill="#F2F4F8">Stub</text>
+  </g>
+</svg>

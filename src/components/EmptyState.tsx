@@ -15,7 +15,7 @@ type Props = {
  */
 export function EmptyState({ title, description, action, children }: Props) {
   return (
-    <div className="rounded-card border border-line bg-surface/60 px-6 py-12 md:px-12 md:py-16">
+    <div className="glass rounded-card px-6 py-12 md:px-12 md:py-16">
       <div className="max-w-md">
         <span
           aria-hidden="true"
@@ -26,7 +26,7 @@ export function EmptyState({ title, description, action, children }: Props) {
         {action && (
           <Link
             href={action.href}
-            className="mt-7 inline-flex items-center rounded-card border border-line-strong bg-raised px-5 py-3 text-sm font-medium whitespace-nowrap text-fg transition duration-200 hover:border-fg-3 hover:-translate-y-px hover:shadow-soft active:translate-y-0"
+            className="mt-7 inline-flex items-center rounded-full border border-line-strong bg-raised px-5 py-3 text-sm font-medium whitespace-nowrap text-fg transition duration-200 hover:border-fg-3 hover:-translate-y-px hover:shadow-soft active:translate-y-0"
           >
             {action.label}
           </Link>

@@ -113,7 +113,7 @@ function Arrow({
       onClick={onClick}
       aria-hidden={hidden}
       tabIndex={hidden ? -1 : 0}
-      className={`absolute top-[38%] z-10 hidden size-11 -translate-y-1/2 place-items-center rounded-full border border-line bg-raised/90 text-fg-2 shadow-soft backdrop-blur-sm transition duration-200 hover:border-fg-3 hover:text-fg md:grid ${
+      className={`absolute top-[38%] z-10 hidden size-11 -translate-y-1/2 place-items-center glass-panel rounded-full text-fg-2 shadow-soft transition duration-200 hover:border-fg-3 hover:text-fg md:grid ${
         side === "left" ? "left-2 xl:left-4" : "right-2 xl:right-4"
       } ${
         hidden

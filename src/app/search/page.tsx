@@ -42,14 +42,9 @@ export default async function SearchPage({ searchParams }: Props) {
 
   if (!query) {
     return (
-      <div className="relative isolate">
-        <div
-          aria-hidden="true"
-          className="brand-wash pointer-events-none absolute inset-0 -z-10 opacity-70"
-        />
+      <div>
         <div className="page flex min-h-[80dvh] flex-col justify-center pt-32 pb-24">
           <div className="flex items-center gap-3">
-            <span className="h-px w-8 bg-fg-3/50" />
             <span className="eyebrow">Search</span>
           </div>
           <h1 className="display display-page mt-5 max-w-[14ch] text-fg text-balance">
@@ -70,7 +65,6 @@ export default async function SearchPage({ searchParams }: Props) {
     <div className="pt-32 pb-20 md:pt-40">
       <header className="page">
         <div className="flex items-center gap-3">
-          <span className="h-px w-8 bg-fg-3/50" />
           <span className="eyebrow">Search</span>
         </div>
         <h1 className="display display-page mt-5 max-w-[18ch] text-fg text-balance">
@@ -93,7 +87,7 @@ export default async function SearchPage({ searchParams }: Props) {
                 }`}
                 scroll={false}
                 aria-current={on ? "page" : undefined}
-                className={`rounded-card border px-4 py-2 text-sm transition duration-200 hover:-translate-y-px ${
+                className={`rounded-full border px-4 py-2 text-sm transition duration-200 hover:-translate-y-px ${
                   on
                     ? "border-fg bg-fg text-ink"
                     : "border-line-strong text-fg-2 hover:border-fg-3"
@@ -137,7 +131,7 @@ async function SearchResults({
     if (error instanceof ConfigError) throw error;
     return (
       <ErrorState
-        title="Search is unavailable."
+        title="Search is unavailable"
         description="We could not reach the catalogue. Try again in a moment."
       />
     );
@@ -146,7 +140,7 @@ async function SearchResults({
   if (!results.length) {
     return (
       <EmptyState
-        title="No titles found."
+        title="No titles found"
         description="Check the spelling, or try a shorter version of the name."
       >
         <div className="mt-7 w-full max-w-md">

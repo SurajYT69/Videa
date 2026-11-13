@@ -18,7 +18,7 @@ const YEARS = Array.from({ length: CURRENT_YEAR - 1949 }, (_, i) =>
 const RATINGS = [6, 7, 8, 9];
 
 const FIELD =
-  "rounded-card border border-line-strong bg-surface px-3 py-2.5 text-sm text-fg transition-colors duration-200 hover:border-fg-3/60";
+  "rounded-card border border-line-strong bg-surface px-3 py-2 text-sm text-fg transition-colors duration-200 hover:border-fg-3/60";
 
 type Props = {
   /** Comes from `SORT_OPTIONS`, so the UI cannot offer a sort this type rejects. */
@@ -84,7 +84,7 @@ export function BrowseFilters({
                 type="button"
                 aria-pressed={on}
                 onClick={() => toggleGenre(genre.id)}
-                className={`rounded-card border px-3 py-1.5 text-xs transition duration-200 hover:-translate-y-px ${
+                className={`rounded-full border px-3 py-1.5 text-xs transition duration-200 hover:-translate-y-px ${
                   on
                     ? "border-fg bg-fg text-ink"
                     : "border-line-strong text-fg-2 hover:border-fg-3"

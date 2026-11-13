@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/PageHeader";
 import {
+  LibraryHeader,
   ContinueWatchingSection,
   FavoritesSection,
   RecentlyViewedSection,
@@ -15,11 +15,7 @@ export const metadata: Metadata = {
 export default function MyListPage() {
   return (
     <>
-      <PageHeader
-        eyebrow="On this device"
-        title="My List"
-        description="Saved locally in this browser. No account, no server copy, nothing to sign into."
-      />
+      <LibraryHeader />
       <ContinueWatchingSection showWhenEmpty />
       <FavoritesSection showWhenEmpty tone="band" />
       <RecentlyViewedSection showWhenEmpty />

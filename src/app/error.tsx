@@ -5,7 +5,7 @@ import { ErrorState } from "@/components/ErrorState";
 export default function AppError({ reset }: { error: Error; reset: () => void }) {
   return (
     <ErrorState
-      title="Something went wrong."
+      title="Something went wrong"
       description="That page didn't load. Trying again usually clears it."
       action={
         <button

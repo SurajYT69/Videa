@@ -37,8 +37,8 @@ export function SearchDropdown({
             <li key={i} className="flex items-center gap-3 p-2">
               <div className="skeleton h-[54px] w-9 rounded-mini" />
               <div className="flex-1 space-y-2">
-                <div className="skeleton h-3 w-2/5 rounded-[3px]" />
-                <div className="skeleton h-2.5 w-1/4 rounded-[3px]" />
+                <div className="skeleton h-3 w-2/5 rounded-sm" />
+                <div className="skeleton h-2.5 w-1/4 rounded-sm" />
               </div>
             </li>
           ))}
@@ -108,8 +108,8 @@ export function SearchDropdown({
                       </span>
                     </span>
 
-                    <span className="shrink-0 text-[11px]">
-                      <Rating value={item.rating} variant="bare" />
+                    <span className="shrink-0 text-xs">
+                      <Rating value={item.rating} />
                     </span>
                   </button>
                 </li>

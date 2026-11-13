@@ -4,8 +4,6 @@ import type { ReactNode } from "react";
 
 type Props = {
   title: string;
-  /** Category marker above the title. What makes one section read unlike the next. */
-  eyebrow?: string;
   /** One editorial line. Used sparingly; most sections carry none. */
   lead?: string;
   /** Optional destination for the section's own listing. */
@@ -19,57 +17,48 @@ type Props = {
 };
 
 /**
- * The rule above the heading is the section's own edge. Sections are set
- * apart by rhythm and ground, not by boxing each one in a card.
+ * A heading with the accent tick, then content. Sections are set apart by
+ * rhythm and ground, not by boxing each one in a card.
  */
 export function Section({
   title,
-  eyebrow,
   lead,
   href,
-  hrefLabel = "View all",
+  hrefLabel = "Show more",
   bleed = false,
   tone = "ground",
   children,
 }: Props) {
   return (
-    <section
-      className={`py-14 md:py-20 ${tone === "band" ? "band" : ""}`}
-    >
-      <div className="page">
-        <div className="h-px w-full bg-line" />
-
-        <div className="mt-6 flex items-end justify-between gap-8 md:mt-8">
-          <div className="min-w-0">
-            {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-            <h2
-              className={`display display-section text-fg ${eyebrow ? "mt-2.5" : ""}`}
-            >
-              {title}
-            </h2>
-            {lead && (
-              <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-fg-3">
-                {lead}
-              </p>
-            )}
-          </div>
-
-          {href && (
-            <Link
-              href={href}
-              className="group inline-flex shrink-0 items-center gap-1.5 pb-1 text-sm text-fg-3 transition-colors duration-200 hover:text-fg"
-            >
-              {hrefLabel}
-              <ArrowRight
-                className="size-3.5 transition-transform duration-300 ease-out-expo group-hover:translate-x-0.5"
-                aria-hidden="true"
-              />
-            </Link>
+    <section className={`py-10 md:py-14 ${tone === "band" ? "band md:-ml-18 md:pl-18" : ""}`}>
+      <div className="page flex items-end justify-between gap-8">
+        <div className="min-w-0">
+          <h2 className="display display-section flex items-center gap-3 text-fg">
+            <span aria-hidden="true" className="h-5 w-1 shrink-0 rounded-full bg-accent" />
+            {title}
+          </h2>
+          {lead && (
+            <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-fg-3">
+              {lead}
+            </p>
           )}
         </div>
+
+        {href && (
+          <Link
+            href={href}
+            className="group inline-flex shrink-0 items-center gap-1.5 pb-1 text-sm text-fg-3 transition-colors duration-200 hover:text-fg"
+          >
+            {hrefLabel}
+            <ArrowRight
+              className="size-3.5 transition-transform duration-300 ease-out-expo group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </Link>
+        )}
       </div>
 
-      <div className={bleed ? "mt-8 md:mt-10" : "page mt-8 md:mt-10"}>
+      <div className={bleed ? "mt-6 md:mt-8" : "page mt-6 md:mt-8"}>
         {children}
       </div>
     </section>

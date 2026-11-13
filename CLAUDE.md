@@ -4,7 +4,8 @@ Guidance for Claude Code working in this repository.
 
 ## What this is
 
-Videa: a movie and TV discovery and playback site. Search by name, open a title,
+oovi: a movie and TV discovery and playback site. It was called Videa; the
+repo folder, the package name and the LocalStorage key keep the old name. Search by name, open a title,
 press play. TMDB supplies metadata, VidFast supplies the embed, and everything
 personal lives in LocalStorage. No database, no accounts, no server-side user
 state.
@@ -75,7 +76,8 @@ in the page's top-level `await`.
 allowed in persisted state; narrow with `toStub()` before writing and widen with
 `fromStub()` to reuse card components. Every read and write in `storage.ts` is
 guarded, so private mode and quota-exceeded degrade to empty rather than throwing
-into a render. The key is `videa-app-state`.
+into a render. The key is `videa-app-state`; it kept the old name through the rename so saved
+lists survive.
 
 **Never invent playback progress.** The embed is cross-origin. Progress is only
 stored when the player actually reports a position via `postMessage`
@@ -83,8 +85,9 @@ stored when the player actually reports a position via `postMessage`
 Watching with `progress: null` and renders no bar. Do not substitute a
 plausible-looking percentage.
 
-**Scroll:** no `window.addEventListener("scroll")`. The header's opaque state
-comes from an `IntersectionObserver` on a sentinel in `layout.tsx`.
+**Scroll:** no `window.addEventListener("scroll")`. The phone bar's opaque state
+comes from an `IntersectionObserver` on a sentinel in `layout.tsx`. The desktop
+rail has no scroll state at all.
 
 ## Design system
 
@@ -103,46 +106,41 @@ components needed no edit, because `bg-ink` is the page ground and
 things that did not survive inversion are recorded under "Gotchas already paid
 for", and they are the list to check first if the theme is ever changed again.
 
-**Palette.** A five-stop brand ramp plus one solid accent, all from the same
-family so the page reads as one palette.
+**Palette.** One neutral ramp and one solid accent. Artwork carries the colour;
+the chrome does not.
 
 | Token | Value | Role |
 | --- | --- | --- |
-| `--color-g1` .. `--color-g5` | `#FFC03D` `#FF8A52` `#FF4E96` `#BE58E3` `#7B6EF6` | Brand ramp |
-| `--color-accent` | `#FF7A45` | Signal only: rating star, focus ring, saved state |
-| `--color-accent-soft` | `#2E1810` | Accent-tinted surface behind `text-accent` |
-| `--color-ink` | `#0F1116` | Page ground |
-| `--color-ink-2` | `#171A21` | Section band — one step *lighter* than the ground |
-| `--color-surface` / `--color-raised` | `#191D27` `#212632` | Resting / elevated surface |
-| `--color-line` / `-strong` | `#272D3A` `#3A4252` | Hairline / hairline on raised |
-| `--color-fg` / `-2` / `-3` | `#F2F4F8` `#BAC2D0` `#98A1B2` | Text |
+| `--color-accent` | `#C8F031` | Logo mark, playhead, rating star, focus ring, saved state |
+| `--color-accent-soft` | `#1E2410` | Accent-tinted surface behind `text-accent` |
+| `--color-ink` | `#0B0C0E` | Page ground |
+| `--color-ink-2` | `#121316` | Section band — one step *lighter* than the ground |
+| `--color-surface` / `--color-raised` | `#15171A` `#1D1F23` | Resting / elevated surface |
+| `--color-line` / `-strong` | `#25282D` `#383C43` | Hairline / hairline on raised |
+| `--color-fg` / `-2` / `-3` | `#F4F5F0` `#BABCBA` `#989B98` | Text |
 
 Every value was recomputed against the new grounds, not inverted from the old
-ones. `--color-fg-3` carries `.meta` and `.eyebrow` at 11px and measures 7.26:1
-on the ground, 6.70:1 on the band, 6.48:1 on a surface and 5.82:1 on a raised
-one. It sits above the light theme's 5.33:1 deliberately: light-on-dark blooms
+ones. `--color-fg-3` carries `.meta` and `.eyebrow` at 12px and comes to roughly 6.9:1 on the ground, 6.6:1 on the band, 6.3:1 on a surface and 5.8:1 on a raised
+one (computed from the hex values for the oovi palette, not measured in a browser). It sits above the light theme's 5.33:1 deliberately: light-on-dark blooms
 optically at small sizes and the headroom pays for that. Do not darken it.
 
 `--color-ink-2` going *lighter* than the ground is the one inversion that is
 not symmetric. On dark, receding means coming forward; flip it darker and the
 alternating sections stop reading as separate chapters.
 
-The ramp moved for luminance only — same hues, same order. `#4739D9` measured
-2.0:1 on this ground and read as a bruise; every stop now clears 3:1, which is
-the non-text threshold the ramp actually needs.
+The accent is acid lime. It replaced the orange when the product became oovi,
+and the surface ramp went from blue-tinted to neutral at the same time so the
+lime is the only colour in the chrome. It comes to roughly 15:1 on the ground.
 
-The accent moved the opposite way to the light theme's: that one *deepened*
-stop 2 to hold up against white, and dark needs it lighter and more saturated
-or the focus ring disappears. It measures 7.3:1 on the ground.
+**No hue-to-hue gradients, anywhere.** The five-stop brand ramp, `brand-bar`,
+`brand-wash` and the gradient logo were removed on purpose. The accent appears
+as a short tick that means "you are here": on the rail's edge beside the active
+destination, before every section heading, as the Continue Watching progress
+fill, and under the episode a viewer stopped on.
 
-**The brand gradient has exactly four sanctioned placements:** the logo lockup,
-the active nav indicator, the Continue Watching progress fill, and the ambient
-`brand-wash` behind the hero seam and page headers. Adding a fifth turns a brand
-into confetti.
-
-**Radius, one system:** `--radius-card` 12px for surfaces (cards, posters,
-inputs, buttons, panels), `--radius-mini` 6px for micro-surfaces under 48px, and
-full round only for circular icon affordances such as the play disc.
+**Radius, one system:** `--radius-card` 16px for surfaces (cards, posters,
+panels, tiles), `--radius-mini` 8px for chips and small thumbnails, and full
+round for buttons, the search field, filter pills and icon affordances.
 
 **Type, three faces with distinct jobs:** Bricolage Grotesque for display
 (`.display`), Instrument Sans for text, JetBrains Mono for data (`.meta`, years,
@@ -153,14 +151,21 @@ Display sizing comes from three fluid steps, not from ad-hoc `text-*` chains:
 openers, `.display-section` for section headings. Each is a `clamp()`, so 390px
 and 1440px are the same rule rather than two guesses.
 
-`.meta` is data on the page ground. `.eyebrow` is the wider-tracked category
-marker above a section or title heading; it never sits on artwork either.
+`.meta` is data on the page ground, sentence case at 12px. `.eyebrow` is the
+small uppercase tracked label (11px, 0.12em): the kind marker above a title,
+"Streaming on", fact-tile labels and footer headings. It came back with the
+layout rebuild because the reference layout depends on it; keep it to labels of
+that kind and never use it for running text.
 
-**Sections are told apart by rhythm and ground, not by boxes.** `Section` draws
-a hairline above its heading and takes `tone="band"` to sit on `--color-ink-2`.
-Alternate it down a page so the scroll reads as stacked chapters. Do not wrap
-sections in cards, and do not give every section the same eyebrow-plus-lead
-treatment — the lead line is for the one or two sections that earn it.
+Tight tracking is opt-in. `.display` is weight 500 with zero tracking, and only
+`.display-hero` and `.display-page` set `--display-tracking` negative.
+
+**Sections are told apart by rhythm and ground, not by boxes.** `Section` opens
+with a heading carrying the accent tick and takes `tone="band"` to sit on `--color-ink-2`.
+Alternate it down a page so the scroll reads as stacked chapters. Band sections run under the rail (`md:-ml-18 md:pl-18`) so the ground change
+reaches the left edge. Do not wrap sections in cards, and do not bring back
+section eyebrows — `Section` has no such prop. The lead
+line is for the one or two sections that earn it.
 
 **Primary CTAs are `bg-fg text-ink`.** On this theme that is a near-white fill
 with dark text. Never add a hover that moves the fill toward the text colour —
@@ -183,8 +188,8 @@ progress hairline) for resume. They share radius, hover physics and type, and
 differ in proportion and what sits on the image. Do not collapse them into one
 component, and do not add a fourth without a proportion that earns it.
 
-Hover is the same everywhere: card lifts 4px, image scales ~1.05, one action
-affordance fades in, shadow goes to `shadow-lift`. Posters carry no resting
+Hover is the same everywhere: one action affordance fades in and the shadow
+goes to `shadow-lift`. Cards do not lift and artwork does not zoom. Posters carry no resting
 shadow — eighteen of them in a grid reads as fog.
 
 **Discovery on the homepage is horizontal.** Every homepage section is a single
@@ -211,6 +216,49 @@ type column, narrow frames centre, because at 390px there is no far side to move
 anyone to. Both sit high, since backdrops put faces in the upper third.
 
 Motion is CSS only and collapses entirely under `prefers-reduced-motion`.
+
+## Layout
+
+The layout was rebuilt against a set of reference screenshots the owner
+supplied (another product's home, title, discover, shelf and player screens).
+Structure and treatment follow that reference closely; name, logo, colours and
+type are oovi's own.
+
+**Shell.** From `md` up, navigation is a 72px icon rail (`Header.tsx`), fixed
+on the left and transparent over artwork. `layout.tsx` pads everything else
+with `md:pl-18`; heroes and band sections break back out with `md:-ml-18` and
+pad their content in again. Search sits top-centre in the page flow and scrolls
+away; the rail's search icon and Ctrl+K are always available. Below `md` it is
+a top bar with a drawer.
+
+**Title pages** open with `TitleHero`: backdrop edge to edge, the title's own
+logo art when TMDB has one (typed title otherwise), a score ring and one facts
+line, then the actions and a "Streaming on" row. There is no poster on the
+page. Under it: the collection banner (films only, streamed), then fact tiles.
+
+**Everything on a title page still comes from one request.** Logo, studios,
+languages and providers ride on `append_to_response` (`images`,
+`watch/providers`). Providers are read for India, then the US, and are shown
+but never linked; the footer carries the JustWatch credit that requires.
+`getCollection` is the one extra call and lives behind Suspense.
+
+**Glass.** `glass` (light film) is for controls, chips and tiles; `glass-panel`
+(dark film) is for anything that carries text over a still, including the
+search field and the resume card. Blur is static, never animated.
+
+**Ambient tint.** `AmbientTint` samples the hero image (`img[data-ambient]`)
+through a canvas and sets `--ambient` on `<html>`; a fixed layer in
+`layout.tsx` paints it. It is content colour, changes per title, and falls
+back to nothing if sampling fails.
+
+**Episodes** are one horizontal rail per selected season, cards 240px on phones
+and 264px from `md`. The series hero shows a resume card on wide screens once
+this browser has a last episode; it draws progress only when the player
+reported one.
+
+**Not built from the reference, on purpose:** profile, streak, watchlists and
+lists (no accounts), the "new episode" notice, download, and the provider
+filter strip. Hover lift and artwork zoom stay removed.
 
 ## Images
 
@@ -252,8 +300,8 @@ ignores the phone. Current measured widths:
 instead of rounding up. After any change, verify no image requests more than
 about 1.3× its rendered width.
 
-**`priority` is for the LCP element and nothing else.** The hero backdrop and the
-detail-page poster earn it. Rails do not, at any position: two eager trending
+**`priority` is for the LCP element and nothing else.** The home hero backdrop
+and the title-page backdrop (`TitleHero`) earn it. Rails do not, at any position: two eager trending
 stills were competing with the hero for the optimizer and for Chrome's six
 connections. Grids below a page header do not either — measured, `/movie`'s grid
 starts around 1140px on a 900px-tall window. Everything else stays lazy, which is
@@ -261,21 +309,21 @@ Next's default, so the fix is usually to delete a prop rather than add one.
 
 ## Logo
 
-Source of truth is `logos/iterations/iteration-5.svg` (lockup) and
-`logos/iterations/mark-ramp.svg` (square mark). `logos/preview.html` shows the
-concept and iteration history.
+Source of truth is `logos/oovi/logo.svg` (wordmark) and `logos/oovi/mark.svg`
+(square mark). Earlier rounds, including the Videa logo, are kept under
+`logos/iterations/`, `logos/concepts*/` and `logos/names*/`.
 
-`components/Wordmark.tsx` inlines the lockup. Letterforms are paths, not text,
-because the display face is not a system font and a font reference would mean
-the logo silently renders in a fallback somewhere. The gradient is defined once
-in `layout.tsx` as `#videa-ramp`, because `Wordmark` renders three times per page
-and duplicate gradient ids are invalid markup.
+The two o's are the eyes: accent discs with a pupil in the page ground, set
+right of centre so they look toward the rest of the word. The wordmark has no
+separate icon beside it; the square mark is the eyes alone.
+
+`components/Wordmark.tsx` inlines the wordmark. Letterforms are shapes, not
+text, so the logo can never render in a fallback font.
 
 Favicon and app icon use the Next file conventions `src/app/icon.svg` and
-`src/app/apple-icon.png`. Regenerate with `node scripts/export-logo.mjs`.
-
-The mark is a continuous gradient rather than five discrete bands on purpose. At
-16px, banded gaps fall below one device pixel and alias into a smudge.
+`src/app/apple-icon.png`. Regenerate the PNGs with
+`node scripts/export-logo.mjs`. `src/app/icon.svg` is a hand copy of
+`logos/oovi/mark.svg`; the export script does not write it.
 
 ## Gotchas already paid for
 
@@ -288,12 +336,10 @@ palette is ever changed again, this is the checklist.
 - `html { color-scheme }` in `@layer base`, and the `viewport` export in
   `layout.tsx` (`themeColor`, `colorScheme`). A stale `themeColor` is a white
   flash on first paint on mobile, which no amount of correct CSS hides.
-- The `#videa-ramp` `<linearGradient>` in `layout.tsx` hardcodes the five ramp
-  stops, because SVG gradients cannot read Tailwind theme tokens. It has to move
-  in the same commit as `--color-g1..g5` or the logo drifts out of the palette it
-  is supposed to define. `src/app/icon.svg` carries a third copy of the same
-  ramp and is still on the old values — it is generated from `logos/` via
-  `scripts/export-logo.mjs`, so fixing it means regenerating, not editing.
+- The logo mark hardcodes the accent hex in `logos/oovi/*.svg` and
+  `src/app/icon.svg`, because SVG files cannot read theme tokens, and `GROUND`
+  in `scripts/export-logo.mjs` hardcodes the page ground. Both have to move in
+  the same commit as `--color-accent` and `--color-ink`.
 
 *Hardcoded colours inside utilities:*
 

@@ -179,7 +179,7 @@ async function BrowseResults({
     if (error instanceof ConfigError) throw error;
     return (
       <ErrorState
-        title="We can't reach the catalogue."
+        title="We can't reach the catalogue"
         description="The metadata service is not responding. Try reloading in a moment."
       />
     );
@@ -203,7 +203,7 @@ async function BrowseResults({
   if (!items.length) {
     return (
       <EmptyState
-        title="Nothing matches those filters."
+        title="Nothing matches those filters"
         description="Try widening the year, lowering the rating, or picking fewer genres."
         action={{ href: `/${type}`, label: "Clear filters" }}
       />

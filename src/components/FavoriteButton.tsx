@@ -21,10 +21,10 @@ export function FavoriteButton({ stub }: { stub: MediaStub }) {
       onClick={() => toggleFavorite(stub)}
       aria-pressed={saved}
       title={saved ? "Remove from My List" : "Add to My List"}
-      className={`grid size-[58px] shrink-0 place-items-center rounded-card border transition duration-200 active:translate-y-px ${
+      className={`grid size-14 shrink-0 place-items-center rounded-full border transition duration-200 active:translate-y-px ${
         saved
           ? "border-accent bg-accent-soft text-accent"
-          : "border-line-strong text-fg-2 hover:border-fg-3 hover:bg-raised hover:text-fg"
+          : "glass text-fg hover:bg-white/15"
       }`}
     >
       <BookmarkSimple

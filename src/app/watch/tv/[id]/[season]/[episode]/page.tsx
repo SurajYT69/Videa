@@ -145,10 +145,10 @@ export default async function WatchEpisodePage({ params }: Props) {
                 </span>
                 <span className="text-accent">{code}</span>
               </p>
-              <h1 className="display mt-2.5 text-2xl text-fg md:text-3xl">
+              <h1 className="display mt-2 text-2xl text-fg md:text-3xl">
                 {current.name}
               </h1>
-              <div className="mt-3.5 flex flex-wrap items-center gap-x-3 gap-y-2">
+              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
                 <Rating value={current.rating} />
                 {runtime && (
                   <>
@@ -243,6 +243,6 @@ function EpisodeStep({
 
 function Dot() {
   return (
-    <span aria-hidden="true" className="size-[3px] rounded-full bg-fg-3/50" />
+    <span aria-hidden="true" className="size-1 rounded-full bg-fg-3/50" />
   );
 }

@@ -1,0 +1,10 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="nubo">
+  <title>nubo</title>
+  <g id="icon">
+    <path d="M120 344 V256 a88 88 0 0 1 176 0 V344 H236 V256 a28 28 0 0 0 -56 0 V344 Z" fill="#3FD9C6"/>
+    <circle cx="208" cy="318" r="22" fill="#FF6B5E"/>
+  </g>
+  <g id="wordmark">
+    <text x="340" y="306" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="160" font-weight="700" letter-spacing="-4" fill="#EAF7F5">nubo</text>
+  </g>
+</svg>

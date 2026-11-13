@@ -3,19 +3,19 @@
  *
  *   node scripts/export-logo.mjs
  *
- * Source of truth is logos/iterations/iteration-5.svg (lockup) and
- * logos/iterations/mark-ramp.svg (square mark). Uses sharp, which is already
+ * Source of truth is logos/oovi/logo.svg (lockup) and
+ * logos/oovi/mark.svg (square mark). Uses sharp, which is already
  * a Next.js dependency, so there is nothing extra to install.
  */
 
 import sharp from "sharp";
 import { mkdirSync, copyFileSync, readFileSync } from "node:fs";
 
-const LOCKUP_SRC = "logos/iterations/iteration-5.svg";
-const MARK_SRC = "logos/iterations/mark-ramp.svg";
+const LOCKUP_SRC = "logos/oovi/logo.svg";
+const MARK_SRC = "logos/oovi/mark.svg";
 
 /** Page ground. iOS composites app icons onto black, so they need this. */
-const GROUND = { r: 245, g: 246, b: 248, alpha: 1 };
+const GROUND = { r: 11, g: 12, b: 14, alpha: 1 };
 
 /** Render at high density first so curves resample cleanly at small sizes. */
 const DENSITY = 600;

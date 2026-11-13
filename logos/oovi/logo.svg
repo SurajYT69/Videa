@@ -1,0 +1,16 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="oovi">
+  <title>oovi</title>
+  <g id="wordmark" transform="translate(127 194.4) scale(2.2)">
+    <g id="eyes">
+      <circle cx="50" cy="50" r="50" fill="#C8F031"/>
+      <circle cx="158" cy="50" r="50" fill="#C8F031"/>
+      <circle cx="66" cy="50" r="21" fill="#0B0C0E"/>
+      <circle cx="174" cy="50" r="21" fill="#0B0C0E"/>
+    </g>
+    <g id="letters" fill="#F4F5F0">
+      <path d="M216 0 H245 L265 64 L285 0 H314 L279 100 H251 Z"/>
+      <path d="M324 0 H350 V100 H324 Z"/>
+    </g>
+    <circle id="tittle" cx="337" cy="-28" r="16" fill="#C8F031"/>
+  </g>
+</svg>

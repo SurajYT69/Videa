@@ -34,7 +34,7 @@ export function Footer() {
           {COLUMNS.map((column) => (
             <nav key={column.heading} aria-label={column.heading}>
               <h2 className="eyebrow">{column.heading}</h2>
-              <ul className="mt-4 space-y-2.5">
+              <ul className="mt-4 space-y-2">
                 {column.links.map((link) => (
                   <li key={link.href}>
                     <Link
@@ -54,7 +54,7 @@ export function Footer() {
       <div className="page border-t border-line py-6">
         <p className="meta">
           This product uses the TMDB API but is not endorsed or certified by
-          TMDB.
+          TMDB. Streaming availability is provided by JustWatch.
         </p>
       </div>
     </footer>

@@ -1,0 +1,10 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="plum">
+  <title>plum</title>
+  <g id="icon">
+    <circle cx="208" cy="270" r="74" fill="#8B5CF6"/>
+    <path d="M208 196 C208 162 232 146 266 146 C266 180 246 196 208 196 Z" fill="#C8F031"/>
+  </g>
+  <g id="wordmark">
+    <text x="340" y="306" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="160" font-weight="700" letter-spacing="-4" fill="#F3F0FA">plum</text>
+  </g>
+</svg>

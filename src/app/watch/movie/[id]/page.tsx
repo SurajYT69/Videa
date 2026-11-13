@@ -43,7 +43,7 @@ async function SimilarMovies({ id }: { id: number }) {
   if (!similar.length) return null;
 
   return (
-    <Section title="More like this" eyebrow="Keep going" tone="band">
+    <Section title="More like this" tone="band">
       <MediaGrid items={similar.slice(0, 12)} />
     </Section>
   );
@@ -87,10 +87,10 @@ export default async function WatchMoviePage({ params }: Props) {
         <div className="mt-10 flex flex-wrap items-start justify-between gap-6 border-t border-line pt-8">
           <div className="max-w-[64ch]">
             <span className="eyebrow">Now playing</span>
-            <h1 className="display mt-2.5 text-2xl text-fg md:text-3xl">
+            <h1 className="display mt-2 text-2xl text-fg md:text-3xl">
               {movie.title}
             </h1>
-            <div className="mt-3.5 flex flex-wrap items-center gap-x-3 gap-y-2">
+            <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
               <Rating value={movie.rating} />
               {released && (
                 <>
@@ -137,6 +137,6 @@ export default async function WatchMoviePage({ params }: Props) {
 
 function Dot() {
   return (
-    <span aria-hidden="true" className="size-[3px] rounded-full bg-fg-3/50" />
+    <span aria-hidden="true" className="size-1 rounded-full bg-fg-3/50" />
   );
 }

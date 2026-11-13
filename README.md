@@ -1,4 +1,4 @@
-# Videa
+# oovi
 
 A movie and TV discovery and playback site. Search by name, open a title, press
 play. TMDB provides metadata, VidFast provides the embed, and everything

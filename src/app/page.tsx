@@ -35,7 +35,7 @@ async function HeroAndTrending() {
     if (error instanceof ConfigError) throw error;
     return (
       <ErrorState
-        title="We can't reach the catalogue."
+        title="We can't reach the catalogue"
         description="The metadata service is not responding. Try reloading in a moment."
       />
     );
@@ -46,7 +46,7 @@ async function HeroAndTrending() {
   if (!hero) {
     return (
       <ErrorState
-        title="Nothing to show yet."
+        title="Nothing to show yet"
         description="The catalogue came back empty. Try reloading in a moment."
       />
     );
@@ -59,7 +59,6 @@ async function HeroAndTrending() {
       <Hero media={hero} />
       <Section
         title="Trending this week"
-        eyebrow="Right now"
         lead="The titles the most people are opening, ranked, refreshed every week."
         bleed
       >
@@ -80,7 +79,7 @@ async function PopularMovies() {
    * reachable.
    */
   return (
-    <Section title="Popular movies" eyebrow="Film" href="/movie" tone="band" bleed>
+    <Section title="Popular movies" href="/movie" tone="band" bleed>
       <PosterRail items={movies.slice(0, 18)} label="Popular movies" />
     </Section>
   );
@@ -91,7 +90,7 @@ async function PopularSeries() {
   if (!shows.length) return null;
 
   return (
-    <Section title="Popular series" eyebrow="Television" href="/tv" bleed>
+    <Section title="Popular series" href="/tv" bleed>
       <PosterRail items={shows.slice(0, 16)} label="Popular series" />
     </Section>
   );

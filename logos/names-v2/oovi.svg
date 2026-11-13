@@ -1,0 +1,12 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="oovi">
+  <title>oovi</title>
+  <g id="icon">
+    <circle cx="164" cy="256" r="44" fill="#C8F031"/>
+    <circle cx="252" cy="256" r="44" fill="#C8F031"/>
+    <circle cx="178" cy="256" r="18" fill="#0B0C0E"/>
+    <circle cx="266" cy="256" r="18" fill="#0B0C0E"/>
+  </g>
+  <g id="wordmark">
+    <text x="340" y="306" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="160" font-weight="700" letter-spacing="-4" fill="#F4F5F0">oovi</text>
+  </g>
+</svg>

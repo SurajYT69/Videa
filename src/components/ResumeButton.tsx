@@ -25,7 +25,7 @@ export function ResumeButton({ tvId, startSeason, startEpisode }: Props) {
   return (
     <Link
       href={watchHref("tv", tvId, season, episode)}
-      className="inline-flex items-center gap-2.5 rounded-card bg-fg px-8 py-4 text-base font-medium whitespace-nowrap text-ink transition duration-200 hover:-translate-y-px hover:shadow-lift active:translate-y-0 active:shadow-soft"
+      className="inline-flex items-center gap-2 rounded-full bg-fg px-7 py-4 text-base font-medium whitespace-nowrap text-ink transition duration-200 hover:-translate-y-px hover:shadow-lift active:translate-y-0 active:shadow-soft"
     >
       <Play weight="fill" className="size-4" aria-hidden="true" />
       {last ? "Resume" : "Start watching"}

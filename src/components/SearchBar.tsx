@@ -151,7 +151,7 @@ export function SearchBar({
   const showDropdown = open && status !== "idle";
   const width =
     variant === "header"
-      ? "w-full max-w-sm focus-within:max-w-lg transition-[max-width] duration-500 ease-out-expo"
+      ? "w-full max-w-md"
       : "w-full";
 
   return (
@@ -168,7 +168,7 @@ export function SearchBar({
         </label>
 
         <MagnifyingGlass
-          className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-fg-3"
+          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-fg-3"
           aria-hidden="true"
         />
 
@@ -194,7 +194,7 @@ export function SearchBar({
           aria-activedescendant={
             activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined
           }
-          className="w-full rounded-card border border-line-strong bg-surface py-3 pr-14 pl-11 text-sm text-fg placeholder:text-fg-3 transition-colors duration-200 hover:border-fg-3/60 focus:border-fg-3 focus:bg-raised [&::-webkit-search-cancel-button]:appearance-none"
+          className="glass-panel w-full rounded-full py-3 pr-14 pl-11 text-sm text-fg placeholder:text-fg-3 transition-colors duration-200 focus:bg-ink/85 [&::-webkit-search-cancel-button]:appearance-none"
         />
 
         {query ? (
@@ -206,7 +206,7 @@ export function SearchBar({
               setStatus("idle");
               inputRef.current?.focus();
             }}
-            className="absolute top-1/2 right-2.5 grid size-7 -translate-y-1/2 place-items-center rounded-mini text-fg-3 transition-colors hover:text-fg"
+            className="absolute top-1/2 right-2 grid size-7 -translate-y-1/2 place-items-center rounded-mini text-fg-3 transition-colors hover:text-fg"
           >
             <X className="size-3.5" aria-hidden="true" />
             <span className="sr-only">Clear search</span>
@@ -215,7 +215,7 @@ export function SearchBar({
           variant === "header" && (
             <kbd
               aria-hidden="true"
-              className="pointer-events-none absolute top-1/2 right-3 hidden -translate-y-1/2 rounded-mini border border-line-strong px-1.5 py-0.5 font-mono text-[10px] text-fg-3 lg:block"
+              className="pointer-events-none absolute top-1/2 right-3 hidden -translate-y-1/2 rounded-mini border border-line-strong px-1.5 py-0.5 font-mono text-xs text-fg-3 lg:block"
             >
               ⌘K
             </kbd>

@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Play } from "@phosphor-icons/react/dist/ssr";
+import { Play, Star } from "@phosphor-icons/react/dist/ssr";
 import { STILL, tmdbImage } from "@/lib/images";
-import { airDateLabel, episodeCode, metaLine, runtimeLabel } from "@/lib/format";
+import { ratingLabel, runtimeLabel } from "@/lib/format";
 import { watchHref } from "@/lib/playback";
 import type { Episode } from "@/lib/types";
 
@@ -14,31 +14,33 @@ type Props = {
 };
 
 /**
- * A row, not a card: the still leads, the text runs beside it. Episodes are
- * scanned in sequence, and a grid of boxes reads as a spreadsheet.
+ * A card: the still on top with its runtime, then the title with the episode
+ * number and rating on the same line, then two lines of synopsis.
  */
 export function EpisodeCard({ episode, tvId, isResume = false }: Props) {
   const src = tmdbImage(episode.stillPath, STILL.md);
-  const code = episodeCode(episode.seasonNumber, episode.episodeNumber);
+  const number = `E${String(episode.episodeNumber).padStart(2, "0")}`;
+  const runtime = runtimeLabel(episode.runtime);
+  const rating = ratingLabel(episode.rating);
 
   return (
     <Link
       href={watchHref("tv", tvId, episode.seasonNumber, episode.episodeNumber)}
-      className="group flex gap-4 rounded-card md:gap-5"
+      className="group block rounded-card"
     >
-      <div className="relative aspect-video w-36 shrink-0 overflow-hidden rounded-card bg-surface transition-shadow duration-300 group-hover:shadow-lift sm:w-44 md:w-52">
+      <div className="relative aspect-video overflow-hidden rounded-card bg-surface transition-shadow duration-300 group-hover:shadow-lift">
         {src ? (
           <Image
             src={src}
             alt=""
             fill
-            /* Measured still width: 144px phone, 176px sm, 208px md up. */
-            sizes="(min-width: 768px) 208px, (min-width: 640px) 176px, 144px"
-            className="object-cover transition-transform duration-500 ease-out-expo group-hover:scale-[1.06]"
+            /* Card width in the rail: 240px phone, 264px md up. */
+            sizes="(min-width: 768px) 264px, 240px"
+            className="object-cover"
           />
         ) : (
           <div className="absolute inset-0 grid place-items-center">
-            <span className="font-mono text-sm text-fg-3">{code}</span>
+            <span className="font-mono text-sm text-fg-3">{number}</span>
           </div>
         )}
 
@@ -48,26 +50,42 @@ export function EpisodeCard({ episode, tvId, isResume = false }: Props) {
           </span>
         </span>
 
+        {runtime && (
+          <span className="absolute right-2 bottom-2 rounded-mini bg-black/45 px-1.5 py-0.5 backdrop-blur-md font-mono text-xs text-white tabular-nums">
+            {runtime}
+          </span>
+        )}
+
+        {/* The playhead: this is the episode the viewer stopped on. */}
+        {isResume && (
+          <span className="absolute inset-x-0 bottom-0 h-1 bg-accent" aria-hidden="true" />
+        )}
+
         <span className="pointer-events-none absolute inset-0 rounded-card art-edge" />
       </div>
 
-      <div className="min-w-0 flex-1 py-0.5">
-        <p className="meta">
-          {code}
-          {isResume && <span className="text-accent">{"  ·  Continue"}</span>}
-        </p>
-        <h3 className="mt-2 line-clamp-1 text-[15px] font-medium text-fg-2 transition-colors duration-200 group-hover:text-fg">
+      <div className="mt-3 flex items-baseline justify-between gap-3">
+        <h3 className="line-clamp-1 text-sm font-medium text-fg-2 transition-colors duration-200 group-hover:text-fg">
           {episode.name}
         </h3>
-        <p className="meta mt-1.5">
-          {metaLine(runtimeLabel(episode.runtime), airDateLabel(episode.airDate))}
-        </p>
-        {episode.overview && (
-          <p className="mt-2.5 line-clamp-2 text-xs leading-relaxed text-fg-3">
-            {episode.overview}
-          </p>
-        )}
+        <span className="flex shrink-0 items-center gap-2 font-mono text-xs tabular-nums">
+          <span className={isResume ? "text-accent" : "text-fg-3"}>
+            {number}
+            {isResume && <span className="sr-only">, continue here</span>}
+          </span>
+          {rating && (
+            <span className="inline-flex items-center gap-1 text-fg-3">
+              <Star weight="fill" className="size-3 text-accent" aria-hidden="true" />
+              {rating}
+            </span>
+          )}
+        </span>
       </div>
+      {episode.overview && (
+        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-fg-3">
+          {episode.overview}
+        </p>
+      )}
     </Link>
   );
 }

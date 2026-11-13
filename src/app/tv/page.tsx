@@ -26,14 +26,14 @@ async function TrendingShows() {
     if (error instanceof ConfigError) throw error;
     return (
       <ErrorState
-        title="We can't reach the catalogue."
+        title="We can't reach the catalogue"
         description="The metadata service is not responding. Try reloading in a moment."
       />
     );
   }
 
   return (
-    <Section title="Trending this week" eyebrow="Right now" bleed>
+    <Section title="Trending this week" bleed>
       <TrendingRail items={trending.slice(0, 12)} label="Trending series" />
     </Section>
   );
@@ -60,7 +60,6 @@ export default async function TVPage({ searchParams }: Props) {
 
       <Section
         title="Every series"
-        eyebrow="Browse"
         lead="Narrow by genre, year or rating. Filters live in the address bar, so a list stays shareable."
         tone="band"
       >

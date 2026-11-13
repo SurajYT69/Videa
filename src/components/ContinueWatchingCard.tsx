@@ -34,7 +34,7 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
     <div className="group relative">
       <Link
         href={watchHref(item.type, item.tmdbId, item.season, item.episode)}
-        className="block rounded-card transition-transform duration-300 ease-out-expo hover:-translate-y-1"
+        className="block rounded-card"
       >
         <div className="relative aspect-video overflow-hidden rounded-card bg-surface transition-shadow duration-300 group-hover:shadow-lift">
           {src ? (
@@ -43,7 +43,7 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
               alt=""
               fill
               sizes="(min-width: 768px) 360px, 280px"
-              className="object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.05]"
+              className="object-cover"
             />
           ) : (
             <div className="absolute inset-0 grid place-items-center">
@@ -63,7 +63,7 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
 
           {percent !== null && (
             <div className="absolute inset-x-0 bottom-0">
-              <p className="px-3.5 pb-2 text-right font-mono text-[11px] text-white/80 tabular-nums">
+              <p className="px-3 pb-2 text-right font-mono text-xs text-white/80 tabular-nums">
                 {percent}%
               </p>
               <div
@@ -74,7 +74,7 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
                 aria-valuemin={0}
                 aria-valuemax={100}
               >
-                <div className="brand-bar h-full" style={{ width: `${percent}%` }} />
+                <div className="h-full bg-accent" style={{ width: `${percent}%` }} />
               </div>
             </div>
           )}
@@ -82,7 +82,7 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
           <div className="pointer-events-none absolute inset-0 rounded-card art-edge" />
         </div>
 
-        <h3 className="mt-3.5 line-clamp-1 text-sm font-medium text-fg">
+        <h3 className="mt-3 line-clamp-1 text-sm font-medium text-fg">
           {item.title}
         </h3>
         <p className="meta mt-1.5">{line}</p>
@@ -91,7 +91,7 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
       <button
         type="button"
         onClick={() => removeFromContinueWatching(item.type, item.tmdbId)}
-        className="absolute top-2.5 right-2.5 grid size-8 place-items-center rounded-full bg-ink/70 text-fg-2 opacity-0 backdrop-blur-sm transition duration-200 group-hover:opacity-100 hover:text-fg focus-visible:opacity-100"
+        className="absolute top-2 right-2 grid size-8 place-items-center rounded-full bg-ink/80 text-fg-2 opacity-0 transition duration-200 group-hover:opacity-100 hover:text-fg focus-visible:opacity-100"
       >
         <X className="size-3.5" aria-hidden="true" />
         <span className="sr-only">Remove {item.title} from Continue Watching</span>

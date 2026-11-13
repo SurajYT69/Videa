@@ -1,0 +1,11 @@
+<svg viewBox="0 0 1024 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="blip">
+  <title>blip</title>
+  <g id="icon">
+    <circle cx="200" cy="264" r="66" fill="none" stroke="#FFFFFF" stroke-width="22"/>
+    <circle cx="258" cy="206" r="38" fill="#0A0F24"/>
+    <circle cx="258" cy="206" r="28" fill="#4C6FFF"/>
+  </g>
+  <g id="wordmark">
+    <text x="340" y="306" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="160" font-weight="700" letter-spacing="-4" fill="#FFFFFF">blip</text>
+  </g>
+</svg>

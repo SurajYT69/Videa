@@ -75,6 +75,7 @@ export function SeasonSelector({ tvId, seasons, initialSeason }: Props) {
 
   return (
     <div>
+      <div className="page">
       <div role="tablist" aria-label="Seasons" className="rail gap-2 pb-2">
         {seasons.map((item) => {
           const active = item.seasonNumber === selected;
@@ -85,15 +86,15 @@ export function SeasonSelector({ tvId, seasons, initialSeason }: Props) {
               role="tab"
               aria-selected={active}
               onClick={() => setSelected(item.seasonNumber)}
-              className={`rail-item rounded-card border px-5 py-2.5 text-sm whitespace-nowrap transition duration-200 ${
+              className={`rail-item rounded-full border px-5 py-2 text-sm whitespace-nowrap transition duration-200 ${
                 active
                   ? "border-fg bg-fg text-ink"
-                  : "border-line-strong text-fg-2 hover:border-fg-3 hover:bg-raised hover:text-fg"
+                  : "glass text-fg-2 hover:bg-white/15 hover:text-fg"
               }`}
             >
               {item.name}
               <span
-                className={`ml-2.5 font-mono text-[11px] tabular-nums ${
+                className={`ml-2 font-mono text-xs tabular-nums ${
                   active ? "text-ink/60" : "text-fg-3"
                 }`}
               >
@@ -103,12 +104,17 @@ export function SeasonSelector({ tvId, seasons, initialSeason }: Props) {
           );
         })}
       </div>
+      </div>
 
-      <div className="mt-10">
-        {status === "loading" && <EpisodeListSkeleton />}
+      <div className="mt-6">
+        {status === "loading" && (
+          <div className="page">
+            <EpisodeListSkeleton />
+          </div>
+        )}
 
         {status === "error" && (
-          <div className="rounded-card border border-line bg-surface/50 px-6 py-10">
+          <div className="glass mx-5 rounded-card px-6 py-10 md:mx-8 xl:mx-12">
             <p className="text-sm text-fg">This season could not be loaded.</p>
             <button
               type="button"

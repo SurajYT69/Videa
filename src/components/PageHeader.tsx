@@ -5,22 +5,15 @@ type Props = {
 };
 
 /**
- * Editorial page opener for routes that have no hero. This is where the
- * five-stop wash does its main work: these pages carry no artwork, so the
- * gradient is what makes the top of the page feel like the product.
+ * Editorial page opener for routes that have no hero. No artwork and no wash:
+ * the title, on the page ground, is the opener.
  */
 export function PageHeader({ title, eyebrow, description }: Props) {
   return (
-    <header className="relative isolate overflow-hidden border-b border-line">
-      <div
-        aria-hidden="true"
-        className="brand-wash pointer-events-none absolute inset-0 -z-10 opacity-70"
-      />
-
+    <header className="border-b border-line">
       <div className="page pt-32 pb-14 md:pt-40 md:pb-20">
         {eyebrow && (
           <div className="animate-rise flex items-center gap-3">
-            <span className="h-px w-8 bg-fg-3/50" />
             <span className="eyebrow">{eyebrow}</span>
           </div>
         )}
