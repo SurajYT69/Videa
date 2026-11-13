@@ -1,11 +1,12 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHero, heroIds } from "@/components/PageHero";
 import { Section } from "@/components/Section";
 import { Browse, type BrowseSearchParams } from "@/components/Browse";
 import { TrendingRail } from "@/components/TrendingRail";
 import { ErrorState } from "@/components/ErrorState";
 import {
+  HeroSkeleton,
   SectionSkeleton,
   TrendingRailSkeleton,
 } from "@/components/LoadingSkeleton";
@@ -32,27 +33,32 @@ async function TrendingShows() {
     );
   }
 
+  /* The slider takes the first five with artwork; the rail carries the rest. */
+  const used = heroIds(trending);
   return (
-    <Section title="Trending this week" bleed>
-      <TrendingRail items={trending.slice(0, 12)} label="Trending series" />
-    </Section>
+    <>
+      <PageHero items={trending} eyebrow="Series · Trending now" />
+      <Section title="Trending this week" bleed>
+        <TrendingRail
+          items={trending.filter((item) => !used.has(item.tmdbId)).slice(0, 12)}
+          label="Trending series"
+        />
+      </Section>
+    </>
   );
 }
 
 export default async function TVPage({ searchParams }: Props) {
   return (
     <>
-      <PageHeader
-        eyebrow="Television"
-        title="Series"
-        description="Long-form television, from this week's breakout to the shows that never left."
-      />
-
       <Suspense
         fallback={
-          <SectionSkeleton bleed>
-            <TrendingRailSkeleton />
-          </SectionSkeleton>
+          <>
+            <HeroSkeleton />
+            <SectionSkeleton bleed>
+              <TrendingRailSkeleton />
+            </SectionSkeleton>
+          </>
         }
       >
         <TrendingShows />

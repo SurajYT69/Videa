@@ -70,7 +70,10 @@ export default function RootLayout({
       lang="en"
       className={`${display.variable} ${sans.variable} ${mono.variable}`}
     >
-      <body>
+      {/* Browser extensions (e.g. ColorZilla's cz-shortcut-listen) add attributes
+          to <body> before React hydrates. This silences that one element's
+          attribute mismatch only; children are still checked. */}
+      <body suppressHydrationWarning>
         {/* Observed by the header to decide when to become opaque. */}
         <div data-scroll-sentinel aria-hidden="true" className="absolute top-0 h-px w-full" />
 

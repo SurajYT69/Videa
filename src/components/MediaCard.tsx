@@ -11,6 +11,10 @@ type Props = {
   priority?: boolean;
   /** Shown as a chip on the poster for series, when the count is known. */
   seasonCount?: number;
+  /** Overrides the title page link, for cards not backed by a TMDB id. */
+  href?: string;
+  /** Overrides the TMDB poster with a full image URL. */
+  imageSrc?: string | null;
 };
 
 const CHIP =
@@ -20,12 +24,12 @@ const CHIP =
  * The poster is the content. Rating and season count ride on it as chips, so
  * the line below only has to carry the title and when it is from.
  */
-export function MediaCard({ media, sizes, priority, seasonCount }: Props) {
+export function MediaCard({ media, sizes, priority, seasonCount, href, imageSrc }: Props) {
   const rating = ratingLabel(media.rating);
 
   return (
     <Link
-      href={detailsHref(media.type, media.tmdbId)}
+      href={href ?? detailsHref(media.type, media.tmdbId)}
       className="group block rounded-card focus-visible:outline-offset-4"
     >
       {/* No resting shadow: eighteen of these in a grid reads as fog. */}
@@ -35,6 +39,7 @@ export function MediaCard({ media, sizes, priority, seasonCount }: Props) {
           title={media.title}
           sizes={sizes}
           priority={priority}
+          src={imageSrc}
         />
 
         {media.type === "tv" && seasonCount ? (

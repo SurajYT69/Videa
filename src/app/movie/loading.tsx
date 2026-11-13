@@ -1,6 +1,6 @@
 import {
   GridSkeleton,
-  PageHeaderSkeleton,
+  HeroSkeleton,
   PosterRailSkeleton,
   SectionSkeleton,
 } from "@/components/LoadingSkeleton";
@@ -8,7 +8,7 @@ import {
 export default function BrowseLoading() {
   return (
     <>
-      <PageHeaderSkeleton />
+      <HeroSkeleton />
       <SectionSkeleton bleed>
         <PosterRailSkeleton />
       </SectionSkeleton>

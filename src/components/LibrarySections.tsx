@@ -131,8 +131,8 @@ export function LibraryHeader() {
   ];
 
   return (
-    <div className="page pt-24 md:pt-20">
-      <div className="glass flex flex-wrap items-center justify-between gap-6 rounded-card p-6 md:p-8">
+    <div className="page pt-32 md:pt-40">
+      <div className="glass-panel flex flex-wrap items-center justify-between gap-6 rounded-card p-6 md:p-8">
         <div>
           <h1 className="display text-3xl text-fg md:text-4xl">My List</h1>
           <p className="mt-3 max-w-[52ch] text-sm leading-relaxed text-fg-2">

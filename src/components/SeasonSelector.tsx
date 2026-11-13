@@ -12,11 +12,13 @@ type Props = {
   seasons: SeasonSummary[];
   /** Rendered on the server so the first season needs no client fetch. */
   initialSeason: Season | null;
+  /** The show's backdrop, for episodes TMDB has no still for. */
+  fallbackPath?: string | null;
 };
 
 type Status = "ready" | "loading" | "error";
 
-export function SeasonSelector({ tvId, seasons, initialSeason }: Props) {
+export function SeasonSelector({ tvId, seasons, initialSeason, fallbackPath }: Props) {
   const library = useLibrary();
   const resumeAt = getLastEpisode(library, tvId);
 
@@ -131,6 +133,7 @@ export function SeasonSelector({ tvId, seasons, initialSeason }: Props) {
             episodes={season.episodes}
             tvId={tvId}
             resumeAt={resumeAt}
+            fallbackPath={fallbackPath}
           />
         )}
       </div>

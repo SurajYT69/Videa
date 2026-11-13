@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   BookmarkSimple,
   FilmSlate,
+  Ghost,
   House,
   List as ListIcon,
   MagnifyingGlass,
@@ -36,6 +37,12 @@ const NAV: Item[] = [
     label: "TV",
     icon: TelevisionSimple,
     match: (p) => p.startsWith("/tv") || p.startsWith("/watch/tv"),
+  },
+  {
+    href: "/anime",
+    label: "Anime",
+    icon: Ghost,
+    match: (p) => p.startsWith("/anime"),
   },
 ];
 

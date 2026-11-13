@@ -6,10 +6,11 @@ type Props = {
   episodes: Episode[];
   tvId: number;
   resumeAt?: { season: number; episode: number } | null;
+  fallbackPath?: string | null;
 };
 
 /** One season as a single scrolling row, like every other rail on the site. */
-export function EpisodeList({ episodes, tvId, resumeAt }: Props) {
+export function EpisodeList({ episodes, tvId, resumeAt, fallbackPath }: Props) {
   if (!episodes.length) {
     return (
       <p className="page text-sm text-fg-2">
@@ -28,6 +29,7 @@ export function EpisodeList({ episodes, tvId, resumeAt }: Props) {
           <EpisodeCard
             episode={episode}
             tvId={tvId}
+            fallbackPath={fallbackPath}
             isResume={
               resumeAt?.season === episode.seasonNumber &&
               resumeAt?.episode === episode.episodeNumber

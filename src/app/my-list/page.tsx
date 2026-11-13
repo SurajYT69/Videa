@@ -5,6 +5,7 @@ import {
   FavoritesSection,
   RecentlyViewedSection,
 } from "@/components/LibrarySections";
+import { PosterWall } from "@/components/PosterWall";
 
 export const metadata: Metadata = {
   title: "My List",
@@ -15,7 +16,10 @@ export const metadata: Metadata = {
 export default function MyListPage() {
   return (
     <>
-      <LibraryHeader />
+      <div className="relative isolate overflow-hidden pb-6 md:-ml-18 md:pl-18">
+        <PosterWall />
+        <LibraryHeader />
+      </div>
       <ContinueWatchingSection showWhenEmpty />
       <FavoritesSection showWhenEmpty tone="band" />
       <RecentlyViewedSection showWhenEmpty />

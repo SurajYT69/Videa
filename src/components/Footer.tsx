@@ -8,6 +8,7 @@ const COLUMNS = [
       { href: "/", label: "Home" },
       { href: "/movie", label: "Movies" },
       { href: "/tv", label: "TV" },
+      { href: "/anime", label: "Anime" },
       { href: "/search", label: "Search" },
     ],
   },
@@ -54,7 +55,8 @@ export function Footer() {
       <div className="page border-t border-line py-6">
         <p className="meta">
           This product uses the TMDB API but is not endorsed or certified by
-          TMDB. Streaming availability is provided by JustWatch.
+          TMDB. Streaming availability is provided by JustWatch. Anime scores are from
+          MyAnimeList; IMDb, Rotten Tomatoes and Metacritic scores via OMDb.
         </p>
       </div>
     </footer>

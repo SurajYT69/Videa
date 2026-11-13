@@ -1,5 +1,8 @@
 import { Suspense } from "react";
 import { Hero } from "@/components/Hero";
+import { HeroCarousel } from "@/components/HeroCarousel";
+import { DiscoverRail } from "@/components/DiscoverRail";
+import { NewEpisodes } from "@/components/NewEpisodes";
 import { Section } from "@/components/Section";
 import { PosterRail } from "@/components/PosterRail";
 import { TrendingRail } from "@/components/TrendingRail";
@@ -52,11 +55,19 @@ async function HeroAndTrending() {
     );
   }
 
-  const rest = trending.filter((item) => item.tmdbId !== hero.tmdbId);
+  /* Five titles with artwork wide enough to hold the hero composition. */
+  const heroes = trending.filter((item) => item.backdropPath).slice(0, 5);
+  const heroIds = new Set(heroes.map((item) => item.tmdbId));
+  const rest = trending.filter((item) => !heroIds.has(item.tmdbId));
 
   return (
     <>
-      <Hero media={hero} />
+      <HeroCarousel
+        slides={(heroes.length ? heroes : [hero]).map((item, index) => (
+          <Hero key={item.tmdbId} media={item} priority={index === 0} />
+        ))}
+      />
+      <NewEpisodes />
       <Section
         title="Trending this week"
         lead="The titles the most people are opening, ranked, refreshed every week."
@@ -131,6 +142,22 @@ export default function HomePage() {
       >
         <PopularSeries />
       </Suspense>
+
+      {/* Indian cinema and television: the audience this site is used by most. */}
+      <DiscoverRail
+        title="Popular Hindi films"
+        type="movie"
+        params={{ language: "hi", minVotes: 50 }}
+        tone="band"
+      />
+      <DiscoverRail title="Hindi series" type="tv" params={{ language: "hi", minVotes: 10 }} />
+      <DiscoverRail
+        title="Telugu films"
+        type="movie"
+        params={{ language: "te", minVotes: 30 }}
+        tone="band"
+      />
+      <DiscoverRail title="Tamil films" type="movie" params={{ language: "ta", minVotes: 30 }} />
 
       <ContinueWatchingSection tone="band" />
       <RecentlyViewedSection />

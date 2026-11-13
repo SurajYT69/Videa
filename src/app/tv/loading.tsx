@@ -1,6 +1,6 @@
 import {
   GridSkeleton,
-  PageHeaderSkeleton,
+  HeroSkeleton,
   SectionSkeleton,
   TrendingRailSkeleton,
 } from "@/components/LoadingSkeleton";
@@ -8,7 +8,7 @@ import {
 export default function TVBrowseLoading() {
   return (
     <>
-      <PageHeaderSkeleton />
+      <HeroSkeleton />
       <SectionSkeleton bleed>
         <TrendingRailSkeleton />
       </SectionSkeleton>

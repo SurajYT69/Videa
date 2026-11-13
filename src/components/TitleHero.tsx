@@ -45,13 +45,13 @@ export function TitleHero({
   aside,
   children,
 }: Props) {
-  const src = tmdbImage(backdropPath, BACKDROP.lg);
+  const src = tmdbImage(backdropPath, BACKDROP.xl);
   const logo = tmdbImage(logoPath, LOGO.md);
   const shown = facts.filter(Boolean) as string[];
   const hasScore = rating > 0;
 
   return (
-    <section className="relative isolate flex min-h-[560px] items-end overflow-hidden md:-ml-18 md:min-h-[clamp(600px,72dvh,760px)]">
+    <section className="relative isolate flex min-h-[560px] items-end overflow-hidden md:-ml-18 md:min-h-[clamp(600px,min(88dvh,56.25vw),960px)]">
       {src ? (
         <Image
           src={src}
@@ -60,6 +60,8 @@ export function TitleHero({
           priority
           fetchPriority="high"
           sizes="100vw"
+          /* Heroes only: 75 bands the dark gradients of a full-screen still. */
+          quality={90}
           data-ambient
           className="-z-10 object-cover object-[50%_20%] md:object-[64%_22%]"
         />

@@ -4,7 +4,7 @@
 
 export function HeroSkeleton() {
   return (
-    <div className="relative flex min-h-[520px] items-end overflow-hidden sm:min-h-[560px] md:-ml-18 md:min-h-[clamp(600px,64dvh,700px)]">
+    <div className="relative flex min-h-[520px] items-end overflow-hidden sm:min-h-[560px] md:-ml-18 md:min-h-[clamp(600px,min(88dvh,56.25vw),960px)]">
       <div className="skeleton absolute inset-0" />
       <div className="scrim-bottom absolute inset-x-0 bottom-0 h-4/5" />
       <div className="page relative w-full pt-32 pb-16 md:pb-24">
@@ -81,7 +81,7 @@ export function SectionHeadingSkeleton() {
 export function DetailsSkeleton() {
   return (
     <div>
-      <div className="skeleton min-h-[560px] md:-ml-18 md:min-h-[clamp(600px,72dvh,760px)]" />
+      <div className="skeleton min-h-[560px] md:-ml-18 md:min-h-[clamp(600px,min(88dvh,56.25vw),960px)]" />
       <div className="page pt-6 pb-12">
         <div className="max-w-[40rem] space-y-5">
           <div className="skeleton h-3 w-24 rounded-sm" />
@@ -127,18 +127,6 @@ export function PlayerSkeleton() {
   return <div className="skeleton aspect-video w-full rounded-card" />;
 }
 
-/** Mirrors `PageHeader`, minus the wash. */
-export function PageHeaderSkeleton() {
-  return (
-    <div className="border-b border-line">
-      <div className="page space-y-5 pt-32 pb-14 md:pt-40 md:pb-20">
-        <div className="skeleton h-2.5 w-24 rounded-sm" />
-        <div className="skeleton h-12 w-56 rounded-card md:h-16" />
-        <div className="skeleton h-3 w-80 max-w-full rounded-sm" />
-      </div>
-    </div>
-  );
-}
 
 /** A whole section, heading included. Used by streamed page sections. */
 export function SectionSkeleton({

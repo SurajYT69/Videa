@@ -4,6 +4,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Play } from "@phosphor-icons/react/dist/ssr";
 import { FactTiles, TitleHero } from "@/components/TitleHero";
+import { TrailerButton } from "@/components/TrailerButton";
+import { RatingsStrip } from "@/components/RatingsStrip";
+import { MalPanel } from "@/components/MalPanel";
+import { isAnime } from "@/lib/mal";
 import { CollectionBanner } from "@/components/CollectionBanner";
 import { Section } from "@/components/Section";
 import { CastRail } from "@/components/CastRail";
@@ -106,12 +110,28 @@ export default async function MoviePage({ params }: Props) {
           <Play weight="fill" className="size-4 translate-x-px" aria-hidden="true" />
           Watch now
         </Link>
+        {movie.trailerKey && (
+          <TrailerButton videoKey={movie.trailerKey} title={movie.title} />
+        )}
         <FavoriteButton stub={toStub(movie)} />
       </TitleHero>
+
+      <RatingsStrip imdbId={movie.imdbId} />
 
       {movie.collectionId && (
         <Suspense fallback={null}>
           <CollectionBanner id={movie.collectionId} />
+        </Suspense>
+      )}
+
+      {isAnime(movie.genres, movie.originalLanguage) && (
+        <Suspense fallback={null}>
+          <MalPanel
+            title={movie.title}
+            originalTitle={movie.originalTitle}
+            year={year(movie.releaseDate)}
+            type="movie"
+          />
         </Suspense>
       )}
 

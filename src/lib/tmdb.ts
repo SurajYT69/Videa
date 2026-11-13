@@ -17,6 +17,9 @@ import type {
   TVDetails,
   TitleExtras,
   Collection,
+  Airing,
+  Person,
+  ProviderOption,
 } from "./types";
 
 const BASE = "https://api.themoviedb.org/3";
@@ -219,6 +222,10 @@ async function normalizePage(
 }
 
 type RawExtras = {
+  videos?: {
+    results?: Array<{ site?: string; type?: string; key?: string; official?: boolean }>;
+  };
+  original_language?: string;
   images?: {
     logos?: Array<{ file_path: string; iso_639_1?: string | null }>;
   };
@@ -242,7 +249,15 @@ function normalizeExtras(raw: RawExtras): TitleExtras {
   /* India first, then the US: the two regions this site is most used from. */
   const regions = raw["watch/providers"]?.results ?? {};
   const flatrate = (regions.IN ?? regions.US)?.flatrate ?? [];
+  /* Official YouTube trailer first, then any trailer, then a teaser. */
+  const youtube = (raw.videos?.results ?? []).filter((v) => v.site === "YouTube" && v.key);
+  const trailer =
+    youtube.find((v) => v.type === "Trailer" && v.official) ??
+    youtube.find((v) => v.type === "Trailer") ??
+    youtube.find((v) => v.type === "Teaser");
   return {
+    trailerKey: trailer?.key ?? null,
+    originalLanguage: raw.original_language ?? null,
     providers: flatrate
       .filter((p): p is { provider_name: string; logo_path: string } =>
         Boolean(p.logo_path),
@@ -328,7 +343,7 @@ export async function getMovie(id: number): Promise<MovieDetails | null> {
    * resolve a playback id.
    */
   const raw = await tmdbOrNull<Raw>(`/movie/${id}`, {
-    append_to_response: "credits,release_dates,images,watch/providers",
+    append_to_response: "credits,release_dates,images,watch/providers,videos",
     include_image_language: "en,null",
   });
   if (!raw) return null;
@@ -370,7 +385,7 @@ export async function getTV(id: number): Promise<TVDetails | null> {
   };
 
   const raw = await tmdbOrNull<Raw>(`/tv/${id}`, {
-    append_to_response: "credits,external_ids,images,watch/providers",
+    append_to_response: "credits,external_ids,images,watch/providers,videos",
     include_image_language: "en,null",
   });
   if (!raw) return null;
@@ -400,6 +415,97 @@ export async function getTV(id: number): Promise<TVDetails | null> {
     lastAirDate: raw.last_air_date ?? null,
     episodeCount: raw.number_of_episodes ?? 0,
     ...normalizeExtras(raw),
+  };
+}
+
+/* -------------------------------------------------------------------------
+   Providers, people and air dates
+   ------------------------------------------------------------------------- */
+
+/** The services worth offering as a filter in India, in TMDB's own order. */
+export async function getProviders(type: MediaType): Promise<ProviderOption[]> {
+  type Raw = {
+    results?: Array<{
+      provider_id: number;
+      provider_name: string;
+      logo_path: string | null;
+      display_priority?: number;
+    }>;
+  };
+  const raw = await tmdb<Raw>(
+    `/watch/providers/${type}`,
+    { watch_region: "IN" },
+    60 * 60 * 24 * 7,
+  );
+  return (raw.results ?? [])
+    .filter((p): p is typeof p & { logo_path: string } => Boolean(p.logo_path))
+    .sort((a, b) => (a.display_priority ?? 999) - (b.display_priority ?? 999))
+    .slice(0, 10)
+    .map((p) => ({ id: p.provider_id, name: p.provider_name, logoPath: p.logo_path }));
+}
+
+/** One request: details plus every film and series they acted in. */
+export async function getPerson(id: number): Promise<Person | null> {
+  type Raw = {
+    id: number;
+    name?: string;
+    biography?: string;
+    profile_path?: string | null;
+    known_for_department?: string;
+    birthday?: string | null;
+    place_of_birth?: string | null;
+    combined_credits?: { cast?: Array<RawMedia & { vote_count?: number }> };
+  };
+
+  const raw = await tmdbOrNull<Raw>(`/person/${id}`, {
+    append_to_response: "combined_credits",
+  });
+  if (!raw) return null;
+
+  /* Best-known work first: most-voted, with artwork, each title once. */
+  const seen = new Set<string>();
+  const cast = (raw.combined_credits?.cast ?? [])
+    .filter((c) => c.poster_path)
+    .sort((a, b) => (b.vote_count ?? 0) - (a.vote_count ?? 0))
+    .filter((c) => {
+      const key = `${c.media_type}-${c.id}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 36);
+
+  return {
+    id: raw.id,
+    name: raw.name ?? "Unknown",
+    biography: raw.biography ?? "",
+    profilePath: raw.profile_path ?? null,
+    knownFor: raw.known_for_department ?? null,
+    birthday: raw.birthday ?? null,
+    placeOfBirth: raw.place_of_birth ?? null,
+    credits: await normalizePage({ results: cast }),
+  };
+}
+
+/** Last and next episode air dates. Plain details, cached for six hours. */
+export async function getAiring(id: number): Promise<Airing | null> {
+  type RawEp = { season_number: number; episode_number: number; air_date?: string | null };
+  type Raw = RawMedia & {
+    last_episode_to_air?: RawEp | null;
+    next_episode_to_air?: RawEp | null;
+  };
+  const raw = await tmdbOrNull<Raw>(`/tv/${id}`, {}, 60 * 60 * 6);
+  if (!raw) return null;
+
+  const ref = (ep: RawEp | null | undefined) =>
+    ep ? { season: ep.season_number, episode: ep.episode_number, airDate: ep.air_date ?? null } : null;
+
+  return {
+    tmdbId: raw.id,
+    title: raw.name ?? raw.title ?? "Untitled",
+    backdropPath: raw.backdrop_path ?? null,
+    lastEpisode: ref(raw.last_episode_to_air),
+    nextEpisode: ref(raw.next_episode_to_air),
   };
 }
 
@@ -530,6 +636,8 @@ export type DiscoverParams = {
   minRating?: number;
   year?: number;
   language?: string;
+  /** A TMDB watch-provider id, matched in India. */
+  provider?: number;
 };
 
 /**
@@ -577,6 +685,8 @@ export async function discover(
       "vote_count.gte": params.minVotes ?? 200,
       "vote_average.gte": params.minRating,
       with_original_language: params.language,
+      with_watch_providers: params.provider,
+      watch_region: params.provider ? "IN" : undefined,
       [yearParam]: params.year,
       include_adult: false,
     },

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { MediaGrid } from "@/components/MediaGrid";
 import { SearchBar } from "@/components/SearchBar";
 import { EmptyState } from "@/components/EmptyState";
+import { PosterWall } from "@/components/PosterWall";
 import { ErrorState } from "@/components/ErrorState";
 import { GridSkeleton } from "@/components/LoadingSkeleton";
 import { ConfigError, searchMovies, searchMulti, searchTV } from "@/lib/tmdb";
@@ -42,7 +43,8 @@ export default async function SearchPage({ searchParams }: Props) {
 
   if (!query) {
     return (
-      <div>
+      <div className="relative isolate overflow-hidden md:-ml-18 md:pl-18">
+        <PosterWall />
         <div className="page flex min-h-[80dvh] flex-col justify-center pt-32 pb-24">
           <div className="flex items-center gap-3">
             <span className="eyebrow">Search</span>

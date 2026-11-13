@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Play, Star } from "@phosphor-icons/react/dist/ssr";
-import { STILL, tmdbImage } from "@/lib/images";
+import { BACKDROP, STILL, tmdbImage } from "@/lib/images";
 import { ratingLabel, runtimeLabel } from "@/lib/format";
 import { watchHref } from "@/lib/playback";
 import type { Episode } from "@/lib/types";
@@ -11,14 +11,20 @@ type Props = {
   tvId: number;
   /** True when this is where the viewer left off. */
   isResume?: boolean;
+  /** Shown dimmed when the episode has no still of its own. */
+  fallbackPath?: string | null;
 };
 
 /**
  * A card: the still on top with its runtime, then the title with the episode
  * number and rating on the same line, then two lines of synopsis.
  */
-export function EpisodeCard({ episode, tvId, isResume = false }: Props) {
-  const src = tmdbImage(episode.stillPath, STILL.md);
+export function EpisodeCard({ episode, tvId, isResume = false, fallbackPath }: Props) {
+  const still = tmdbImage(episode.stillPath, STILL.md);
+  /* Older seasons often have no stills; the show's backdrop stands in, dimmed
+     and labelled, so the row never reads as broken boxes. */
+  const fallback = still ? null : tmdbImage(fallbackPath, BACKDROP.md);
+  const src = still ?? fallback;
   const number = `E${String(episode.episodeNumber).padStart(2, "0")}`;
   const runtime = runtimeLabel(episode.runtime);
   const rating = ratingLabel(episode.rating);
@@ -36,11 +42,12 @@ export function EpisodeCard({ episode, tvId, isResume = false }: Props) {
             fill
             /* Card width in the rail: 240px phone, 264px md up. */
             sizes="(min-width: 768px) 264px, 240px"
-            className="object-cover"
+            className={fallback ? "object-cover opacity-35 grayscale-[40%]" : "object-cover"}
           />
-        ) : (
+        ) : null}
+        {(!src || fallback) && (
           <div className="absolute inset-0 grid place-items-center">
-            <span className="font-mono text-sm text-fg-3">{number}</span>
+            <span className="display text-2xl text-white/80 tabular-nums">{number}</span>
           </div>
         )}
 

@@ -2,6 +2,10 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FactTiles, TitleHero } from "@/components/TitleHero";
+import { TrailerButton } from "@/components/TrailerButton";
+import { RatingsStrip } from "@/components/RatingsStrip";
+import { MalPanel } from "@/components/MalPanel";
+import { isAnime } from "@/lib/mal";
 import { Section } from "@/components/Section";
 import { CastRail } from "@/components/CastRail";
 import { MediaGrid } from "@/components/MediaGrid";
@@ -68,9 +72,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 async function Episodes({
   tvId,
   seasons,
+  backdropPath,
 }: {
   tvId: number;
   seasons: SeasonSummary[];
+  backdropPath: string | null;
 }) {
   const first = seasons[0]?.seasonNumber ?? 1;
   const initialSeason = await getSeason(tvId, first).catch(() => null);
@@ -80,6 +86,7 @@ async function Episodes({
       tvId={tvId}
       seasons={seasons}
       initialSeason={initialSeason}
+      fallbackPath={backdropPath}
     />
   );
 }
@@ -135,8 +142,24 @@ export default async function TVDetailsPage({ params }: Props) {
           startSeason={firstSeason}
           startEpisode={1}
         />
+        {show.trailerKey && (
+          <TrailerButton videoKey={show.trailerKey} title={show.title} />
+        )}
         <FavoriteButton stub={toStub(show)} />
       </TitleHero>
+
+      <RatingsStrip imdbId={show.imdbId} />
+
+      {isAnime(show.genres, show.originalLanguage) && (
+        <Suspense fallback={null}>
+          <MalPanel
+            title={show.title}
+            originalTitle={show.originalTitle}
+            year={started}
+            type="tv"
+          />
+        </Suspense>
+      )}
 
       <FactTiles
         facts={[
@@ -159,7 +182,7 @@ export default async function TVDetailsPage({ params }: Props) {
               </div>
             }
           >
-            <Episodes tvId={show.tmdbId} seasons={show.seasons} />
+            <Episodes tvId={show.tmdbId} seasons={show.seasons} backdropPath={show.backdropPath} />
           </Suspense>
         </Section>
       )}

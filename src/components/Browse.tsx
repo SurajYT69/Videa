@@ -10,10 +10,12 @@ import {
   SORT_OPTIONS,
   discover,
   getGenres,
+  getProviders,
   type DiscoverParams,
   type Paged,
 } from "@/lib/tmdb";
-import type { Genre, MediaItem, MediaType } from "@/lib/types";
+import { LANGUAGE_OPTIONS } from "@/lib/tmdb-options";
+import type { Genre, MediaItem, MediaType, ProviderOption } from "@/lib/types";
 
 /**
  * The filtered, paginated listing shared by /movie and /tv. Filters and paging
@@ -79,7 +81,21 @@ function parseFilters(
     genres: genres?.length ? genres : undefined,
     year: num(one(searchParams.year), 1900, CURRENT_YEAR + 1),
     minRating: num(one(searchParams.rating), 1, 9),
+    provider: num(one(searchParams.provider), 1, 1_000_000),
+    /* Only languages the filter offers reach TMDB. */
+    language: LANGUAGE_OPTIONS.find((l) => l.value === one(searchParams.lang))?.value,
   };
+}
+
+/*
+ * The 200-vote floor in `discover` is tuned for English-language titles. Most
+ * Hindi, Tamil or Korean series never reach it, so a language filter alone
+ * would empty the list; outside English the floor drops to 20.
+ */
+function withVoteFloor(filters: DiscoverParams): DiscoverParams {
+  return filters.language && filters.language !== "en"
+    ? { ...filters, minVotes: 20 }
+    : filters;
 }
 
 /** Carries the current filters forward; only the page number changes. */
@@ -106,13 +122,17 @@ export async function Browse({
   searchParams: BrowseSearchParams;
 }) {
   const page = parsePage(one(searchParams.page));
-  const filters = parseFilters(type, searchParams);
+  const filters = withVoteFloor(parseFilters(type, searchParams));
 
   /* Seven-day cached, and the controls cannot render without it. */
-  const genres = await getGenres(type).catch((error: unknown) => {
-    if (error instanceof ConfigError) throw error;
-    return [] as Genre[];
-  });
+  const [genres, providers] = await Promise.all([
+    getGenres(type).catch((error: unknown) => {
+      if (error instanceof ConfigError) throw error;
+      return [] as Genre[];
+    }),
+    /* Week-cached; a failure just hides the provider row. */
+    getProviders(type).catch(() => [] as ProviderOption[]),
+  ]);
 
   /*
    * The filter bar sits outside the boundary on purpose: inside it, changing a
@@ -129,6 +149,8 @@ export async function Browse({
     filters.genres?.join("|"),
     filters.year,
     filters.minRating,
+    filters.provider,
+    filters.language,
   ].join("~");
 
   /* The caller owns the section frame and the page gutter. */
@@ -141,6 +163,9 @@ export async function Browse({
         sort={filters.sort ?? "popularity.desc"}
         year={filters.year}
         minRating={filters.minRating}
+        language={filters.language}
+        providers={providers}
+        provider={filters.provider}
       />
 
       <div className="mt-10 md:mt-12">

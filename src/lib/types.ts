@@ -46,6 +46,10 @@ export type TVDetails = MediaItem & {
 export type TitleExtras = {
   /** The title's own logo artwork, when TMDB has one. */
   logoPath: string | null;
+  /** YouTube key of the official trailer, when there is one. */
+  trailerKey: string | null;
+  /** ISO 639-1, e.g. "ja". Used to tell anime from other animation. */
+  originalLanguage: string | null;
   studios: string[];
   languages: string[];
   /** Subscription services carrying the title. Shown, never linked. */
@@ -142,4 +146,67 @@ export type LocalState = {
   continueWatching: ContinueWatchingItem[];
   favorites: FavoriteItem[];
   lastEpisodes: Record<string, { season: number; episode: number }>;
+};
+/** MyAnimeList's view of an anime title. Optional, from `lib/mal.ts`. */
+export type MalInfo = {
+  id: number;
+  title: string;
+  score: number | null;
+  rank: number | null;
+  popularity: number | null;
+  episodes: number | null;
+  status: string | null;
+  studios: string[];
+  url: string;
+};
+/** A streaming service offered as a browse filter. */
+export type ProviderOption = {
+  id: number;
+  name: string;
+  logoPath: string;
+};
+
+/** An actor or crew member, with what they are known for. */
+export type Person = {
+  id: number;
+  name: string;
+  biography: string;
+  profilePath: string | null;
+  knownFor: string | null;
+  birthday: string | null;
+  placeOfBirth: string | null;
+  credits: MediaItem[];
+};
+
+export type EpisodeRef = {
+  season: number;
+  episode: number;
+  airDate: string | null;
+};
+
+/** When a series last aired and next airs. Drives the "New episodes" notice. */
+export type Airing = {
+  tmdbId: number;
+  title: string;
+  backdropPath: string | null;
+  lastEpisode: EpisodeRef | null;
+  nextEpisode: EpisodeRef | null;
+};
+
+/** Scores from OMDb. Each is null when OMDb has none. */
+export type Ratings = {
+  imdb: string | null;
+  imdbVotes: string | null;
+  rottenTomatoes: string | null;
+  metacritic: string | null;
+  imdbUrl: string;
+};
+
+/** A title airing this anime season, from MyAnimeList. */
+export type SeasonalAnime = {
+  malId: number;
+  title: string;
+  imageUrl: string | null;
+  score: number | null;
+  startDate: string | null;
 };

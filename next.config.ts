@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "image.tmdb.org", pathname: "/t/p/**" },
+      /* Seasonal anime posters on /anime come from MyAnimeList. */
+      { protocol: "https", hostname: "cdn.myanimelist.net", pathname: "/images/**" },
     ],
 
     /*
@@ -29,7 +31,9 @@ const nextConfig: NextConfig = {
      * to 1280 while still costing a resize job. A 1430px hero on a 1440px
      * screen now lands on 1280 instead of 1920.
      */
-    deviceSizes: [640, 750, 828, 1080, 1280],
+    /* 1920 and 2560 exist for the full-bleed heroes only, which request TMDB's
+     * 'original' still (BACKDROP.xl). Everything else tops out at w1280. */
+    deviceSizes: [640, 750, 828, 1080, 1280, 1920, 2560],
 
     /*
      * Extra steps at 192 / 320 / 448 so the fixed-width card surfaces land near

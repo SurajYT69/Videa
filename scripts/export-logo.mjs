@@ -11,6 +11,8 @@
 import sharp from "sharp";
 import { mkdirSync, copyFileSync, readFileSync } from "node:fs";
 
+mkdirSync("public", { recursive: true });
+
 const LOCKUP_SRC = "logos/oovi/logo.svg";
 const MARK_SRC = "logos/oovi/mark.svg";
 
@@ -50,6 +52,10 @@ for (const n of [16, 32, 48, 512, 1024]) {
 await emit("src/app/apple-icon.png", mark, 180, 180, true);
 await emit("logos/export/mark-192-solid.png", mark, 192, 192, true);
 await emit("logos/export/mark-512-solid.png", mark, 512, 512, true);
+
+// The web app manifest (src/app/manifest.ts) points at these.
+await emit("public/icon-192.png", mark, 192, 192, true);
+await emit("public/icon-512.png", mark, 512, 512, true);
 
 for (const file of written) {
   const meta = await sharp(file).metadata();

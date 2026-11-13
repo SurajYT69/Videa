@@ -55,6 +55,11 @@ owns the base URL, the path shape, and the origins trusted for player
 `postMessage`. `VideoPlayer` receives intent (type, ids, season, episode) and
 asks that module for a URL. Swapping providers should touch one file.
 
+Providers are entries in `SERVERS` there; the first is the default. `VideoPlayer`
+shows a server switcher once there are two, and remembers the viewer's pick
+under its own LocalStorage key, `oovi-server` (a plain id, guarded like the
+rest). `PLAYER_ORIGINS` is every server's trusted origins together.
+
 **IDs are implementation details.** TMDB ids drive routes. IMDb ids are preferred
 for playback, with the TMDB id as fallback (`playbackId()`). Neither is ever
 shown to a viewer.
@@ -206,11 +211,13 @@ stills at 390px. `MediaGrid` still belongs on `/movie`, `/tv`, `/search` and
 it renders a labelled scroll region. Arrows are desktop-only, appear on hover,
 and go `aria-hidden` plus `pointer-events-none` at whichever end has run out.
 
-**Hero height is capped on purpose.** `min-h-[520px]` on phones, and
-`clamp(600px, 64dvh, 700px)` from `md` up. This is a composition rule, not a
-taste one: TMDB backdrops are 16:9, and the taller the box, the more width
-`object-cover` throws away, which is what slices through the actors. A shallower
-box keeps the frame near the still's own proportions. `object-position` carries
+**Hero height follows the backdrop, not the viewport.** `min-h-[520px]` on
+phones, and `clamp(600px, min(88dvh, 56.25vw), 960px)` from `md` up, on the
+home slider, section sliders and title pages alike. 56.25vw is the height of a
+16:9 still at full width: up to there `object-cover` only trims top and bottom,
+and past it it starts cutting the sides, which is what slices through the
+actors. So the hero grows with the screen and stops exactly where cropping
+would begin. `object-position` carries
 two values for the same reason — wide frames bias right so the subject clears the
 type column, narrow frames centre, because at 390px there is no far side to move
 anyone to. Both sit high, since backdrops put faces in the upper third.
@@ -257,8 +264,56 @@ this browser has a last episode; it draws progress only when the player
 reported one.
 
 **Not built from the reference, on purpose:** profile, streak, watchlists and
-lists (no accounts), the "new episode" notice, download, and the provider
-filter strip. Hover lift and artwork zoom stay removed.
+lists (no accounts) and download. Hover lift and artwork zoom stay removed.
+
+**Home** opens with `HeroCarousel`: up to five trending titles, auto-advancing
+every 8s, paused on hover and focus, never under reduced motion. Only slide one
+is `priority` and only it feeds the ambient tint. Below it, `NewEpisodes` (a
+client component) asks `/api/airing` about the series this browser has saved
+or started and shows episodes out in the last week or due in the next; it
+renders nothing otherwise. Indian rails (Hindi films and series, Telugu, Tamil)
+come from `DiscoverRail`, which is also what `/anime` uses.
+
+**Every page opens on artwork.** `/movie`, `/tv` and `/anime` open with
+`PageHero`: the homepage slider fed with that section's own trending or
+popular titles, and the rail below skips the five it used. My List and the empty
+search page have no single title, so `PosterWall` puts a tilted, dimmed wall of
+this week's trending posters behind them. `PageHeader` is gone.
+
+**More title-page data, still no extra request:** the trailer key rides on the
+details call (`videos`); `TrailerButton` opens it in a native `<dialog>` and
+only creates the YouTube iframe on open. `RatingsStrip` (IMDb, Rotten Tomatoes,
+Metacritic from OMDb, `lib/omdb.ts`) is a second request behind Suspense,
+cached a day, and needs `OMDB_API_KEY`. OMDb's terms are personal and
+non-commercial; the free key allows 1,000 requests a day.
+
+**People.** Cast cards link to `/person/[id]`: one request (`combined_credits`),
+credits ordered by vote count, each title once.
+
+**Browse filters** are `FilterDropdown` glass pills, not native selects: Genres
+(multi), Language (`?lang=`, validated against `lib/tmdb-options.ts`), Year,
+Rating, and Sort on the right. The dropdown is a button plus a listbox with
+arrow-key, Enter and Escape handling, and closes on an outside click.
+
+**Provider filter.** `/movie` and `/tv` show the top ten Indian streaming
+services above the filter pills; one is selectable at a time and lives in the URL as
+`?provider=`, matched with `watch_region=IN`.
+
+**Anime this season** is MAL's seasonal list. MAL entries carry no TMDB id, so
+those cards link to oovi's search for the English title rather than costing a
+lookup each.
+
+**Installable.** `src/app/manifest.ts` plus `public/icon-192.png` and
+`public/icon-512.png` (written by `scripts/export-logo.mjs`). No service
+worker; the Next.js PWA guide lists only a manifest and HTTPS.
+
+**MyAnimeList** (`lib/mal.ts`) is optional and anime-only: a title counts as
+anime when TMDB says Japanese-language animation. `MalPanel` searches MAL by
+the title (then the original title) and keeps only a result with the same
+start year and kind, so a sequel season never stands in for the show. It is a
+second request behind Suspense, cached a day, and renders nothing without
+`MAL_CLIENT_ID` or without a confident match. Only the Client ID is used; the
+Client Secret is not needed for public data and must never be stored here.
 
 ## Images
 
@@ -275,11 +330,16 @@ the homepage, the queue is deep enough that the details page's backdrop lands
 behind it. The ~25% byte saving AVIF would give back is not worth it here,
 because every TMDB image is unique and the optimizer cache hit rate is low.
 
-**`deviceSizes` stops at 1280 because no source is wider.** `BACKDROP.lg`
-(`w1280`) is the widest thing this app ever requests from TMDB. The default
-ladder's 1920 / 2048 / 3840 steps returned byte-identical output while still
-costing a resize job. If you ever add an `original` source, raise the ceiling in
-the same commit.
+**`deviceSizes` stops at 2560, and only the heroes go past 1280.** They also
+render at `quality={90}`, against Next's default 75, because a full-screen
+still bands in its dark gradients at 75. Zoomed and HiDPI screens are what
+reach 2560. The home,
+section and title-page heroes request TMDB's `original` still (`BACKDROP.xl`),
+because w1280 stretched across a 1920px screen read as soft. Everything else
+still requests at most `w1280` (`BACKDROP.lg`), so the 1920 step costs one
+resize per page, for its LCP image. Do not point anything else at
+`BACKDROP.xl` without measuring; originals can be 3840 wide and are the most
+expensive thing the optimizer ever resizes.
 
 **Every `sizes` is measured, not guessed.** Open the component in the browser,
 read the rendered width at 390 and at 1440, and write both into `sizes`. Never

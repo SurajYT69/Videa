@@ -24,8 +24,17 @@ import type { MediaItem } from "@/lib/types";
  * On desktop the section breaks out under the icon rail (`md:-ml-18`) and pads
  * its content back in, so the still runs edge to edge.
  */
-export function Hero({ media, eyebrow = "Trending now" }: { media: MediaItem; eyebrow?: string }) {
-  const src = tmdbImage(media.backdropPath, BACKDROP.lg);
+export function Hero({
+  media,
+  eyebrow = "Trending now",
+  priority = true,
+}: {
+  media: MediaItem;
+  eyebrow?: string;
+  /** Only the first slide of the carousel is the LCP element. */
+  priority?: boolean;
+}) {
+  const src = tmdbImage(media.backdropPath, BACKDROP.xl);
 
   const facts = [
     typeLabel(media.type),
@@ -35,16 +44,18 @@ export function Hero({ media, eyebrow = "Trending now" }: { media: MediaItem; ey
   const hasScore = media.rating > 0;
 
   return (
-    <section className="relative isolate flex min-h-[520px] items-end overflow-hidden sm:min-h-[560px] md:-ml-18 md:min-h-[clamp(600px,64dvh,700px)]">
+    <section className="relative isolate flex min-h-[520px] items-end overflow-hidden sm:min-h-[560px] md:-ml-18 md:min-h-[clamp(600px,min(88dvh,56.25vw),960px)]">
       {src && (
         <Image
           src={src}
           alt=""
           fill
-          priority
-          fetchPriority="high"
+          priority={priority}
+          fetchPriority={priority ? "high" : "auto"}
           sizes="100vw"
-          data-ambient
+          /* Heroes only: 75 bands the dark gradients of a full-screen still. */
+          quality={90}
+          data-ambient={priority ? true : undefined}
           /*
            * Two crops, not one. Wide frames bias right so the subject clears
            * the type column on the left; narrow frames centre horizontally,
@@ -55,10 +66,13 @@ export function Hero({ media, eyebrow = "Trending now" }: { media: MediaItem; ey
           className="-z-10 object-cover object-[50%_26%] md:object-[64%_28%]"
         />
       )}
-      <AmbientTint />
+      {priority && <AmbientTint />}
 
       {/* Opaque under the type, clear across the subject. */}
       <div className="scrim-corner absolute inset-0 -z-10" />
+      {/* Bright stills (much of anime) need a little more density under the
+          type column; this is weighted to the left, not a flat tint. */}
+      <div className="scrim-left absolute inset-y-0 left-0 -z-10 hidden w-3/5 opacity-60 md:block" />
       {/* Short band so the still hands off cleanly to the section below. */}
       <div className="scrim-bottom absolute inset-x-0 bottom-0 -z-10 h-1/4" />
 

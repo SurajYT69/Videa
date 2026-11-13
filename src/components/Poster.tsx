@@ -7,6 +7,8 @@ type Props = {
   sizes: string;
   priority?: boolean;
   size?: keyof typeof POSTER;
+  /** A full image URL that replaces the TMDB path, e.g. a MAL poster. */
+  src?: string | null;
 };
 
 /**
@@ -19,8 +21,9 @@ export function Poster({
   sizes,
   priority = false,
   size = "md",
+  src: override,
 }: Props) {
-  const src = tmdbImage(path, POSTER[size]);
+  const src = override ?? tmdbImage(path, POSTER[size]);
 
   if (!src) {
     return (
