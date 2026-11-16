@@ -36,7 +36,7 @@ export function TrailerButton({ videoKey, title }: { videoKey: string; title: st
       <button
         type="button"
         onClick={open}
-        className="glass inline-flex items-center gap-2 rounded-full px-6 py-4 text-base font-medium whitespace-nowrap text-fg transition duration-200 hover:bg-fg/10 active:translate-y-px"
+        className="glass inline-flex items-center gap-2 rounded-full px-5 py-3.5 text-[15px] font-medium sm:px-6 sm:py-4 sm:text-base whitespace-nowrap text-fg transition duration-200 hover:bg-fg/10 active:translate-y-px"
       >
         <FilmStrip className="size-4" aria-hidden="true" />
         Trailer

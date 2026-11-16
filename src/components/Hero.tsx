@@ -44,8 +44,12 @@ export function Hero({
   const hasScore = media.rating > 0;
 
   return (
-    <section className="relative isolate flex min-h-[520px] items-end overflow-hidden sm:min-h-[560px] md:-ml-18 md:min-h-[clamp(600px,min(88dvh,56.25vw),960px)]">
+    <section className="relative isolate flex items-end overflow-hidden md:-ml-18 md:min-h-[clamp(600px,min(88dvh,56.25vw),960px)]">
       {src && (
+        <div className="absolute inset-x-0 top-0 -z-10 aspect-video md:inset-0 md:aspect-auto">
+          {/* Phones show the whole 16:9 still across the top instead of
+              covering a portrait box, which zoomed a wide frame until only a
+              sliver of the middle was left. From md up it fills the hero. */}
         <Image
           src={src}
           alt=""
@@ -57,15 +61,13 @@ export function Hero({
           quality={90}
           data-ambient={priority ? true : undefined}
           data-hero-art
-          /*
-           * Two crops, not one. Wide frames bias right so the subject clears
-           * the type column on the left; narrow frames centre horizontally,
-           * because at 390px there is no far side to move the subject to. Both
-           * sit high in the frame, since backdrops put faces in the upper
-           * third and a centred crop cuts them at the chin.
-           */
-          className="-z-10 object-cover object-[50%_26%] md:object-[64%_28%]"
+          /* Wide frames bias right so the subject clears the type column,
+             and sit high because backdrops put faces in the upper third. */
+          className="object-cover md:object-[64%_28%]"
         />
+          {/* Phones only: the still ends here, so it fades into the ground. */}
+          <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink to-transparent md:hidden" />
+        </div>
       )}
       {priority && <AmbientTint />}
 
@@ -78,7 +80,7 @@ export function Hero({
       <div className="scrim-bottom absolute inset-x-0 bottom-0 -z-10 h-1/4" />
 
       <div className="w-full md:pl-18">
-        <div className="page pt-32 pb-12 md:pb-16">
+        <div className="page pt-[calc(56.25vw-1rem)] pb-12 md:pt-32 md:pb-16">
           <div data-hero-copy className="max-w-[40rem]">
             <p className="eyebrow animate-rise" style={{ animationDelay: "40ms" }}>
               {eyebrow}
@@ -99,7 +101,7 @@ export function Hero({
               {facts.map((fact, index) => (
                 <span key={fact} className="flex items-center gap-4">
                   {(index > 0 || hasScore) && (
-                    <span aria-hidden="true" className="h-3 w-px bg-fg-3/40" />
+                    <span aria-hidden="true" className="hidden h-3 w-px bg-fg-3/40 sm:block" />
                   )}
                   <span className="text-sm text-fg-2">{fact}</span>
                 </span>
@@ -116,19 +118,19 @@ export function Hero({
             )}
 
             <div
-              className="animate-rise mt-8 flex flex-wrap items-center gap-3"
+              className="animate-rise mt-8 flex items-center gap-3"
               style={{ animationDelay: "270ms" }}
             >
               <Link
                 href={watchHref(media.type, media.tmdbId, 1, 1)}
-                className="inline-flex items-center gap-2 rounded-full bg-fg px-7 py-4 text-base font-medium whitespace-nowrap text-ink transition duration-200 hover:-translate-y-px hover:shadow-lift active:translate-y-0 active:shadow-soft"
+                className="inline-flex items-center gap-2 rounded-full bg-fg px-5 py-3.5 text-[15px] font-medium sm:px-7 sm:py-4 sm:text-base whitespace-nowrap text-ink transition duration-200 hover:-translate-y-px hover:shadow-lift active:translate-y-0 active:shadow-soft"
               >
                 <Play weight="fill" className="size-4" aria-hidden="true" />
                 Watch now
               </Link>
               <Link
                 href={detailsHref(media.type, media.tmdbId)}
-                className="inline-flex items-center gap-2 glass rounded-full px-7 py-4 text-base font-medium whitespace-nowrap text-fg transition duration-200 hover:bg-fg/10 active:translate-y-px"
+                className="inline-flex items-center gap-2 glass rounded-full px-5 py-3.5 text-[15px] font-medium sm:px-7 sm:py-4 sm:text-base whitespace-nowrap text-fg transition duration-200 hover:bg-fg/10 active:translate-y-px"
               >
                 <Info className="size-4" aria-hidden="true" />
                 More info

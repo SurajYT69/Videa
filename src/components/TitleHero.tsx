@@ -52,8 +52,12 @@ export function TitleHero({
   const hasScore = rating > 0;
 
   return (
-    <section className="relative isolate flex min-h-[560px] items-end overflow-hidden md:-ml-18 md:min-h-[clamp(600px,min(88dvh,56.25vw),960px)]">
+    <section className="relative isolate flex items-end overflow-hidden md:-ml-18 md:min-h-[clamp(600px,min(88dvh,56.25vw),960px)]">
       {src ? (
+        <div className="absolute inset-x-0 top-0 -z-10 aspect-video md:inset-0 md:aspect-auto">
+          {/* Phones show the whole 16:9 still across the top instead of
+              covering a portrait box, which zoomed a wide frame until only a
+              sliver of the middle was left. From md up it fills the hero. */}
         <Image
           src={src}
           alt=""
@@ -64,8 +68,11 @@ export function TitleHero({
           /* Heroes only: 75 bands the dark gradients of a full-screen still. */
           quality={90}
           data-ambient
-          className="-z-10 object-cover object-[50%_20%] md:object-[64%_22%]"
+          className="object-cover md:object-[64%_22%]"
         />
+          {/* Phones only: the still ends here, so it fades into the ground. */}
+          <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink to-transparent md:hidden" />
+        </div>
       ) : (
         <div className="absolute inset-0 -z-10 bg-surface" />
       )}
@@ -75,7 +82,7 @@ export function TitleHero({
       <div className="scrim-bottom absolute inset-x-0 bottom-0 -z-10 h-1/3" />
 
       <div className="w-full md:pl-18">
-        <div className="page relative pt-32 pb-10 md:pb-14">
+        <div className="page relative pt-[calc(56.25vw-1rem)] pb-10 md:pt-32 md:pb-14">
           <div className="max-w-[40rem]">
             <p className="eyebrow">{kind}</p>
 
@@ -105,7 +112,7 @@ export function TitleHero({
               {shown.map((fact, index) => (
                 <span key={fact} className="flex items-center gap-3">
                   {(index > 0 || hasScore) && (
-                    <span aria-hidden="true" className="size-1 rounded-full bg-fg-3/60" />
+                    <span aria-hidden="true" className="hidden size-1 rounded-full bg-fg-3/60 sm:block" />
                   )}
                   <span className="text-sm font-medium whitespace-nowrap text-fg-2 tabular-nums">
                     {fact}

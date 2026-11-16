@@ -113,7 +113,7 @@ export function HeroCarousel({
 
       {count > 1 && (
         <div
-          className="absolute right-5 bottom-6 z-20 flex items-end gap-2 md:right-12 md:bottom-10 md:gap-3"
+          className="absolute inset-x-5 top-[calc(4.5rem+env(safe-area-inset-top))] z-20 flex items-end gap-1.5 md:inset-x-auto md:top-auto md:right-12 md:bottom-10 md:gap-3"
           data-paused={paused || reduced ? "" : undefined}
         >
           {slides.map((_, i) => {
@@ -126,7 +126,7 @@ export function HeroCarousel({
                 onClick={() => go(i, i > index ? 1 : -1)}
                 aria-label={thumb ? `Show ${thumb.title}` : `Show slide ${i + 1}`}
                 aria-current={active ? "true" : undefined}
-                className="group/thumb flex flex-col items-stretch gap-2"
+                className="group/thumb flex flex-1 flex-col items-stretch gap-2 py-2 md:flex-none md:py-0"
               >
                 {/* Stills from md up; phones keep the bars alone. */}
                 {thumb?.src && (
@@ -149,7 +149,7 @@ export function HeroCarousel({
                 )}
                 <span
                   className={`relative block h-1 overflow-hidden rounded-full bg-white/25 ${
-                    thumb?.src ? "w-8 md:w-28" : "w-8"
+                    thumb?.src ? "w-full md:w-28" : "w-full md:w-8"
                   }`}
                 >
                   {active && (

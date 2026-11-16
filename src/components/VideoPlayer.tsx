@@ -162,7 +162,7 @@ export function VideoPlayer({
         {partyId && <WatchParty roomId={partyId} frameRef={frameRef} />}
         {SERVERS.length > 1 && !partyId && (
           <>
-            <span className="eyebrow">Server</span>
+            <span className="eyebrow hidden sm:inline">Server</span>
             <div
               role="radiogroup"
               aria-label="Server"

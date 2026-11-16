@@ -42,10 +42,13 @@ export function ShareButton({ title }: { title: string }) {
     <button
       type="button"
       onClick={share}
-      className="glass inline-flex items-center gap-2 rounded-full px-6 py-4 text-base font-medium whitespace-nowrap text-fg transition duration-200 hover:bg-fg/10 active:translate-y-px"
+      /* Icon-only on phones so the actions fit two rows; same 52px as Save. */
+      className="glass inline-flex size-[52px] items-center justify-center gap-2 rounded-full text-[15px] font-medium whitespace-nowrap text-fg transition duration-200 hover:bg-fg/10 active:translate-y-px sm:size-auto sm:px-6 sm:py-4 sm:text-base"
     >
       <Icon className="size-4" aria-hidden="true" />
-      <span aria-live="polite">{copied ? "Copied" : "Share"}</span>
+      <span aria-live="polite" className="sr-only sm:not-sr-only">
+        {copied ? "Copied" : "Share"}
+      </span>
     </button>
   );
 }

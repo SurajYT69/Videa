@@ -45,7 +45,7 @@ export default async function SearchPage({ searchParams }: Props) {
     return (
       <div className="relative isolate overflow-hidden md:-ml-18 md:pl-18">
         <PosterWall />
-        <div className="page flex min-h-[80svh] flex-col justify-center pt-32 pb-24">
+        <div className="page flex flex-col justify-center pt-28 pb-16 md:min-h-[80svh] md:pt-32 md:pb-24">
           <div className="flex items-center gap-3">
             <span className="eyebrow">Search</span>
           </div>

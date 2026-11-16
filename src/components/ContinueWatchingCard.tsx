@@ -41,7 +41,7 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
 
   /* The bar belongs to the episode it measured, not the one up next. */
   const percent =
-    item.progress !== null && !upNext ? Math.round(item.progress * 100) : null;
+    item.progress !== null && item.progress >= 0.01 && !upNext ? Math.round(item.progress * 100) : null;
 
   return (
     <div className="group relative">
