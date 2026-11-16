@@ -16,7 +16,6 @@ import type { Icon } from "@phosphor-icons/react";
 import { MotionConfig, motion } from "motion/react";
 import { SearchBar } from "./SearchBar";
 import { EyesMark, Wordmark } from "./Wordmark";
-import { ThemeSwitch } from "./ThemeSwitch";
 
 type Item = {
   href: string;
@@ -124,11 +123,7 @@ export function Header() {
           </ul>
         </nav>
 
-        <div className="mt-auto mb-2 grid place-items-center">
-          <ThemeSwitch />
-        </div>
-
-        <nav aria-label="Search and library">
+        <nav aria-label="Search and library" className="mt-auto">
           <ul className="flex flex-col gap-1">
             {TOOLS.map((item) => (
               <li key={item.href}>
@@ -170,7 +165,6 @@ export function Header() {
           </Link>
 
           <div className="ml-auto flex items-center gap-1">
-            <ThemeSwitch />
             <button
               type="button"
               onClick={() => setSearchOpen((open) => !open)}
