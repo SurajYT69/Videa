@@ -15,9 +15,29 @@ type Props = {
   fallbackPath?: string | null;
 };
 
+/*
+ * Air dates are calendar days, not instants. TMDB sends "2008-01-20", which
+ * parses as UTC midnight; formatting it in the viewer's zone puts it on the
+ * 19th anywhere west of Greenwich, and the server and browser would disagree.
+ */
+const AIR_DATE = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+function airDate(date: string | null): string | null {
+  if (!date) return null;
+  const parsed = new Date(date);
+  return Number.isNaN(parsed.getTime()) ? null : AIR_DATE.format(parsed);
+}
+
 /**
- * A card: the still on top with its runtime, then the title with the episode
- * number and rating on the same line, then two lines of synopsis.
+ * A card in three typographic tiers: a mono data line (episode code, air
+ * date, rating), the title in the text face, then the synopsis a step
+ * smaller and quieter. The code leads because it is how a viewer finds their
+ * place in a season; the title is what they read once they have.
  */
 export function EpisodeCard({ episode, tvId, isResume = false, fallbackPath }: Props) {
   const still = tmdbImage(episode.stillPath, STILL.md);
@@ -28,6 +48,7 @@ export function EpisodeCard({ episode, tvId, isResume = false, fallbackPath }: P
   const number = `E${String(episode.episodeNumber).padStart(2, "0")}`;
   const runtime = runtimeLabel(episode.runtime);
   const rating = ratingLabel(episode.rating);
+  const aired = airDate(episode.airDate);
 
   return (
     <Link
@@ -71,25 +92,33 @@ export function EpisodeCard({ episode, tvId, isResume = false, fallbackPath }: P
         <span className="pointer-events-none absolute inset-0 rounded-card art-edge" />
       </div>
 
-      <div className="mt-3 flex items-baseline justify-between gap-3">
-        <h3 className="line-clamp-1 text-sm font-medium text-fg-2 transition-colors duration-200 group-hover:text-fg">
-          {episode.name}
-        </h3>
-        <span className="flex shrink-0 items-center gap-2 font-mono text-xs tabular-nums">
-          <span className={isResume ? "text-accent" : "text-fg-3"}>
-            {number}
-            {isResume && <span className="sr-only">, continue here</span>}
-          </span>
-          {rating && (
-            <span className="inline-flex items-center gap-1 text-fg-3">
-              <Star weight="fill" className="size-3 text-accent" aria-hidden="true" />
-              {rating}
-            </span>
-          )}
+      <p className="mt-3 flex items-center gap-2 font-mono text-xs whitespace-nowrap text-fg-3 tabular-nums">
+        <span className={isResume ? "font-medium text-accent" : "text-fg-2"}>
+          {number}
+          {isResume && <span className="sr-only">, continue here</span>}
         </span>
-      </div>
+        {aired && (
+          <>
+            <span aria-hidden="true" className="size-0.5 shrink-0 rounded-full bg-fg-3" />
+            <time dateTime={episode.airDate ?? undefined}>{aired}</time>
+          </>
+        )}
+        {rating && (
+          <span className="ml-auto inline-flex items-center gap-1">
+            <Star weight="fill" className="size-3 text-accent" aria-hidden="true" />
+            {rating}
+            <span className="sr-only">out of 10</span>
+          </span>
+        )}
+      </p>
+      <h3
+        className="mt-1.5 line-clamp-1 text-[15px] leading-snug font-medium text-fg"
+        title={episode.name}
+      >
+        {episode.name}
+      </h3>
       {episode.overview && (
-        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-fg-3">
+        <p className="mt-1.5 line-clamp-3 text-[13px] leading-normal text-pretty text-fg-3">
           {episode.overview}
         </p>
       )}

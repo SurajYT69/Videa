@@ -116,35 +116,39 @@ export default async function MoviePage({ params }: Props) {
         <FavoriteButton stub={toStub(movie)} />
       </TitleHero>
 
-      <RatingsStrip imdbId={movie.imdbId} />
+      {/* The details stack: scores, then anything that streams, then the
+          spec sheet. One gutter and one gap, so the rhythm under the hero
+          does not depend on which of these happened to render. */}
+      <div className="page flex flex-col gap-10 pt-10 md:gap-12 md:pt-14">
+        <RatingsStrip imdbId={movie.imdbId} />
 
-      {movie.collectionId && (
-        <Suspense fallback={null}>
-          <CollectionBanner id={movie.collectionId} />
-        </Suspense>
-      )}
+        {movie.collectionId && (
+          <Suspense fallback={null}>
+            <CollectionBanner id={movie.collectionId} />
+          </Suspense>
+        )}
 
-      {isAnime(movie.genres, movie.originalLanguage) && (
-        <Suspense fallback={null}>
-          <MalPanel
-            title={movie.title}
-            originalTitle={movie.originalTitle}
-            year={year(movie.releaseDate)}
-            type="movie"
-          />
-        </Suspense>
-      )}
-
-      <FactTiles
-        facts={[
-          ["Genres", movie.genres.join(", ")],
-          ["Release date", released],
-          ["Status", movie.status],
-          ["Runtime", runtime],
-          ["Studios", movie.studios.join(", ")],
-          ["Languages", movie.languages.join(", ")],
-        ]}
-      />
+        {isAnime(movie.genres, movie.originalLanguage) && (
+          <Suspense fallback={null}>
+            <MalPanel
+              title={movie.title}
+              originalTitle={movie.originalTitle}
+              year={year(movie.releaseDate)}
+              type="movie"
+            />
+          </Suspense>
+        )}
+        <FactTiles
+          facts={[
+            ["Genres", movie.genres.join(", ")],
+            ["Release date", released],
+            ["Status", movie.status],
+            ["Runtime", runtime],
+            ["Studios", movie.studios.join(", ")],
+            ["Languages", movie.languages.join(", ")],
+          ]}
+        />
+      </div>
 
       {movie.cast.length > 0 && (
         <Section title="Cast" bleed>

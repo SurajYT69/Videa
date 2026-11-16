@@ -99,22 +99,32 @@ export function TitleHero({
               )}
             </h1>
 
-            <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
               <Score value={rating} />
               {shown.map((fact, index) => (
-                <span key={fact} className="flex items-center gap-4">
+                <span key={fact} className="flex items-center gap-3">
                   {(index > 0 || hasScore) && (
-                    <span aria-hidden="true" className="h-3 w-px bg-fg-3/40" />
+                    <span aria-hidden="true" className="size-1 rounded-full bg-fg-3/60" />
                   )}
-                  <span className="text-sm font-medium text-fg-2">{fact}</span>
+                  <span className="text-sm font-medium whitespace-nowrap text-fg-2 tabular-nums">
+                    {fact}
+                  </span>
                 </span>
               ))}
             </div>
 
-            {tagline && <p className="mt-5 text-base text-fg-3">{tagline}</p>}
+            {/* The tagline is the title's own voice, so it takes the display
+                face; the overview below it is reference and stays text. */}
+            {tagline && (
+              <p className="display mt-6 max-w-[34ch] text-lg leading-snug text-balance text-fg md:text-xl">
+                {tagline}
+              </p>
+            )}
 
             {overview && (
-              <p className="mt-4 line-clamp-3 max-w-[60ch] text-[15px] leading-relaxed text-fg-2 md:text-base">
+              <p
+                className={`${tagline ? "mt-3" : "mt-6"} line-clamp-3 max-w-[60ch] text-[15px] leading-relaxed text-pretty text-fg-2 md:text-base`}
+              >
                 {overview}
               </p>
             )}
@@ -124,18 +134,19 @@ export function TitleHero({
             </div>
 
             {providers.length > 0 && (
-              <div className="mt-6 flex items-center gap-3">
+              <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3">
                 <span className="eyebrow">Streaming on</span>
-                <ul className="flex items-center gap-2">
+                <ul className="flex flex-wrap items-center gap-2">
                   {providers.map((provider) => (
-                    <li key={provider.name} title={provider.name}>
+                    <li key={provider.name} title={provider.name} className="relative">
                       <Image
                         src={tmdbImage(provider.logoPath, PROVIDER.sm) ?? ""}
                         alt={provider.name}
-                        width={28}
-                        height={28}
-                        className="size-7 rounded-mini"
+                        width={32}
+                        height={32}
+                        className="size-8 rounded-mini"
                       />
+                      <span className="pointer-events-none absolute inset-0 rounded-mini art-edge" />
                     </li>
                   ))}
                 </ul>
@@ -154,7 +165,12 @@ export function TitleHero({
   );
 }
 
-/** Reference facts as a row of small glass tiles. Empty values are dropped. */
+/**
+ * Reference facts as a spec sheet: label over value, columns divided by
+ * hairlines rather than boxed into tiles. A row of same-size glass boxes read
+ * as a dashboard; this reads as the back of the case. Empty values are dropped.
+ * Rendered inside the page's details stack, so it carries no gutter of its own.
+ */
 export function FactTiles({
   facts,
 }: {
@@ -164,15 +180,15 @@ export function FactTiles({
   if (!shown.length) return null;
 
   return (
-    <div className="page pt-2 pb-4">
-      <dl className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        {shown.map(([label, value]) => (
-          <div key={label} className="glass rounded-card px-4 py-3">
-            <dt className="eyebrow">{label}</dt>
-            <dd className="mt-2 line-clamp-2 text-sm text-fg">{value}</dd>
-          </div>
-        ))}
-      </dl>
-    </div>
+    <dl className="grid grid-cols-2 gap-x-6 gap-y-6 border-t border-line pt-6 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(9rem,1fr))]">
+      {shown.map(([label, value]) => (
+        <div key={label} className="min-w-0">
+          <dt className="eyebrow">{label}</dt>
+          <dd className="mt-2 line-clamp-3 text-sm leading-normal text-pretty text-fg" title={value}>
+            {value}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }

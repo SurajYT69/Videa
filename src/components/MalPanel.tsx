@@ -31,36 +31,36 @@ export async function MalPanel({ title, originalTitle, year, type }: Props) {
   ];
   const shown = facts.filter((fact): fact is [string, string] => Boolean(fact[1]));
 
+  /* Same spec-sheet treatment as the ratings strip: the score leads in the
+     display face, the rest are reference values. */
   return (
-    <div className="page pt-2 pb-2">
-      <div className="glass flex flex-wrap items-center justify-between gap-6 rounded-card px-5 py-4 md:px-6">
-        <dl className="flex flex-wrap items-center gap-x-8 gap-y-3">
-          {shown.map(([label, value]) => (
-            <div key={label}>
-              <dt className="eyebrow">{label}</dt>
-              <dd
-                className={`mt-1 tabular-nums ${
-                  label === "MAL score"
-                    ? "display text-2xl text-accent"
-                    : "text-sm text-fg"
-                }`}
-              >
-                {value}
-              </dd>
-            </div>
-          ))}
-        </dl>
+    <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
+      <dl className="flex flex-wrap items-end gap-x-10 gap-y-5">
+        {shown.map(([label, value]) => (
+          <div key={label}>
+            <dt className="eyebrow">{label}</dt>
+            <dd
+              className={`mt-2 tabular-nums ${
+                label === "MAL score"
+                  ? "display text-3xl leading-none text-fg md:text-4xl"
+                  : "text-sm whitespace-nowrap text-fg"
+              }`}
+            >
+              {value}
+            </dd>
+          </div>
+        ))}
+      </dl>
 
-        <a
-          href={info.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm text-fg-2 transition-colors duration-200 hover:bg-white/10 hover:text-fg"
-        >
-          View on MyAnimeList
-          <ArrowUpRight className="size-3.5" aria-hidden="true" />
-        </a>
-      </div>
+      <a
+        href={info.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="glass inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm whitespace-nowrap text-fg-2 transition-colors duration-200 hover:text-fg"
+      >
+        View on MyAnimeList
+        <ArrowUpRight className="size-3.5" aria-hidden="true" />
+      </a>
     </div>
   );
 }

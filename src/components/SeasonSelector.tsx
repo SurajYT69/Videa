@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { EpisodeList } from "./EpisodeList";
 import { EpisodeListSkeleton } from "./LoadingSkeleton";
 import { getLastEpisode } from "@/lib/storage";
@@ -75,37 +75,80 @@ export function SeasonSelector({ tvId, seasons, initialSeason, fallbackPath }: P
     return () => controller.abort();
   }, [selected, tvId, retryKey]);
 
+  const current = seasons.find((item) => item.seasonNumber === selected);
+  const currentYear = current?.airDate?.slice(0, 4);
+  const count = season?.seasonNumber === selected ? season.episodes.length : current?.episodeCount;
+
+  /* Tabs move with the arrow keys and only the selected one is in the tab
+     order, which is what a tablist promises to keyboard and screen reader
+     users. */
+  const tabs = useRef<Array<HTMLButtonElement | null>>([]);
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const index = seasons.findIndex((item) => item.seasonNumber === selected);
+    const last = seasons.length - 1;
+    const next =
+      event.key === "ArrowRight" ? Math.min(index + 1, last)
+      : event.key === "ArrowLeft" ? Math.max(index - 1, 0)
+      : event.key === "Home" ? 0
+      : event.key === "End" ? last
+      : null;
+    if (next === null || next === index) return;
+    event.preventDefault();
+    setSelected(seasons[next]?.seasonNumber ?? selected);
+    tabs.current[next]?.focus();
+  };
+
   return (
     <div>
       <div className="page">
-      <div role="tablist" aria-label="Seasons" className="rail gap-2 pb-2">
-        {seasons.map((item) => {
-          const active = item.seasonNumber === selected;
-          return (
-            <button
-              key={item.seasonNumber}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => setSelected(item.seasonNumber)}
-              className={`rail-item rounded-full border px-5 py-2 text-sm whitespace-nowrap transition duration-200 ${
-                active
-                  ? "border-fg bg-fg text-ink"
-                  : "glass text-fg-2 hover:bg-white/15 hover:text-fg"
-              }`}
-            >
-              {item.name}
-              <span
-                className={`ml-2 font-mono text-xs tabular-nums ${
-                  active ? "text-ink/60" : "text-fg-3"
+        <div
+          role="tablist"
+          aria-label="Seasons"
+          onKeyDown={onKeyDown}
+          className="rail gap-2 pb-2"
+        >
+          {seasons.map((item, index) => {
+            const active = item.seasonNumber === selected;
+            const resumeHere = resumeAt?.season === item.seasonNumber;
+            return (
+              <button
+                key={item.seasonNumber}
+                ref={(node) => {
+                  tabs.current[index] = node;
+                }}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                tabIndex={active ? 0 : -1}
+                onClick={() => setSelected(item.seasonNumber)}
+                className={`rail-item inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-medium whitespace-nowrap transition duration-200 ${
+                  active
+                    ? "border-fg bg-fg text-ink"
+                    : "glass text-fg-2 hover:bg-white/15 hover:text-fg"
                 }`}
               >
-                {item.episodeCount}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+                {item.name}
+                {/* The season the viewer stopped in: "you are here". */}
+                {resumeHere && (
+                  <>
+                    <span aria-hidden="true" className="size-1.5 rounded-full bg-accent" />
+                    <span className="sr-only">, continue here</span>
+                  </>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* The selected season's data, once, under the tabs, instead of a
+            count crowded into every pill. */}
+        {Boolean(currentYear || count) && (
+          <p className="meta mt-3 tabular-nums">
+            {[currentYear, count ? `${count} episode${count === 1 ? "" : "s"}` : null]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        )}
       </div>
 
       <div className="mt-6">
@@ -116,15 +159,17 @@ export function SeasonSelector({ tvId, seasons, initialSeason, fallbackPath }: P
         )}
 
         {status === "error" && (
-          <div className="glass mx-5 rounded-card px-6 py-10 md:mx-8 xl:mx-12">
-            <p className="text-sm text-fg">This season could not be loaded.</p>
-            <button
-              type="button"
-              onClick={() => setRetryKey((n) => n + 1)}
-              className="mt-4 inline-flex items-center rounded-card border border-line-strong px-4 py-2 text-sm text-fg transition hover:border-fg-3 hover:bg-raised"
-            >
-              Try again
-            </button>
+          <div className="page">
+            <div className="glass rounded-card px-6 py-10">
+              <p className="text-sm text-fg">This season could not be loaded.</p>
+              <button
+                type="button"
+                onClick={() => setRetryKey((n) => n + 1)}
+                className="mt-4 inline-flex items-center rounded-full border border-line-strong px-5 py-2 text-sm font-medium text-fg transition hover:border-fg-3 hover:bg-raised"
+              >
+                Try again
+              </button>
+            </div>
           </div>
         )}
 

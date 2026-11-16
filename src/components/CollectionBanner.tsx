@@ -23,8 +23,7 @@ export async function CollectionBanner({ id }: { id: number }) {
   const mid = (parts.length - 1) / 2;
 
   return (
-    <div className="page pt-2 pb-2">
-      <div className="relative isolate overflow-hidden rounded-card border border-white/10 bg-surface">
+    <div className="relative isolate overflow-hidden rounded-card border border-line bg-surface">
         {src && (
           <div className="absolute inset-y-0 right-0 -z-10 w-full [mask-image:linear-gradient(to_right,transparent,black_55%)] md:w-3/4">
             <Image
@@ -42,13 +41,12 @@ export async function CollectionBanner({ id }: { id: number }) {
 
         <div className="flex flex-col gap-8 p-6 md:flex-row md:items-center md:justify-between md:p-8">
           <div className="max-w-[60ch]">
-            <span className="inline-block rounded-mini bg-accent px-2 py-1 font-mono text-[11px] font-medium tracking-[0.12em] text-ink uppercase">
-              Collection
-            </span>
-            <h2 className="display mt-4 text-2xl text-fg md:text-3xl">{collection.name}</h2>
-            <p className="meta mt-2">{collection.parts.length} movies</p>
+            <p className="eyebrow">
+              Collection <span className="text-fg-3/70">·</span> {collection.parts.length} films
+            </p>
+            <h2 className="display mt-3 text-2xl text-balance text-fg md:text-3xl">{collection.name}</h2>
             {collection.overview && (
-              <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-fg-2">
+              <p className="mt-4 line-clamp-3 max-w-[60ch] text-sm leading-relaxed text-pretty text-fg-2">
                 {collection.overview}
               </p>
             )}
@@ -85,7 +83,6 @@ export async function CollectionBanner({ id }: { id: number }) {
             })}
           </ul>
         </div>
-      </div>
     </div>
   );
 }

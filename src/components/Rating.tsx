@@ -33,7 +33,7 @@ export function Score({ value }: { value: number }) {
       title={`Rated ${label} out of 10 on TMDB`}
     >
       <svg viewBox="0 0 40 40" className="absolute inset-0 -rotate-90" aria-hidden="true">
-        <circle cx="20" cy="20" r={radius} fill="none" stroke="rgb(255 255 255 / 0.18)" strokeWidth="3" />
+        <circle cx="20" cy="20" r={radius} fill="none" stroke="currentColor" strokeWidth="3" className="text-fg/20" />
         <circle
           cx="20"
           cy="20"

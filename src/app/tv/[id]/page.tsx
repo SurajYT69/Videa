@@ -148,30 +148,34 @@ export default async function TVDetailsPage({ params }: Props) {
         <FavoriteButton stub={toStub(show)} />
       </TitleHero>
 
-      <RatingsStrip imdbId={show.imdbId} />
+      {/* The details stack: scores, then anything that streams, then the
+          spec sheet. One gutter and one gap, so the rhythm under the hero
+          does not depend on which of these happened to render. */}
+      <div className="page flex flex-col gap-10 pt-10 md:gap-12 md:pt-14">
+        <RatingsStrip imdbId={show.imdbId} />
 
-      {isAnime(show.genres, show.originalLanguage) && (
-        <Suspense fallback={null}>
-          <MalPanel
-            title={show.title}
-            originalTitle={show.originalTitle}
-            year={started}
-            type="tv"
-          />
-        </Suspense>
-      )}
-
-      <FactTiles
-        facts={[
-          ["Genres", show.genres.join(", ")],
-          ["First aired", airDateLabel(show.releaseDate)],
-          ["Status", show.status],
-          ["Episode runtime", runtime],
-          ["Created by", show.creators.join(", ")],
-          ["Studios", show.studios.join(", ")],
-          ["Languages", show.languages.join(", ")],
-        ]}
-      />
+        {isAnime(show.genres, show.originalLanguage) && (
+          <Suspense fallback={null}>
+            <MalPanel
+              title={show.title}
+              originalTitle={show.originalTitle}
+              year={started}
+              type="tv"
+            />
+          </Suspense>
+        )}
+        <FactTiles
+          facts={[
+            ["Genres", show.genres.join(", ")],
+            ["First aired", airDateLabel(show.releaseDate)],
+            ["Status", show.status],
+            ["Episode runtime", runtime],
+            ["Created by", show.creators.join(", ")],
+            ["Studios", show.studios.join(", ")],
+            ["Languages", show.languages.join(", ")],
+          ]}
+        />
+      </div>
 
       {show.seasons.length > 0 && (
         <Section title="Episodes" bleed>

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Play } from "@phosphor-icons/react";
 import { BACKDROP, tmdbImage } from "@/lib/images";
+import { episodeCode } from "@/lib/format";
 import { watchHref } from "@/lib/playback";
 import { getLastEpisode } from "@/lib/storage";
 import { useLibrary } from "@/lib/useLibrary";
@@ -55,8 +56,8 @@ export function ResumeCard({ tvId, backdropPath }: Props) {
         <span className="inline-block rounded-mini bg-accent-soft px-2 py-1 font-mono text-[11px] font-medium tracking-[0.12em] text-accent uppercase">
           Continue watching
         </span>
-        <span className="display mt-2 block text-lg text-fg">
-          S{last.season} E{last.episode}
+        <span className="display mt-2 block text-lg text-fg tabular-nums">
+          {episodeCode(last.season, last.episode)}
         </span>
         {percent !== null && (
           <span className="meta mt-1 block tabular-nums">{percent}% watched</span>

@@ -34,15 +34,16 @@ export default async function PersonPage({ params }: Props) {
   const photo = tmdbImage(person.profilePath, PROFILE.lg);
   const born = airDateLabel(person.birthday);
   const facts = [
-    person.knownFor,
     born && `Born ${born}`,
     person.placeOfBirth,
   ].filter(Boolean) as string[];
 
   return (
     <>
+      {/* No box: the portrait and the name carry the opener, the same way a
+          title page opens on its artwork rather than on a panel. */}
       <div className="page pt-24 md:pt-20">
-        <div className="glass flex flex-col gap-6 rounded-card p-6 sm:flex-row md:gap-8 md:p-8">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-end md:gap-10">
           <div className="relative aspect-2/3 w-32 shrink-0 overflow-hidden rounded-card bg-surface md:w-44">
             {photo ? (
               <Image
@@ -62,18 +63,26 @@ export default async function PersonPage({ params }: Props) {
           </div>
 
           <div className="min-w-0">
-            <p className="eyebrow">Person</p>
-            <h1 className="display display-page mt-3 text-fg">{person.name}</h1>
+            <p className="eyebrow">{person.knownFor ?? "Person"}</p>
+            <h1 className="display display-page mt-3 text-balance text-fg">{person.name}</h1>
             {facts.length > 0 && (
-              <p className="mt-4 text-sm text-fg-2">{facts.join(" · ")}</p>
-            )}
-            {person.biography && (
-              <p className="mt-4 line-clamp-6 max-w-[72ch] text-[15px] leading-relaxed text-fg-2">
-                {person.biography}
+              <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-fg-2">
+                {facts.map((fact, index) => (
+                  <span key={fact} className="flex items-center gap-3">
+                    {index > 0 && <span aria-hidden="true" className="size-1 rounded-full bg-fg-3/60" />}
+                    {fact}
+                  </span>
+                ))}
               </p>
             )}
           </div>
         </div>
+
+        {person.biography && (
+          <p className="mt-8 line-clamp-6 max-w-[68ch] text-[15px] leading-relaxed text-pretty text-fg-2 md:text-base">
+            {person.biography}
+          </p>
+        )}
       </div>
 
       {person.credits.length > 0 && (
