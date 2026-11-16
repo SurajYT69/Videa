@@ -39,6 +39,10 @@ const MAX_LOADED_PAGES = 25;
 
 const CURRENT_YEAR = new Date().getFullYear();
 
+function count(n: number): string {
+  return n.toLocaleString("en-US");
+}
+
 function one(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
@@ -204,6 +208,7 @@ async function BrowseResults({
     if (error instanceof ConfigError) throw error;
     return (
       <ErrorState
+        inline
         title="We can't reach the catalogue"
         description="The metadata service is not responding. Try reloading in a moment."
       />
@@ -244,18 +249,28 @@ async function BrowseResults({
       {/* No priority: this grid sits below the page header and the filter bar. */}
       <MediaGrid items={items} />
 
-      <div className="mt-14 flex flex-col items-center gap-5">
-        <p className="meta">
-          {items.length} of {totalResults.toLocaleString("en-US")} titles
+      <div className="mt-14 flex flex-col items-center gap-5 text-center">
+        <p className="meta tabular-nums">
+          {items.length === totalResults
+            ? `${count(totalResults)} ${totalResults === 1 ? "title" : "titles"}`
+            : `${count(items.length)} of ${count(totalResults)} titles`}
         </p>
 
-        {page < totalPages && (
+        {page < totalPages ? (
           <LoadMore
             href={pageHref(type, searchParams, page + 1)}
-            className="inline-flex items-center rounded-card border border-line-strong bg-raised px-6 py-3 text-sm font-medium text-fg transition duration-200 hover:-translate-y-px hover:border-fg-3 hover:shadow-soft active:translate-y-0"
+            className="inline-flex h-12 min-w-36 items-center justify-center rounded-full border border-line-strong bg-raised px-6 text-sm font-medium text-fg transition duration-200 hover:-translate-y-px hover:border-fg-3 hover:shadow-soft active:translate-y-0"
           >
             Load more
           </LoadMore>
+        ) : (
+          /* The depth cap, not the catalogue, ended the list: say so. */
+          items.length < totalResults && (
+            <p className="max-w-[40ch] text-sm leading-relaxed text-fg-3">
+              That is as deep as browsing goes. Narrow the filters to reach the
+              rest.
+            </p>
+          )
         )}
       </div>
     </>

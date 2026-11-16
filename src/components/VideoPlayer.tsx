@@ -108,7 +108,7 @@ export function VideoPlayer({
                     aria-label={`Server ${index + 1}`}
                     onClick={() => choose(server.id)}
                     className={`grid size-9 place-items-center rounded-[4px] font-mono text-sm tabular-nums transition-colors duration-200 ${
-                      active ? "bg-fg text-ink" : "text-fg-3 hover:bg-white/10 hover:text-fg"
+                      active ? "bg-fg text-ink" : "text-fg-3 hover:bg-fg/10 hover:text-fg"
                     }`}
                   >
                     {index + 1}
@@ -128,7 +128,7 @@ export function VideoPlayer({
             setLoaded(false);
             setAttempt((n) => n + 1);
           }}
-          className="ml-auto inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm text-fg-2 transition-colors duration-200 hover:bg-white/10 hover:text-fg sm:px-4"
+          className="ml-auto inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm text-fg-2 transition-colors duration-200 hover:bg-fg/10 hover:text-fg sm:px-4"
         >
           <ArrowClockwise className="size-4" aria-hidden="true" />
           <span className="sr-only sm:not-sr-only">Reload</span>

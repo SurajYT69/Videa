@@ -81,8 +81,8 @@ export function BrowseFilters({
   return (
     <div className="space-y-5">
       {providers.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="eyebrow mr-2">On</span>
+        <div role="group" aria-label="Streaming service" className="flex flex-wrap items-center gap-2">
+          <span aria-hidden="true" className="eyebrow mr-2">On</span>
           {providers.map((option) => {
             const on = option.id === provider;
             return (
@@ -92,7 +92,7 @@ export function BrowseFilters({
                 aria-pressed={on}
                 title={option.name}
                 onClick={() => apply({ provider: on ? undefined : String(option.id) })}
-                className={`grid size-11 place-items-center rounded-card p-1 transition duration-200 ${
+                className={`grid size-11 shrink-0 place-items-center rounded-card p-1 transition duration-200 ${
                   on ? "bg-fg ring-2 ring-accent" : "glass opacity-80 hover:opacity-100"
                 }`}
               >
@@ -156,10 +156,10 @@ export function BrowseFilters({
                 provider: undefined,
               })
             }
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm text-fg-3 transition-colors duration-200 hover:text-fg"
+            className="inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-sm whitespace-nowrap text-fg-3 transition-colors duration-200 hover:text-fg"
           >
-            <X className="size-3.5" aria-hidden="true" />
-            Clear
+            <X className="size-3.5 shrink-0" aria-hidden="true" />
+            Clear all
           </button>
         )}
 

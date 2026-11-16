@@ -1,20 +1,23 @@
 import {
+  FilterBarSkeleton,
   GridSkeleton,
   HeroSkeleton,
-  SectionSkeleton,
+  LoadingPage,
   TrendingRailSkeleton,
+  SectionSkeleton,
 } from "@/components/LoadingSkeleton";
 
 export default function TVBrowseLoading() {
   return (
-    <>
+    <LoadingPage>
       <HeroSkeleton />
       <SectionSkeleton bleed>
         <TrendingRailSkeleton />
       </SectionSkeleton>
       <SectionSkeleton>
+        <FilterBarSkeleton />
         <GridSkeleton count={12} />
       </SectionSkeleton>
-    </>
+    </LoadingPage>
   );
 }

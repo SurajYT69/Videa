@@ -1,10 +1,5 @@
 import type { Metadata } from "next";
-import {
-  LibraryHeader,
-  ContinueWatchingSection,
-  FavoritesSection,
-  RecentlyViewedSection,
-} from "@/components/LibrarySections";
+import { LibraryHeader, MyListSections } from "@/components/LibrarySections";
 import { PosterWall } from "@/components/PosterWall";
 
 export const metadata: Metadata = {
@@ -20,9 +15,7 @@ export default function MyListPage() {
         <PosterWall />
         <LibraryHeader />
       </div>
-      <ContinueWatchingSection showWhenEmpty />
-      <FavoritesSection showWhenEmpty tone="band" />
-      <RecentlyViewedSection showWhenEmpty />
+      <MyListSections />
     </>
   );
 }

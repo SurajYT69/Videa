@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { Section } from "./Section";
 import { MediaCard } from "./MediaCard";
 import { MediaGrid } from "./MediaGrid";
@@ -91,7 +92,7 @@ export function RecentlyViewedSection({
     return (
       <Section title="Recently viewed" tone={tone}>
         <EmptyState
-          title="Your viewing history is empty"
+          title="Nothing opened yet"
           description="Titles you open are listed here, newest first."
         />
       </Section>
@@ -118,41 +119,92 @@ export function RecentlyViewedSection({
     </Section>
   );
 }
+/** False on the server and during hydration, true once LocalStorage is readable. */
+const noop = () => () => {};
+function useHydrated() {
+  return useSyncExternalStore(noop, () => true, () => false);
+}
+
 /**
- * The opener for My List: what it is, and what this browser holds, as three
- * counts. There is no account behind any of it.
+ * The opener for My List. The page's job is "pick up where I was", so the
+ * counts double as the table of contents: each jumps to its own section.
+ * Counts appear only once this browser's list has been read; a server-
+ * rendered 0 that turns into 12 reads as data loss.
  */
 export function LibraryHeader() {
+  const hydrated = useHydrated();
   const { continueWatching, favorites, recentlyViewed } = useLibrary();
-  const stats: Array<[string, number]> = [
-    ["In progress", continueWatching.length],
-    ["Saved", favorites.length],
-    ["Viewed", recentlyViewed.length],
+  const stats: Array<[string, string, number]> = [
+    ["continue", "in progress", continueWatching.length],
+    ["saved", "saved", favorites.length],
+    ["viewed", "viewed", recentlyViewed.length],
   ];
 
   return (
-    <div className="page pt-32 md:pt-40">
-      <div className="glass-panel flex flex-wrap items-center justify-between gap-6 rounded-card p-6 md:p-8">
-        <div>
-          <h1 className="display text-3xl text-fg md:text-4xl">My List</h1>
-          <p className="mt-3 max-w-[52ch] text-sm leading-relaxed text-fg-2">
-            Saved locally in this browser. No account, no server copy, nothing
-            to sign into.
-          </p>
-        </div>
-
-        <dl className="flex gap-3">
-          {stats.map(([label, count]) => (
-            <div
-              key={label}
-              className="glass flex min-w-24 flex-col-reverse rounded-card px-4 py-3 text-center"
+    <div className="page pt-32 pb-4 md:pt-40">
+      <p className="eyebrow">On this device</p>
+      <h1 className="display display-page mt-5 text-fg">My List</h1>
+      <p className="mt-5 max-w-[46ch] text-[15px] leading-relaxed text-fg-2">
+        What you saved, started and opened, kept in this browser. No account
+        holds a copy.
+      </p>
+      <nav
+        aria-label="My List sections"
+        className={`mt-8 flex min-h-6 flex-wrap gap-x-6 gap-y-2 transition-opacity duration-300 ${
+          hydrated ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        {hydrated &&
+          stats.map(([id, label, count]) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              className="meta tabular-nums transition-colors duration-200 hover:text-fg"
             >
-              <dt className="meta mt-1">{label}</dt>
-              <dd className="display text-2xl text-fg tabular-nums">{count}</dd>
-            </div>
+              <span className="text-fg">{count.toLocaleString("en-US")}</span> {label}
+            </a>
           ))}
-        </dl>
-      </div>
+      </nav>
     </div>
+  );
+}
+
+/**
+ * The three My List sections, or one invitation when all three are empty:
+ * three stacked "nothing here" blocks on a first visit read as a broken page.
+ * Renders nothing until hydrated, so a returning viewer never sees the empty
+ * version flash before their list.
+ */
+export function MyListSections() {
+  const hydrated = useHydrated();
+  const { continueWatching, favorites, recentlyViewed } = useLibrary();
+
+  if (!hydrated) return <div className="min-h-[40svh]" />;
+
+  if (!continueWatching.length && !favorites.length && !recentlyViewed.length) {
+    return (
+      <div className="page pt-6 pb-20">
+        <EmptyState
+          title="Nothing here yet"
+          description="Save a title, or start one playing, and it lands here. Only this browser keeps it."
+          action={{ href: "/movie", label: "Explore movies" }}
+          secondary={{ href: "/tv", label: "Browse series" }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div id="continue" className="scroll-mt-16">
+        <ContinueWatchingSection showWhenEmpty />
+      </div>
+      <div id="saved" className="scroll-mt-16">
+        <FavoritesSection showWhenEmpty tone="band" />
+      </div>
+      <div id="viewed" className="scroll-mt-16">
+        <RecentlyViewedSection showWhenEmpty />
+      </div>
+    </>
   );
 }

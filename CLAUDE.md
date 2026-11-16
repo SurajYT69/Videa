@@ -522,6 +522,34 @@ read the header.
 **A right-pointing triangle is left-heavy.** Geometric centring reads
 off-centre; the play mark carries a deliberate optical nudge right.
 
+## Redesign conventions (November 2026)
+
+- Card hover affordances share one reveal: 200ms `ease-out-expo`, opacity plus
+  a 6px rise or a scale from 95%, named transition properties, also on keyboard
+  focus. `MediaCard`'s panel lines stagger 40ms on hover only and leave together.
+- Pressable controls on cards and rails take `active:scale-[0.96]`. Discs on
+  artwork are 40px. Hover-revealed controls stay visible on touch
+  (`pointer-fine:opacity-0`), never invisible-but-tappable.
+- `Rail` hints at more content by masking across `--rail-gutter` on whichever
+  side can still scroll. JS smooth scrolling must check reduced motion itself.
+- Hover and highlight washes are `bg-fg/10`, never `bg-white/*`, which vanishes
+  in light mode.
+- The title page's details (ratings, collection, MAL, fact tiles) sit in one
+  `page flex-col gap-10` stack in the page file; those components carry no
+  gutter. `FactTiles`, `RatingsStrip` and `MalPanel` are boxless spec sheets;
+  the accent is not a score colour.
+- Episode air dates format with `timeZone: "UTC"` (calendar days; local zones
+  west of UTC show the day before and break hydration). Season tabs keep counts
+  out of the pills; one `.meta` line under them carries year and count.
+- Every `loading.tsx` wraps its content in `LoadingPage`: 150ms delay, then a
+  fade, one "Loading" announcement. Skeletons match their component's spacing.
+- Empty states are a hairline, not a box, with the primary `bg-fg text-ink`
+  action. My List shows one invitation when all three lists are empty, and
+  renders nothing until LocalStorage has been read. `ErrorState inline` is for
+  a failed list inside a page.
+- `FilterDropdown`'s pill is the combobox; its list flips to the other edge
+  rather than overflow the viewport.
+
 ## Attribution
 
 This product uses the TMDB API but is not endorsed or certified by TMDB.

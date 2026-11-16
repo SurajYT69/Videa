@@ -24,7 +24,7 @@ export function FavoriteButton({ stub }: { stub: MediaStub }) {
       className={`grid size-14 shrink-0 place-items-center rounded-full border transition duration-200 active:translate-y-px ${
         saved
           ? "border-accent bg-accent-soft text-accent"
-          : "glass text-fg hover:bg-white/15"
+          : "glass text-fg hover:bg-fg/10"
       }`}
     >
       <BookmarkSimple

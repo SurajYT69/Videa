@@ -1,20 +1,22 @@
 import {
-  GridSkeleton,
   HeroSkeleton,
-  SectionSkeleton,
+  LoadingPage,
   PosterRailSkeleton,
+  SectionSkeleton,
+  TrendingRailSkeleton,
 } from "@/components/LoadingSkeleton";
 
+/* Home is all rails below the hero, never a grid. */
 export default function HomeLoading() {
   return (
-    <>
+    <LoadingPage>
       <HeroSkeleton />
+      <SectionSkeleton bleed>
+        <TrendingRailSkeleton />
+      </SectionSkeleton>
       <SectionSkeleton bleed>
         <PosterRailSkeleton />
       </SectionSkeleton>
-      <SectionSkeleton>
-        <GridSkeleton count={12} />
-      </SectionSkeleton>
-    </>
+    </LoadingPage>
   );
 }

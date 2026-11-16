@@ -1,5 +1,9 @@
-import { DetailsSkeleton } from "@/components/LoadingSkeleton";
+import { DetailsSkeleton, LoadingPage } from "@/components/LoadingSkeleton";
 
 export default function MovieLoading() {
-  return <DetailsSkeleton />;
+  return (
+    <LoadingPage>
+      <DetailsSkeleton />
+    </LoadingPage>
+  );
 }

@@ -43,12 +43,13 @@ export function Footer() {
           {COLUMNS.map((column) => (
             <nav key={column.heading} aria-label={column.heading}>
               <h2 className="eyebrow">{column.heading}</h2>
-              <ul className="mt-4 space-y-3">
+              {/* 32px rows: the old 20px text-height links were a thin tap target. */}
+              <ul className="mt-3 space-y-1">
                 {column.links.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-fg-2 transition-colors duration-200 hover:text-fg"
+                      className="inline-flex h-8 items-center text-sm whitespace-nowrap text-fg-2 transition-colors duration-200 hover:text-fg"
                     >
                       {link.label}
                     </Link>

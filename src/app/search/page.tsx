@@ -69,7 +69,8 @@ export default async function SearchPage({ searchParams }: Props) {
         <div className="flex items-center gap-3">
           <span className="eyebrow">Search</span>
         </div>
-        <h1 className="display display-page mt-5 max-w-[18ch] text-fg text-balance">
+        {/* A pasted URL or a long unbroken query must wrap, not widen the page. */}
+        <h1 className="display display-page mt-5 max-w-[18ch] text-fg text-balance [overflow-wrap:anywhere]">
           &ldquo;{query}&rdquo;
         </h1>
 
@@ -133,6 +134,7 @@ async function SearchResults({
     if (error instanceof ConfigError) throw error;
     return (
       <ErrorState
+        inline
         title="Search is unavailable"
         description="We could not reach the catalogue. Try again in a moment."
       />
@@ -143,7 +145,16 @@ async function SearchResults({
     return (
       <EmptyState
         title="No titles found"
-        description="Check the spelling, or try a shorter version of the name."
+        description={
+          filter === "all"
+            ? "Check the spelling, or try a shorter version of the name."
+            : `Nothing under ${filter === "movie" ? "Movies" : "Series"}. Check the spelling, or search everything.`
+        }
+        secondary={
+          filter === "all"
+            ? undefined
+            : { href: `/search?q=${encodeURIComponent(query)}`, label: "Search everything" }
+        }
       >
         <div className="mt-7 w-full max-w-md">
           <SearchBar variant="block" placeholder="Try another search" />
@@ -154,7 +165,7 @@ async function SearchResults({
 
   return (
     <>
-      <p className="meta">
+      <p className="meta tabular-nums">
         {results.length} result{results.length === 1 ? "" : "s"}
       </p>
       <div className="mt-6">

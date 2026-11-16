@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 
 /**
  * The Load more control.
@@ -50,7 +50,22 @@ export function LoadMore({
         target.current = window.scrollY;
       }}
     >
-      {children}
+      <Label>{children}</Label>
     </Link>
+  );
+}
+
+/*
+ * Loading the next page re-fetches every page so far, and the list it adds to
+ * stays on screen meanwhile, so without this the click looked ignored. The
+ * label swaps inside a min-width the caller sets, so the button does not
+ * change size. `useLinkStatus` only works inside the Link.
+ */
+function Label({ children }: { children: React.ReactNode }) {
+  const { pending } = useLinkStatus();
+  return (
+    <span aria-live="polite" className={pending ? "text-fg-3" : undefined}>
+      {pending ? "Loading" : children}
+    </span>
   );
 }

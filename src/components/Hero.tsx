@@ -128,7 +128,7 @@ export function Hero({
               </Link>
               <Link
                 href={detailsHref(media.type, media.tmdbId)}
-                className="inline-flex items-center gap-2 glass rounded-full px-7 py-4 text-base font-medium whitespace-nowrap text-fg transition duration-200 hover:bg-white/15 active:translate-y-px"
+                className="inline-flex items-center gap-2 glass rounded-full px-7 py-4 text-base font-medium whitespace-nowrap text-fg transition duration-200 hover:bg-fg/10 active:translate-y-px"
               >
                 <Info className="size-4" aria-hidden="true" />
                 More info

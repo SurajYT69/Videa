@@ -124,7 +124,7 @@ export function SeasonSelector({ tvId, seasons, initialSeason, fallbackPath }: P
                 className={`rail-item inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-medium whitespace-nowrap transition duration-200 ${
                   active
                     ? "border-fg bg-fg text-ink"
-                    : "glass text-fg-2 hover:bg-white/15 hover:text-fg"
+                    : "glass text-fg-2 hover:bg-fg/10 hover:text-fg"
                 }`}
               >
                 {item.name}
