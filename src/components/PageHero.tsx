@@ -1,4 +1,5 @@
 import { Hero } from "./Hero";
+import { heroThumb } from "@/lib/heroThumb";
 import { HeroCarousel } from "./HeroCarousel";
 import type { MediaItem } from "@/lib/types";
 
@@ -13,6 +14,7 @@ export function PageHero({ items, eyebrow }: { items: MediaItem[]; eyebrow: stri
 
   return (
     <HeroCarousel
+      thumbs={slides.map(heroThumb)}
       slides={slides.map((item, index) => (
         <Hero key={item.tmdbId} media={item} eyebrow={eyebrow} priority={index === 0} />
       ))}

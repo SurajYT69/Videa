@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Hero } from "@/components/Hero";
+import { heroThumb } from "@/lib/heroThumb";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { DiscoverRail } from "@/components/DiscoverRail";
 import { NewEpisodes } from "@/components/NewEpisodes";
@@ -62,6 +63,7 @@ async function HeroAndTrending() {
   return (
     <>
       <HeroCarousel
+        thumbs={(heroes.length ? heroes : [hero]).map(heroThumb)}
         slides={(heroes.length ? heroes : [hero]).map((item, index) => (
           <Hero key={item.tmdbId} media={item} priority={index === 0} />
         ))}

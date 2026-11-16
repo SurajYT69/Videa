@@ -258,8 +258,13 @@ on the left and transparent over artwork. `layout.tsx` pads everything else
 with `md:pl-18`; heroes and band sections break back out with `md:-ml-18` and
 pad their content in again. Search sits top-centre in the page flow and scrolls
 away; the rail's search icon and Ctrl+K are always available. Below `md` it is
-a top bar (logo, theme, search) plus a bottom tab bar (Home, Movies, TV, Anime,
-My List); there is no drawer. `layout.tsx` pads the page bottom to clear it.
+a top bar (logo, theme, search) plus a floating glass capsule of tabs (Home,
+Movies, TV, Anime, My List); there is no drawer. The active tab widens into a
+`bg-fg` pill with its label; the rail's raised disc and accent tick slide
+between items. Both are `motion` `layoutId`s on one critically damped spring
+(`bounce: 0`, 0.35s) under `MotionConfig reducedMotion="user"`. Rail items show
+a `glass-panel` label on hover. `layout.tsx` pads the page bottom to clear the
+capsule.
 
 **Title pages** open with `TitleHero`: backdrop edge to edge, the title's own
 logo art when TMDB has one (typed title otherwise), a score ring and one facts
@@ -290,7 +295,14 @@ reported one.
 lists (no accounts) and download. Hover lift and artwork zoom stay removed.
 
 **Home** opens with `HeroCarousel`: up to five trending titles, auto-advancing
-every 8s, paused on hover and focus, never under reduced motion. Only slide one
+every 8s, paused on hover and focus, never under reduced motion. Changes run
+left ("next"); going back is the only reversal. The outgoing copy accelerates
+out before the incoming copy decelerates in on the same axis; the incoming
+still slides in over the outgoing one, which stays opaque underneath. No Ken
+Burns or idle motion. The active thumb's progress fill is the clock: its
+`animationend` advances the slide, so pausing it pauses the countdown exactly.
+Up-next thumbs (TMDB `w300`, `unoptimized`, kept out of the optimizer queue)
+show from `md`; phones get bars and swipe. Only slide one
 is `priority` and only it feeds the ambient tint. Below it, `NewEpisodes` (a
 client component) asks `/api/airing` about the series this browser has saved
 or started and shows episodes out in the last week or due in the next; it

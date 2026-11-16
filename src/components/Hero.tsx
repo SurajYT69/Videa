@@ -56,6 +56,7 @@ export function Hero({
           /* Heroes only: 75 bands the dark gradients of a full-screen still. */
           quality={90}
           data-ambient={priority ? true : undefined}
+          data-hero-art
           /*
            * Two crops, not one. Wide frames bias right so the subject clears
            * the type column on the left; narrow frames centre horizontally,
@@ -78,7 +79,7 @@ export function Hero({
 
       <div className="w-full md:pl-18">
         <div className="page pt-32 pb-12 md:pb-16">
-          <div className="max-w-[40rem]">
+          <div data-hero-copy className="max-w-[40rem]">
             <p className="eyebrow animate-rise" style={{ animationDelay: "40ms" }}>
               {eyebrow}
             </p>

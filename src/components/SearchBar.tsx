@@ -35,6 +35,11 @@ export function SearchBar({
   const [status, setStatus] = useState<SearchStatus>("idle");
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  /* ⌘K on Apple keyboards, Ctrl K everywhere else. Read after mount. */
+  const [modKey, setModKey] = useState("Ctrl K");
+  useEffect(() => {
+    if (/Mac|iPhone|iPad/.test(navigator.platform)) setModKey("⌘K");
+  }, []);
 
   /* Debounced suggestions. In-flight requests are aborted on each keystroke
      so a slow early response cannot overwrite a newer one. */
@@ -207,7 +212,7 @@ export function SearchBar({
               setStatus("idle");
               inputRef.current?.focus();
             }}
-            className="absolute top-1/2 right-2 grid size-7 -translate-y-1/2 place-items-center rounded-mini text-fg-3 transition-colors hover:text-fg"
+            className="absolute top-1/2 right-1.5 grid size-9 -translate-y-1/2 place-items-center rounded-full text-fg-3 transition-[color,scale] duration-100 hover:text-fg active:scale-90"
           >
             <X className="size-3.5" aria-hidden="true" />
             <span className="sr-only">Clear search</span>
@@ -218,7 +223,7 @@ export function SearchBar({
               aria-hidden="true"
               className="pointer-events-none absolute top-1/2 right-3 hidden -translate-y-1/2 rounded-mini border border-line-strong px-1.5 py-0.5 font-mono text-xs text-fg-3 lg:block"
             >
-              ⌘K
+              {modKey}
             </kbd>
           )
         )}
@@ -234,6 +239,7 @@ export function SearchBar({
           onSelect={(item) => go(detailsHref(item.type, item.tmdbId))}
           onHover={setActiveIndex}
           onSeeAll={submit}
+          preview={variant === "header"}
         />
       )}
     </div>

@@ -107,7 +107,7 @@ export default function RootLayout({
         <Header />
         {/* Clears the icon rail from md up (heroes break back out under it),
             and the phone tab bar below md. */}
-        <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 md:pl-18">
+        <div className="pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-0 md:pl-18">
           <main id="main">{children}</main>
           <Footer />
         </div>
