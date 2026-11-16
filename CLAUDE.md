@@ -567,6 +567,15 @@ off-centre; the play mark carries a deliberate optical nudge right.
 - **Up next**: Continue Watching shows "Up next · S02 E05" only when reported
   progress is at least 0.9; the TV watch page redirects one past a finale to
   the next season's E01.
+- **Watch party**: "Watch together" on the player creates a room
+  (`POST /api/party`) and puts `?party=<id>` in the address; the link is the
+  invite. Rooms are one JSON value in Upstash Redis (`lib/party.ts`, REST via
+  fetch, `KV_REST_API_URL` / `KV_REST_API_TOKEN`), expiring 6h after the last
+  write. A party always plays on CineSrc, the only server that reports and
+  accepts play/pause/seek; that protocol lives in `playback.ts`
+  (`sendPartyCommand`, `readPartyEvent`). `WatchParty` polls every 2s, seeks
+  when more than 2s off, and ignores its own player for 1.5s after applying
+  the room so echoes are not re-sent. POST bodies are validated server-side.
 - **Watch shortcuts** (`VideoPlayer`): N next episode, S next server, Esc back.
   They cannot fire while the cross-origin iframe has focus.
 

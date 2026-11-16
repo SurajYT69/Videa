@@ -113,3 +113,45 @@ export function watchHref(
 export function detailsHref(type: MediaType, tmdbId: number): string {
   return `/${type}/${tmdbId}`;
 }
+
+/*
+ * Watch party. Only CineSrc reports play, pause and seek and accepts commands
+ * back, so a party always plays on it. Its protocol stays in this file.
+ */
+export const PARTY_SERVER_ID = "cinesrc";
+const PARTY_ORIGIN = "https://cinesrc.st";
+
+export type PartyCommand = "play" | "pause" | "seek";
+
+export function sendPartyCommand(
+  frame: HTMLIFrameElement | null,
+  command: PartyCommand,
+  args: number[] = [],
+): void {
+  frame?.contentWindow?.postMessage({ type: "cinesrc:command", command, args }, PARTY_ORIGIN);
+}
+
+export type PartyEvent = { kind: "play" | "pause" | "seeked" | "time"; time: number | null };
+
+/** Reads a party-relevant player event, or null for anything else. */
+export function readPartyEvent(event: MessageEvent): PartyEvent | null {
+  if (event.origin !== PARTY_ORIGIN) return null;
+  const data = event.data as { type?: unknown; currentTime?: unknown } | null;
+  if (!data || typeof data.type !== "string") return null;
+  const time =
+    typeof data.currentTime === "number" && Number.isFinite(data.currentTime)
+      ? data.currentTime
+      : null;
+  switch (data.type) {
+    case "cinesrc:play":
+      return { kind: "play", time };
+    case "cinesrc:pause":
+      return { kind: "pause", time };
+    case "cinesrc:seeked":
+      return { kind: "seeked", time };
+    case "cinesrc:timeupdate":
+      return time === null ? null : { kind: "time", time };
+    default:
+      return null;
+  }
+}

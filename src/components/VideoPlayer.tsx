@@ -1,10 +1,11 @@
 "use client";
 
 import { blink } from "@/components/LogoEyes";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowClockwise } from "@phosphor-icons/react";
-import { SERVERS, playbackUrl, type PlaybackRequest } from "@/lib/playback";
+import { ArrowClockwise, UsersThree } from "@phosphor-icons/react";
+import { PARTY_SERVER_ID, SERVERS, playbackUrl, type PlaybackRequest } from "@/lib/playback";
+import { WatchParty } from "./WatchParty";
 import type { MediaType } from "@/lib/types";
 
 type Props = {
@@ -45,6 +46,33 @@ export function VideoPlayer({
   const [serverId, setServerId] = useState(SERVERS[0]!.id);
   const [attempt, setAttempt] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  /* ?party=<id> joins a room. Read from the address after mount rather than
+     useSearchParams, so the page needs no Suspense boundary for it. */
+  const [partyId, setPartyId] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("party");
+    if (id && /^[a-z0-9]{10}$/.test(id)) setPartyId(id);
+  }, []);
+
+  const startParty = async () => {
+    setStarting(true);
+    try {
+      const res = await fetch("/api/party", { method: "POST" });
+      if (!res.ok) throw new Error();
+      const { id } = (await res.json()) as { id: string };
+      const url = new URL(window.location.href);
+      url.searchParams.set("party", id);
+      window.history.replaceState(null, "", url);
+      setPartyId(id);
+      setLoaded(false);
+    } catch {
+      /* Room could not be created; the button stays for another try. */
+    } finally {
+      setStarting(false);
+    }
+  };
 
   /* Read after mount: the server render cannot know it, and a guarded read
      keeps private mode from throwing into the render. */
@@ -82,7 +110,7 @@ export function VideoPlayer({
 
       const key = event.key.toLowerCase();
       if (key === "n" && nextHref) router.push(nextHref);
-      else if (key === "s" && SERVERS.length > 1) {
+      else if (key === "s" && SERVERS.length > 1 && !partyId) {
         const index = SERVERS.findIndex((s) => s.id === serverId);
         choose(SERVERS[(index + 1) % SERVERS.length]!.id);
       } else if (key === "escape") router.push(backHref);
@@ -97,7 +125,9 @@ export function VideoPlayer({
     type === "movie"
       ? { type: "movie", imdbId, tmdbId }
       : { type: "tv", imdbId, tmdbId, season: season ?? 1, episode: episode ?? 1 };
-  const src = playbackUrl(req, serverId);
+  /* A party always plays on the one server that reports and takes commands. */
+  const activeServer = partyId ? PARTY_SERVER_ID : serverId;
+  const src = playbackUrl(req, activeServer);
 
   return (
     <div>
@@ -107,7 +137,8 @@ export function VideoPlayer({
           <div className="skeleton absolute inset-0" aria-hidden="true" />
         )}
         <iframe
-          key={`${serverId}-${attempt}`}
+          ref={frameRef}
+          key={`${activeServer}-${attempt}`}
           src={src}
           title={`${title} player`}
           onLoad={() => {
@@ -127,7 +158,9 @@ export function VideoPlayer({
           concern. Radii nest: card 16, minus 8 padding, is the 8px group,
           minus 4 is each 4px button. */}
       <div className="glass mt-4 flex items-center gap-3 rounded-card p-2 pl-4">
-        {SERVERS.length > 1 && (
+        {/* In a party the server is fixed, so the room takes the picker's place. */}
+        {partyId && <WatchParty roomId={partyId} frameRef={frameRef} />}
+        {SERVERS.length > 1 && !partyId && (
           <>
             <span className="eyebrow">Server</span>
             <div
@@ -160,13 +193,28 @@ export function VideoPlayer({
           </>
         )}
 
+        {!partyId && (
+          <button
+            type="button"
+            onClick={startParty}
+            disabled={starting}
+            className="ml-auto inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm text-fg-2 transition-colors duration-200 hover:bg-fg/10 hover:text-fg disabled:opacity-60 sm:px-4"
+          >
+            <UsersThree className="size-4" aria-hidden="true" />
+            <span className="sr-only sm:not-sr-only">
+              {starting ? "Starting" : "Watch together"}
+            </span>
+          </button>
+        )}
+
         <button
           type="button"
           onClick={() => {
             setLoaded(false);
             setAttempt((n) => n + 1);
           }}
-          className="ml-auto inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm text-fg-2 transition-colors duration-200 hover:bg-fg/10 hover:text-fg sm:px-4"
+          /* "Watch together" (or the room) already takes the free space. */
+          className="inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm text-fg-2 transition-colors duration-200 hover:bg-fg/10 hover:text-fg sm:px-4"
         >
           <ArrowClockwise className="size-4" aria-hidden="true" />
           <span className="sr-only sm:not-sr-only">Reload</span>
@@ -180,7 +228,7 @@ export function VideoPlayer({
             <Key>N</Key> Next episode
           </span>
         )}
-        {SERVERS.length > 1 && (
+        {SERVERS.length > 1 && !partyId && (
           <span className="inline-flex items-center gap-1.5">
             <Key>S</Key> Switch server
           </span>

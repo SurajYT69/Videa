@@ -17,3 +17,4 @@ skills-lock.json
 # one of those skills. Neither is application code.
 .claude/
 design-system/
+.env*
