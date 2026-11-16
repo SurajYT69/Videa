@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { AmbientTint } from "./AmbientTint";
 import { Score } from "./Rating";
+import { ShareButton } from "./ShareButton";
 import { BACKDROP, LOGO, PROVIDER, tmdbImage } from "@/lib/images";
 import type { Provider } from "@/lib/types";
 
@@ -131,6 +132,7 @@ export function TitleHero({
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
               {children}
+              <ShareButton title={title} />
             </div>
 
             {providers.length > 0 && (

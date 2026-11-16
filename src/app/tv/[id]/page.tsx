@@ -19,7 +19,6 @@ import {
   GridSkeleton,
   SectionSkeleton,
 } from "@/components/LoadingSkeleton";
-import { BACKDROP, tmdbImage } from "@/lib/images";
 import { airDateLabel, runtimeLabel, year } from "@/lib/format";
 import { toStub } from "@/lib/stub";
 import { getSeason, getSimilar, getTV } from "@/lib/tmdb";
@@ -44,7 +43,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = started ? `${show.title} (${started})` : show.title;
   const description =
     show.overview.slice(0, 180) || `Watch ${show.title} on oovi.`;
-  const image = tmdbImage(show.backdropPath, BACKDROP.lg);
 
   return {
     title,
@@ -53,13 +51,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       type: "video.tv_show",
-      images: image ? [{ url: image, width: 1280, height: 720 }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: image ? [image] : undefined,
     },
   };
 }
@@ -118,6 +114,8 @@ export default async function TVDetailsPage({ params }: Props) {
   return (
     <>
       <ViewRecorder stub={toStub(show)} />
+      {/* The hook for the card-to-hero view transition (view-transitions.css). */}
+      <div data-title-hero className="contents">
       <TitleHero
         title={show.title}
         kind="Series"
@@ -147,6 +145,7 @@ export default async function TVDetailsPage({ params }: Props) {
         )}
         <FavoriteButton stub={toStub(show)} />
       </TitleHero>
+      </div>
 
       {/* The details stack: scores, then anything that streams, then the
           spec sheet. One gutter and one gap, so the rhythm under the hero

@@ -82,6 +82,7 @@ export default async function WatchMoviePage({ params }: Props) {
           imdbId={movie.imdbId}
           tmdbId={movie.tmdbId}
           title={movie.title}
+          backHref={detailsHref("movie", movie.tmdbId)}
         />
 
         <div className="mt-10 flex flex-wrap items-start justify-between gap-6 border-t border-line pt-8">

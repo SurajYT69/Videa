@@ -1,0 +1,38 @@
+/*
+ * View transitions for card clicks (components/IntentLink.tsx).
+ *
+ * The clicked card's artwork carries `title-art` in the old state; the title
+ * hero's backdrop carries it in the new one. The hero gets it only while
+ * `data-vt-art` is on <html>, which IntentLink sets after the old snapshot,
+ * so a title page linking to another title never has two of the name.
+ * TitleHero is not touched: the movie and tv pages wrap it in
+ * `[data-title-hero]` (display: contents).
+ */
+html[data-vt-art] [data-title-hero] img[data-ambient] {
+  view-transition-name: title-art;
+}
+
+::view-transition-group(title-art) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Poster and backdrop differ in aspect; fill the box rather than squash. */
+::view-transition-old(title-art),
+::view-transition-new(title-art) {
+  height: 100%;
+  object-fit: cover;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

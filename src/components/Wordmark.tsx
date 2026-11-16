@@ -1,3 +1,5 @@
+import { LogoEyes } from "./LogoEyes";
+
 /**
  * The oovi wordmark, inlined so it stays crisp and inherits text colour.
  *
@@ -7,7 +9,8 @@
  * the square icon (logos/oovi/mark.svg) is the eyes on their own.
  *
  * Letterforms are shapes rather than a font, so the logo can never fall back
- * to a system face.
+ * to a system face. The eyes are live (`LogoEyes`): pupils follow the pointer
+ * and the eyes blink on `oovi:blink` or when the logo is pressed.
  */
 export function Wordmark({ className = "h-7 w-auto" }: { className?: string }) {
   return (
@@ -17,7 +20,7 @@ export function Wordmark({ className = "h-7 w-auto" }: { className?: string }) {
       role="img"
       aria-label="oovi"
     >
-      <Eyes />
+      <LogoEyes />
       <circle cx="337" cy="-28" r="16" fill="var(--color-mark)" />
       <g fill="currentColor">
         <path d="M216 0 H245 L265 64 L285 0 H314 L279 100 H251 Z" />
@@ -30,25 +33,7 @@ export function Wordmark({ className = "h-7 w-auto" }: { className?: string }) {
 export function EyesMark({ className = "h-4 w-auto" }: { className?: string }) {
   return (
     <svg viewBox="0 0 208 100" className={className} role="img" aria-label="oovi">
-      <Eyes />
+      <LogoEyes />
     </svg>
-  );
-}
-
-/**
- * Each eye is its own group so it can blink around its own centre, and each
- * pupil can glance. The motion lives in globals.css (`.eye`, `.eye-pupil`) and
- * fires when an ancestor `.group` is hovered.
- */
-function Eyes() {
-  return (
-    <>
-      {[50, 158].map((cx) => (
-        <g key={cx} className="eye">
-          <circle cx={cx} cy="50" r="50" fill="var(--color-mark)" />
-          <circle className="eye-pupil" cx={cx + 16} cy="50" r="21" fill="var(--color-mark-ink)" />
-        </g>
-      ))}
-    </>
   );
 }

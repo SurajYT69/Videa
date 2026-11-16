@@ -15,7 +15,6 @@ import { MediaGrid } from "@/components/MediaGrid";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { ViewRecorder } from "@/components/ViewRecorder";
 import { GridSkeleton, SectionSkeleton } from "@/components/LoadingSkeleton";
-import { BACKDROP, tmdbImage } from "@/lib/images";
 import { airDateLabel, runtimeLabel, year } from "@/lib/format";
 import { watchHref } from "@/lib/playback";
 import { toStub } from "@/lib/stub";
@@ -40,7 +39,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = released ? `${movie.title} (${released})` : movie.title;
   const description =
     movie.overview.slice(0, 180) || `Watch ${movie.title} on oovi.`;
-  const image = tmdbImage(movie.backdropPath, BACKDROP.lg);
 
   return {
     title,
@@ -49,13 +47,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       type: "video.movie",
-      images: image ? [{ url: image, width: 1280, height: 720 }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: image ? [image] : undefined,
     },
   };
 }
@@ -90,6 +86,8 @@ export default async function MoviePage({ params }: Props) {
   return (
     <>
       <ViewRecorder stub={toStub(movie)} />
+      {/* The hook for the card-to-hero view transition (view-transitions.css). */}
+      <div data-title-hero className="contents">
       <TitleHero
         title={movie.title}
         kind="Film"
@@ -115,6 +113,7 @@ export default async function MoviePage({ params }: Props) {
         )}
         <FavoriteButton stub={toStub(movie)} />
       </TitleHero>
+      </div>
 
       {/* The details stack: scores, then anything that streams, then the
           spec sheet. One gutter and one gap, so the rhythm under the hero

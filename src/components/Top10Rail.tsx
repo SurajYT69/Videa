@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { Play } from "@phosphor-icons/react/dist/ssr";
 import { Poster } from "./Poster";
 import { Rail } from "./Rail";
+import { IntentLink } from "./IntentLink";
 import { detailsHref } from "@/lib/playback";
 import type { MediaItem } from "@/lib/types";
 
@@ -15,7 +15,8 @@ export function Top10Rail({ items, label }: { items: MediaItem[]; label: string 
   return (
     <Rail label={label}>
       {items.slice(0, 10).map((item, index) => (
-        <Link
+        <IntentLink
+          morph
           key={`${item.type}-${item.tmdbId}`}
           href={detailsHref(item.type, item.tmdbId)}
           aria-label={`${index + 1}. ${item.title}`}
@@ -35,7 +36,7 @@ export function Top10Rail({ items, label }: { items: MediaItem[]; label: string 
             </span>
             <div className="pointer-events-none absolute inset-0 rounded-card art-edge" />
           </div>
-        </Link>
+        </IntentLink>
       ))}
     </Rail>
   );

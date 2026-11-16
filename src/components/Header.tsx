@@ -9,6 +9,7 @@ import {
   Ghost,
   House,
   MagnifyingGlass,
+  Popcorn,
   TelevisionSimple,
   X,
 } from "@phosphor-icons/react";
@@ -48,6 +49,13 @@ const NAV: Item[] = [
     icon: Ghost,
     motion: "float",
     match: (p) => p.startsWith("/anime"),
+  },
+  {
+    href: "/tonight",
+    label: "Tonight",
+    icon: Popcorn,
+    motion: "lift",
+    match: (p) => p.startsWith("/tonight"),
   },
 ];
 
@@ -210,8 +218,10 @@ export function Header() {
   );
 }
 
-/* Search lives in the phone's top bar, so the tabs are the places. */
-const TABS: Item[] = [...NAV, TOOLS[1]!];
+/* Search lives in the phone's top bar, so the tabs are the places. Tonight
+   stays rail-only: a sixth tab plus the active pill's label overflows a
+   360px capsule, and the homepage teaser is the phone's way in. */
+const TABS: Item[] = [...NAV.filter((item) => item.href !== "/tonight"), TOOLS[1]!];
 
 const SPRING = { type: "spring", bounce: 0, duration: 0.35 } as const;
 

@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
 import { Play, Star } from "@phosphor-icons/react/dist/ssr";
 import { Rail } from "./Rail";
+import { IntentLink } from "./IntentLink";
 import { BACKDROP, tmdbImage } from "@/lib/images";
 import { ratingLabel, typeLabel, year } from "@/lib/format";
 import { detailsHref } from "@/lib/playback";
@@ -27,7 +27,8 @@ export function TrendingRail({
         const src = tmdbImage(item.backdropPath, BACKDROP.md);
         const rating = ratingLabel(item.rating);
         return (
-          <Link
+          <IntentLink
+            morph
             key={`${item.type}-${item.tmdbId}`}
             href={detailsHref(item.type, item.tmdbId)}
             className="rail-item group relative aspect-video w-[280px] overflow-hidden rounded-card bg-surface transition-shadow duration-200 ease-out-expo hover:shadow-lift sm:w-[360px] lg:w-[420px]"
@@ -101,7 +102,7 @@ export function TrendingRail({
             </div>
 
             <div className="pointer-events-none absolute inset-0 rounded-card art-edge" />
-          </Link>
+          </IntentLink>
         );
       })}
     </Rail>

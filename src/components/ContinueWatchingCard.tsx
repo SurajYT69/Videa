@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { Play, X } from "@phosphor-icons/react";
 import { BACKDROP, POSTER, tmdbImage } from "@/lib/images";
 import { episodeCode, typeLabel } from "@/lib/format";
 import { watchHref } from "@/lib/playback";
 import { removeFromContinueWatching } from "@/lib/storage";
+import { IntentLink } from "./IntentLink";
 import type { ContinueWatchingItem } from "@/lib/types";
 
 /**
@@ -22,18 +22,31 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
     tmdbImage(item.backdropPath, BACKDROP.md) ??
     tmdbImage(item.posterPath, POSTER.lg);
 
-  const line =
+  /*
+   * A series nearly finished (a real reported position at 90% or more) points
+   * at the next episode. Season lengths are not stored, so "next" is the next
+   * number in the same season; the watch page sends a finale's E+1 on to the
+   * next season's E01. Without a reported position it stays on this episode.
+   */
+  const ep =
     item.type === "tv" && item.season && item.episode
-      ? episodeCode(item.season, item.episode)
-      : typeLabel(item.type);
+      ? { season: item.season, episode: item.episode }
+      : null;
+  const upNext = ep !== null && item.progress !== null && item.progress >= 0.9;
+  const target = ep && upNext ? { ...ep, episode: ep.episode + 1 } : ep;
 
+  const line = target
+    ? `${upNext ? "Up next" : "Continue"} · ${episodeCode(target.season, target.episode)}`
+    : typeLabel(item.type);
+
+  /* The bar belongs to the episode it measured, not the one up next. */
   const percent =
-    item.progress !== null ? Math.round(item.progress * 100) : null;
+    item.progress !== null && !upNext ? Math.round(item.progress * 100) : null;
 
   return (
     <div className="group relative">
-      <Link
-        href={watchHref(item.type, item.tmdbId, item.season, item.episode)}
+      <IntentLink
+        href={watchHref(item.type, item.tmdbId, target?.season, target?.episode)}
         className="block rounded-card"
       >
         <div className="relative aspect-video overflow-hidden rounded-card bg-surface transition-shadow duration-200 ease-out-expo group-hover:shadow-lift">
@@ -86,7 +99,7 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
           {item.title}
         </h3>
         <p className="meta mt-1.5">{line}</p>
-      </Link>
+      </IntentLink>
 
       <button
         type="button"

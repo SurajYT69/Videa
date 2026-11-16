@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import Link from "next/link";
+import { TONIGHT_MOODS } from "@/lib/tmdb-options";
 import { Hero } from "@/components/Hero";
 import { heroThumb } from "@/lib/heroThumb";
 import { HeroCarousel } from "@/components/HeroCarousel";
@@ -108,6 +110,33 @@ async function PopularSeries() {
   );
 }
 
+/* The first of /tonight's three taps, taken here. Also the phone's way in:
+   the tab capsule has no room for a sixth destination. */
+function TonightTeaser() {
+  return (
+    <Section
+      title="Can't decide tonight?"
+      lead="Pick a mood, say how long you have, and get five picks."
+      href="/tonight"
+      hrefLabel="Open picker"
+      tone="band"
+    >
+      <ul className="flex flex-wrap gap-2">
+        {TONIGHT_MOODS.map((mood) => (
+          <li key={mood.id}>
+            <Link
+              href={`/tonight?mood=${mood.id}`}
+              className="glass inline-flex h-11 items-center rounded-full px-5 text-sm font-medium whitespace-nowrap text-fg-2 transition-colors duration-200 hover:text-fg"
+            >
+              {mood.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
 export default function HomePage() {
   return (
     <>
@@ -144,24 +173,32 @@ export default function HomePage() {
         <PopularSeries />
       </Suspense>
 
-      {/* Indian cinema and television: the audience this site is used by most. */}
+      <TonightTeaser />
+
+      {/* Indian cinema and television: the audience this site is used by most.
+          The first rail leads to /india, which has the new and upcoming. */}
       <DiscoverRail
         title="Popular Hindi films"
         type="movie"
         params={{ language: "hi", minVotes: 50 }}
-        tone="band"
+        href="/india"
       />
-      <DiscoverRail title="Hindi series" type="tv" params={{ language: "hi", minVotes: 10 }} />
       <DiscoverRail
-        title="Telugu films"
-        type="movie"
-        params={{ language: "te", minVotes: 30 }}
+        title="Hindi series"
+        type="tv"
+        params={{ language: "hi", minVotes: 10 }}
         tone="band"
       />
-      <DiscoverRail title="Tamil films" type="movie" params={{ language: "ta", minVotes: 30 }} />
+      <DiscoverRail title="Telugu films" type="movie" params={{ language: "te", minVotes: 30 }} />
+      <DiscoverRail
+        title="Tamil films"
+        type="movie"
+        params={{ language: "ta", minVotes: 30 }}
+        tone="band"
+      />
 
-      <ContinueWatchingSection tone="band" />
-      <RecentlyViewedSection />
+      <ContinueWatchingSection />
+      <RecentlyViewedSection tone="band" />
     </>
   );
 }

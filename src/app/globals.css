@@ -582,10 +582,11 @@
 }
 
 /* ==========================================================================
-   Logo eyes. Hovering any `.group` that holds the logo makes the pupils
-   glance up and forward and the eyes blink once. Pupils transition (so a
-   quick in-and-out retargets instead of snapping); the blink is a one-shot
-   keyframe. Pointer-only, and gone under reduced motion.
+   Logo eyes. The pupils follow the pointer (LogoEyes.tsx writes their
+   transform from one shared rAF-throttled listener) and the transition here
+   smooths each step and eases them home when the pointer leaves the window.
+   The blink is a Web Animations one-shot on `.eye`, fired by `oovi:blink` or
+   a press on the logo, never on a timer. Under reduced motion neither runs.
    ========================================================================== */
 
 @layer components {
@@ -594,38 +595,13 @@
     transform-origin: center;
   }
   .eye-pupil {
-    transition: transform 250ms var(--ease-out-expo);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .group:hover .eye-pupil {
-      transform: translate(6px, -10px);
-    }
-    .group:hover .eye {
-      animation: eye-blink 280ms ease 120ms 1;
-    }
+    transition: transform 300ms var(--ease-out-expo);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .eye-pupil {
       transition: none;
     }
-    .group:hover .eye-pupil {
-      transform: none;
-    }
-    .group:hover .eye {
-      animation: none;
-    }
-  }
-}
-
-@keyframes eye-blink {
-  0%,
-  100% {
-    transform: scaleY(1);
-  }
-  45% {
-    transform: scaleY(0.1);
   }
 }
 

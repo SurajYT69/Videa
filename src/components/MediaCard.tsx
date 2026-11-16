@@ -4,6 +4,7 @@ import { Poster } from "./Poster";
 import { metaLine, ratingLabel, typeLabel, year } from "@/lib/format";
 import { detailsHref, watchHref } from "@/lib/playback";
 import { CardSaveButton } from "./CardSaveButton";
+import { IntentLink } from "./IntentLink";
 import type { MediaItem } from "@/lib/types";
 
 type Props = {
@@ -47,8 +48,9 @@ export function MediaCard({ media, sizes, priority, seasonCount, href, imageSrc 
 
   return (
     <div className="group relative">
-    <Link
+    <IntentLink
       href={href ?? detailsHref(media.type, media.tmdbId)}
+      morph={!href}
       className="block rounded-card focus-visible:outline-offset-4"
     >
       {/* No resting shadow: eighteen of these in a grid reads as fog. */}
@@ -86,7 +88,7 @@ export function MediaCard({ media, sizes, priority, seasonCount, href, imageSrc 
       <p className="meta mt-1.5 truncate">
         {metaLine(year(media.releaseDate), typeLabel(media.type))}
       </p>
-    </Link>
+    </IntentLink>
 
       {/* Hover panel over the poster: title, play, save, year and genre.
           A sibling of the link, because buttons cannot nest inside one. */}

@@ -638,6 +638,12 @@ export type DiscoverParams = {
   language?: string;
   /** A TMDB watch-provider id, matched in India. */
   provider?: number;
+  /** Release (film) or first-air (series) window, ISO dates, inclusive. */
+  from?: string;
+  to?: string;
+  /** Film runtime bounds in minutes. Series ignore them. */
+  minRuntime?: number;
+  maxRuntime?: number;
 };
 
 /**
@@ -674,6 +680,7 @@ export async function discover(
   /* The one filter whose parameter name differs between the two endpoints. */
   const yearParam =
     type === "movie" ? "primary_release_year" : "first_air_date_year";
+  const dateParam = type === "movie" ? "primary_release_date" : "first_air_date";
 
   const raw = await tmdb<RawPage>(
     `/discover/${type}`,
@@ -688,6 +695,10 @@ export async function discover(
       with_watch_providers: params.provider,
       watch_region: params.provider ? "IN" : undefined,
       [yearParam]: params.year,
+      [`${dateParam}.gte`]: params.from,
+      [`${dateParam}.lte`]: params.to,
+      "with_runtime.gte": type === "movie" ? params.minRuntime : undefined,
+      "with_runtime.lte": type === "movie" ? params.maxRuntime : undefined,
       include_adult: false,
     },
     60 * 60 * 6,

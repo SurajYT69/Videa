@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
   CaretLeft,
@@ -90,12 +90,25 @@ export default async function WatchEpisodePage({ params }: Props) {
     getTV(tvId),
     getSeason(tvId, seasonNumber),
   ]);
-  if (!show || !seasonData) notFound();
+  if (!show) notFound();
 
-  const current = seasonData.episodes.find(
+  const current = seasonData?.episodes.find(
     (item) => item.episodeNumber === episodeNumber,
   );
-  if (!current) notFound();
+  if (!current) {
+    /* Continue Watching's "Up next" is the stored episode plus one, because
+       season lengths are not stored. One past a finale moves on to the next
+       season's first episode; one past the last episode of all goes home. */
+    const after = neighbours(show.seasons, seasonNumber, episodeNumber - 1).next;
+    const finale = show.seasons.find((s) => s.seasonNumber === seasonNumber);
+    if (after && after.season !== seasonNumber) {
+      redirect(watchHref("tv", show.tmdbId, after.season, after.episode));
+    }
+    if (!after && finale && episodeNumber - 1 === finale.episodeCount) {
+      redirect(detailsHref("tv", show.tmdbId));
+    }
+    notFound();
+  }
 
   const { previous, next } = neighbours(
     show.seasons,
@@ -133,6 +146,10 @@ export default async function WatchEpisodePage({ params }: Props) {
           season={seasonNumber}
           episode={episodeNumber}
           title={`${show.title} ${code}`}
+          backHref={detailsHref("tv", show.tmdbId)}
+          nextHref={
+            next ? watchHref("tv", show.tmdbId, next.season, next.episode) : undefined
+          }
         />
 
         <div className="mt-10 border-t border-line pt-8">

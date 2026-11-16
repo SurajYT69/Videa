@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { blink } from "@/components/LogoEyes";
+import { useEffect, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowClockwise } from "@phosphor-icons/react";
 import { SERVERS, playbackUrl, type PlaybackRequest } from "@/lib/playback";
 import type { MediaType } from "@/lib/types";
@@ -13,6 +15,10 @@ type Props = {
   season?: number;
   episode?: number;
   title: string;
+  /** Esc goes here: the title page. */
+  backHref: string;
+  /** N goes here, when there is a next episode. */
+  nextHref?: string;
 };
 
 /** The viewer's last pick, so the next episode opens on the server that worked. */
@@ -32,7 +38,10 @@ export function VideoPlayer({
   season,
   episode,
   title,
+  backHref,
+  nextHref,
 }: Props) {
+  const router = useRouter();
   const [serverId, setServerId] = useState(SERVERS[0]!.id);
   const [attempt, setAttempt] = useState(0);
   const [loaded, setLoaded] = useState(false);
@@ -59,6 +68,31 @@ export function VideoPlayer({
     }
   };
 
+  /*
+   * N next episode, S next server, Esc back. Only while the page has focus:
+   * keys pressed inside the cross-origin player never reach this document.
+   */
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.repeat || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
+      const el = event.target as HTMLElement | null;
+      if (el?.closest("input, textarea, select, [contenteditable=''], [contenteditable='true']")) return;
+      /* Something else (a dialog, the search dropdown) already handled it. */
+      if (event.defaultPrevented || document.querySelector("dialog[open]")) return;
+
+      const key = event.key.toLowerCase();
+      if (key === "n" && nextHref) router.push(nextHref);
+      else if (key === "s" && SERVERS.length > 1) {
+        const index = SERVERS.findIndex((s) => s.id === serverId);
+        choose(SERVERS[(index + 1) % SERVERS.length]!.id);
+      } else if (key === "escape") router.push(backHref);
+      else return;
+      event.preventDefault();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
   const req: PlaybackRequest =
     type === "movie"
       ? { type: "movie", imdbId, tmdbId }
@@ -76,7 +110,11 @@ export function VideoPlayer({
           key={`${serverId}-${attempt}`}
           src={src}
           title={`${title} player`}
-          onLoad={() => setLoaded(true)}
+          onLoad={() => {
+            setLoaded(true);
+            /* The logo's eyes blink as the picture arrives. */
+            blink();
+          }}
           allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
           allowFullScreen
           referrerPolicy="origin"
@@ -134,6 +172,32 @@ export function VideoPlayer({
           <span className="sr-only sm:not-sr-only">Reload</span>
         </button>
       </div>
+
+      {/* Keyboards live on md and up; a phone has nothing to press. */}
+      <p className="mt-3 hidden flex-wrap items-center gap-x-4 gap-y-2 text-xs text-fg-3 md:flex">
+        {nextHref && (
+          <span className="inline-flex items-center gap-1.5">
+            <Key>N</Key> Next episode
+          </span>
+        )}
+        {SERVERS.length > 1 && (
+          <span className="inline-flex items-center gap-1.5">
+            <Key>S</Key> Switch server
+          </span>
+        )}
+        <span className="inline-flex items-center gap-1.5">
+          <Key>Esc</Key> Back to title
+        </span>
+      </p>
     </div>
+  );
+}
+
+/* Same keycap as the search dropdown's. */
+function Key({ children }: { children: ReactNode }) {
+  return (
+    <kbd className="grid h-5 min-w-5 place-items-center rounded-[4px] border border-line-strong px-1 font-mono text-[11px] leading-none text-fg-2">
+      {children}
+    </kbd>
   );
 }

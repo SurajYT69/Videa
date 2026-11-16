@@ -539,6 +539,37 @@ off-centre; the play mark carries a deliberate optical nudge right.
 - `FilterDropdown`'s pill is the combobox; its list flips to the other edge
   rather than overflow the viewport.
 
+## Features added November 2026
+
+- **/tonight** is a three-tap picker held in the URL (`?mood=&time=&deal=`);
+  steps are links, not client state. `deal` seeds which of the first 10
+  discover pages is shuffled, so a shared link deals the same five. Moods and
+  times live in `lib/tmdb-options.ts`, each mood with film and series genre ids.
+  Desktop rail only (a sixth phone tab overflows 360px); the homepage teaser
+  band is the phone's way in.
+- **/india** "New on X" rails use a 30-day release window (TMDB has no "added
+  to service" date). Services are hardcoded in `INDIA_PROVIDERS`. A rail with
+  fewer than 4 titles renders nothing. `discover` takes `from`/`to` and
+  `minRuntime`/`maxRuntime`; pass `minVotes: 0` for new and upcoming windows.
+- **Share cards**: `opengraph-image.tsx` / `twitter-image.tsx` in `movie/[id]`
+  and `tv/[id]` render `lib/share-card.tsx`. Never set `openGraph.images` or
+  `twitter.images` in those pages' metadata: even the key overrides the file
+  convention. `metadataBase` falls back to `VERCEL_PROJECT_PRODUCTION_URL`.
+  `ShareButton` uses the system share sheet, else copies the link.
+- **Living logo**: `LogoEyes` shares one rAF-throttled `pointermove` across all
+  logos (fine pointer, no reduced motion). Blinks only on `blink()` (fired when
+  the player iframe loads) or a press on the logo; never on a timer or hover.
+- **IntentLink** wraps card links: prefetches the full route on hover, focus or
+  touchstart, once per href, and morphs the poster into the title hero with
+  `document.startViewTransition` (name `title-art`, see `view-transitions.css`).
+  Do not enable `experimental.viewTransition`; it needs React's experimental
+  channel in Next 15.5.
+- **Up next**: Continue Watching shows "Up next · S02 E05" only when reported
+  progress is at least 0.9; the TV watch page redirects one past a finale to
+  the next season's E01.
+- **Watch shortcuts** (`VideoPlayer`): N next episode, S next server, Esc back.
+  They cannot fire while the cross-origin iframe has focus.
+
 ## Attribution
 
 This product uses the TMDB API but is not endorsed or certified by TMDB.
