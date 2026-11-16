@@ -52,7 +52,7 @@ export function MediaCard({ media, sizes, priority, seasonCount, href, imageSrc 
       className="block rounded-card focus-visible:outline-offset-4"
     >
       {/* No resting shadow: eighteen of these in a grid reads as fog. */}
-      <div className="relative aspect-2/3 overflow-hidden rounded-card bg-surface transition-shadow duration-200 ease-out-expo group-hover:shadow-lift">
+      <div className="relative aspect-2/3 overflow-hidden rounded-card bg-surface transition-shadow duration-200 ease-out-expo group-hover:shadow-lift [&_img]:transition-transform [&_img]:duration-500 [&_img]:ease-out-expo group-hover:[&_img]:scale-105">
         <Poster
           path={media.posterPath}
           title={media.title}

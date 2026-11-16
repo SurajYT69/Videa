@@ -216,7 +216,9 @@ the title, a play link, a save button (`CardSaveButton`) and year · genre. It
 is a sibling of the card link, since buttons cannot nest in an anchor.
 
 Hover is otherwise the same everywhere: one action affordance fades in and the shadow
-goes to `shadow-lift`. Cards do not lift and artwork does not zoom. Posters carry no resting
+goes to `shadow-lift`. Cards do not lift. Poster artwork (`MediaCard`,
+`Top10Rail`) zooms to 105% over 500ms `ease-out-expo` inside its clipped frame,
+at the owner's request; landscape stills do not. Posters carry no resting
 shadow — eighteen of them in a grid reads as fog.
 
 **Discovery on the homepage is horizontal.** Every homepage section is a single

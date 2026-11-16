@@ -27,7 +27,7 @@ export function Top10Rail({ items, label }: { items: MediaItem[]; label: string 
           >
             {index + 1}
           </span>
-          <div className="relative aspect-2/3 w-[148px] shrink-0 overflow-hidden rounded-card bg-surface transition-shadow duration-200 ease-out-expo group-hover:shadow-lift md:w-[184px]">
+          <div className="relative aspect-2/3 w-[148px] shrink-0 overflow-hidden rounded-card bg-surface transition-shadow duration-200 ease-out-expo group-hover:shadow-lift md:w-[184px] [&_img]:transition-transform [&_img]:duration-500 [&_img]:ease-out-expo group-hover:[&_img]:scale-105">
             {/* Measured: 148px on phones, 184px from md up. */}
             <Poster path={item.posterPath} title={item.title} sizes="(min-width: 768px) 184px, 148px" />
             <span className="pointer-events-none absolute right-2 bottom-2 grid size-10 translate-y-1.5 place-items-center rounded-full bg-fg text-ink opacity-0 shadow-soft transition-[opacity,translate] duration-200 ease-out-expo group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
