@@ -68,6 +68,15 @@ export const SERVERS: readonly Server[] = [
         : `https://vidsrc.mov/embed/tv/${id}/${req.season}/${req.episode}`;
     },
   },
+  {
+    id: "cinesrc",
+    name: "CineSrc",
+    trustedOrigins: ["https://cinesrc.st"],
+    url: (req) =>
+      req.type === "movie"
+        ? `https://cinesrc.st/embed/movie/${req.tmdbId}`
+        : `https://cinesrc.st/embed/tv/${req.tmdbId}?s=${req.season}&e=${req.episode}`,
+  },
 ];
 
 export const PLAYER_ORIGINS: readonly string[] = SERVERS.flatMap(

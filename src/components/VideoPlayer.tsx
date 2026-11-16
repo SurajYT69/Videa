@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowClockwise, WifiHigh } from "@phosphor-icons/react";
+import { ArrowClockwise } from "@phosphor-icons/react";
 import { SERVERS, playbackUrl, type PlaybackRequest } from "@/lib/playback";
 import type { MediaType } from "@/lib/types";
 
@@ -84,19 +84,18 @@ export function VideoPlayer({
         />
       </div>
 
-      {/* One glass bar: which server, a hint for when it fails, and reload. */}
-      <div className="glass mt-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-card p-2 pl-4">
-        {SERVERS.length > 1 ? (
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="flex items-center gap-2">
-              <WifiHigh className="size-4 text-accent" aria-hidden="true" />
-              <span className="eyebrow">Server</span>
-            </span>
-
+      {/* One glass bar: which server, a hint for when it fails, and reload.
+          Servers are numbered, never named; the provider is not the viewer's
+          concern. Radii nest: card 16, minus 8 padding, is the 8px group,
+          minus 4 is each 4px button. */}
+      <div className="glass mt-4 flex items-center gap-3 rounded-card p-2 pl-4">
+        {SERVERS.length > 1 && (
+          <>
+            <span className="eyebrow">Server</span>
             <div
               role="radiogroup"
               aria-label="Server"
-              className="flex flex-wrap items-center gap-1 rounded-full bg-ink/60 p-1"
+              className="flex gap-1 rounded-mini bg-ink/60 p-1"
             >
               {SERVERS.map((server, index) => {
                 const active = server.id === serverId;
@@ -106,30 +105,21 @@ export function VideoPlayer({
                     type="button"
                     role="radio"
                     aria-checked={active}
+                    aria-label={`Server ${index + 1}`}
                     onClick={() => choose(server.id)}
-                    className={`inline-flex items-center gap-2 rounded-full py-1.5 pr-4 pl-1.5 text-sm transition-colors duration-200 ${
-                      active ? "bg-fg text-ink" : "text-fg-2 hover:bg-white/10 hover:text-fg"
+                    className={`grid size-9 place-items-center rounded-[4px] font-mono text-sm tabular-nums transition-colors duration-200 ${
+                      active ? "bg-fg text-ink" : "text-fg-3 hover:bg-white/10 hover:text-fg"
                     }`}
                   >
-                    <span
-                      className={`grid size-6 place-items-center rounded-full font-mono text-xs tabular-nums ${
-                        active ? "bg-ink text-accent" : "bg-white/10 text-fg-3"
-                      }`}
-                    >
-                      {index + 1}
-                    </span>
-                    {server.name}
+                    {index + 1}
                   </button>
                 );
               })}
             </div>
-
             <span className="hidden text-xs text-fg-3 lg:inline">
-              Not playing? Try another server.
+              Not playing? Try another server
             </span>
-          </div>
-        ) : (
-          <span />
+          </>
         )}
 
         <button
@@ -138,10 +128,10 @@ export function VideoPlayer({
             setLoaded(false);
             setAttempt((n) => n + 1);
           }}
-          className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-fg-2 transition-colors duration-200 hover:bg-white/10 hover:text-fg"
+          className="ml-auto inline-flex h-9 items-center gap-2 rounded-full px-3 text-sm text-fg-2 transition-colors duration-200 hover:bg-white/10 hover:text-fg sm:px-4"
         >
           <ArrowClockwise className="size-4" aria-hidden="true" />
-          Reload
+          <span className="sr-only sm:not-sr-only">Reload</span>
         </button>
       </div>
     </div>

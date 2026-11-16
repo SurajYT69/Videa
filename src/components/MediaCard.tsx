@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Play, Star } from "@phosphor-icons/react/dist/ssr";
 import { Poster } from "./Poster";
 import { metaLine, ratingLabel, typeLabel, year } from "@/lib/format";
-import { detailsHref } from "@/lib/playback";
+import { detailsHref, watchHref } from "@/lib/playback";
+import { CardSaveButton } from "./CardSaveButton";
 import type { MediaItem } from "@/lib/types";
 
 type Props = {
@@ -27,10 +28,14 @@ const CHIP =
 export function MediaCard({ media, sizes, priority, seasonCount, href, imageSrc }: Props) {
   const rating = ratingLabel(media.rating);
 
+  /* Cards linked elsewhere (MAL entries) have no TMDB id to play or save. */
+  const actionable = !href;
+
   return (
+    <div className="group relative">
     <Link
       href={href ?? detailsHref(media.type, media.tmdbId)}
-      className="group block rounded-card focus-visible:outline-offset-4"
+      className="block rounded-card focus-visible:outline-offset-4"
     >
       {/* No resting shadow: eighteen of these in a grid reads as fog. */}
       <div className="relative aspect-2/3 overflow-hidden rounded-card bg-surface transition-shadow duration-300 group-hover:shadow-lift">
@@ -56,12 +61,7 @@ export function MediaCard({ media, sizes, priority, seasonCount, href, imageSrc 
           </span>
         )}
 
-        <div className="scrim-media pointer-events-none absolute inset-x-0 bottom-0 h-1/2 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-        <span className="pointer-events-none absolute right-2 bottom-2 grid size-9 translate-y-2 place-items-center rounded-full bg-fg text-ink opacity-0 shadow-soft transition duration-300 ease-out-expo group-hover:translate-y-0 group-hover:opacity-100">
-          {/* A right-pointing triangle is left-heavy; nudged right to read centred. */}
-          <Play weight="fill" className="size-4 translate-x-px" aria-hidden="true" />
-        </span>
+        <div className="scrim-media pointer-events-none absolute inset-x-0 bottom-0 h-3/4 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100" />
 
         <div className="pointer-events-none absolute inset-0 rounded-card art-edge" />
       </div>
@@ -73,5 +73,30 @@ export function MediaCard({ media, sizes, priority, seasonCount, href, imageSrc 
         {metaLine(year(media.releaseDate), typeLabel(media.type))}
       </p>
     </Link>
+
+      {/* Hover panel over the poster: title, play, save, year and genre.
+          A sibling of the link, because buttons cannot nest inside one. */}
+      {actionable && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex aspect-2/3 translate-y-2 flex-col justify-end gap-2.5 p-3 text-white opacity-0 transition duration-300 ease-out-expo group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
+          <p className="display line-clamp-2 text-base leading-tight">{media.title}</p>
+          {/* Clickable only while shown, so a tap on a phone never hits a hidden button. */}
+          <div className="flex items-center gap-2 group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
+            <Link
+              href={watchHref(media.type, media.tmdbId)}
+              title="Play"
+              className="grid size-9 place-items-center rounded-full bg-fg text-ink shadow-soft"
+            >
+              {/* A right-pointing triangle is left-heavy; nudged right to read centred. */}
+              <Play weight="fill" className="size-4 translate-x-px" aria-hidden="true" />
+              <span className="sr-only">Play {media.title}</span>
+            </Link>
+            <CardSaveButton media={media} />
+          </div>
+          <p className="truncate font-mono text-xs text-white/80">
+            {metaLine(year(media.releaseDate), media.genres[0] ?? typeLabel(media.type))}
+          </p>
+        </div>
+      )}
+    </div>
   );
 }

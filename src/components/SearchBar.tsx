@@ -168,7 +168,8 @@ export function SearchBar({
         </label>
 
         <MagnifyingGlass
-          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-fg-3"
+          /* z-10: the input's backdrop-filter paints it above this otherwise. */
+          className="pointer-events-none absolute top-1/2 left-4 z-10 size-4 -translate-y-1/2 text-fg-3"
           aria-hidden="true"
         />
 

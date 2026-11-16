@@ -105,8 +105,9 @@ export default function RootLayout({
         <div aria-hidden="true" className="ambient pointer-events-none fixed inset-0 -z-20" />
 
         <Header />
-        {/* Clears the icon rail from md up. Heroes break back out under it. */}
-        <div className="md:pl-18">
+        {/* Clears the icon rail from md up (heroes break back out under it),
+            and the phone tab bar below md. */}
+        <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 md:pl-18">
           <main id="main">{children}</main>
           <Footer />
         </div>

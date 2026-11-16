@@ -8,7 +8,6 @@ import {
   FilmSlate,
   Ghost,
   House,
-  List as ListIcon,
   MagnifyingGlass,
   TelevisionSimple,
   X,
@@ -76,13 +75,13 @@ const TOOLS: Item[] = [
  * sits at the top of the page rather than in a bar. The rail is transparent
  * over artwork, so heroes run underneath it.
  *
- * Below `md` it is a top bar with a drawer, because a rail costs a phone a
- * fifth of its width.
+ * Below `md` it is a top bar (logo, theme, search) plus a bottom tab bar,
+ * because a rail costs a phone a fifth of its width and a drawer hides the
+ * destinations behind a tap.
  */
 export function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
   /* Scroll state comes from a sentinel at the top of the document rather than
@@ -100,23 +99,8 @@ export function Header() {
 
   /* Close everything on navigation. */
   useEffect(() => {
-    setMenuOpen(false);
     setSearchOpen(false);
   }, [pathname]);
-
-  /* Escape closes the drawer; the page behind it must not scroll. */
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
-    };
-    document.addEventListener("keydown", onKeyDown);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [menuOpen]);
 
   return (
     <>
@@ -199,16 +183,6 @@ export function Header() {
                 {searchOpen ? "Close search" : "Open search"}
               </span>
             </button>
-
-            <button
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              aria-expanded={menuOpen}
-              className="grid size-11 place-items-center rounded-card text-fg-2 transition-[color,scale] duration-100 hover:text-fg active:scale-90 motion-reduce:active:scale-100"
-            >
-              <ListIcon className="size-5" aria-hidden="true" />
-              <span className="sr-only">Open menu</span>
-            </button>
           </div>
         </div>
 
@@ -217,52 +191,45 @@ export function Header() {
             <SearchBar autoFocus variant="block" />
           </div>
         )}
-
-        {menuOpen && (
-          <div className="fixed inset-0 z-50">
-            <button
-              type="button"
-              onClick={() => setMenuOpen(false)}
-              /* Scrim behind the drawer: it has to dim the page, so it takes
-                 the ground rather than the foreground. */
-              className="animate-fade absolute inset-0 bg-ink/70 backdrop-blur-sm"
-            >
-              <span className="sr-only">Close menu</span>
-            </button>
-
-            <nav
-              aria-label="Mobile"
-              className="animate-drop absolute inset-x-0 top-0 border-b border-line bg-raised px-5 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-10"
-            >
-              <div className="flex items-center justify-between">
-                <Wordmark />
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen(false)}
-                  className="grid size-11 place-items-center rounded-card text-fg-2 hover:text-fg"
-                >
-                  <X className="size-5" aria-hidden="true" />
-                  <span className="sr-only">Close menu</span>
-                </button>
-              </div>
-
-              <ul className="mt-8 divide-y divide-line">
-                {[...NAV, ...TOOLS].map((item) => (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="display block py-4 text-2xl text-fg"
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-        )}
       </header>
+
+      {/* ------------------------------------------------------ phone tabs */}
+      <nav
+        aria-label="Primary"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-ink/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden"
+      >
+        <ul className="grid h-16 grid-cols-5">
+          {TABS.map((item) => (
+            <li key={item.href}>
+              <TabLink item={item} active={item.match(pathname)} />
+            </li>
+          ))}
+        </ul>
+      </nav>
     </>
+  );
+}
+
+/* Search lives in the phone's top bar, so the tabs are the places. */
+const TABS: Item[] = [...NAV, TOOLS[1]!];
+
+/** One phone tab. The accent tick above the glyph marks where you are. */
+function TabLink({ item, active }: { item: Item; active: boolean }) {
+  const Glyph = item.icon;
+  return (
+    <Link
+      href={item.href}
+      aria-current={active ? "page" : undefined}
+      className={`relative flex h-full flex-col items-center justify-center gap-1 text-[11px] transition-[color,scale] duration-100 active:scale-90 motion-reduce:active:scale-100 ${
+        active ? "text-fg" : "text-fg-3"
+      }`}
+    >
+      {active && (
+        <span aria-hidden="true" className="absolute top-0 h-0.5 w-5 bg-accent" />
+      )}
+      <Glyph weight={active ? "fill" : "regular"} className="size-5" aria-hidden="true" />
+      {item.label}
+    </Link>
   );
 }
 

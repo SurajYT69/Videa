@@ -211,7 +211,11 @@ differ in proportion and what sits on the image. `Top10Rail` (homepage
 its left edge, not a fourth card. Do not collapse them into one
 component, and do not add a fourth without a proportion that earns it.
 
-Hover is the same everywhere: one action affordance fades in and the shadow
+`MediaCard` is the exception: on hover a panel fades up over the poster with
+the title, a play link, a save button (`CardSaveButton`) and year · genre. It
+is a sibling of the card link, since buttons cannot nest in an anchor.
+
+Hover is otherwise the same everywhere: one action affordance fades in and the shadow
 goes to `shadow-lift`. Cards do not lift and artwork does not zoom. Posters carry no resting
 shadow — eighteen of them in a grid reads as fog.
 
@@ -254,7 +258,8 @@ on the left and transparent over artwork. `layout.tsx` pads everything else
 with `md:pl-18`; heroes and band sections break back out with `md:-ml-18` and
 pad their content in again. Search sits top-centre in the page flow and scrolls
 away; the rail's search icon and Ctrl+K are always available. Below `md` it is
-a top bar with a drawer.
+a top bar (logo, theme, search) plus a bottom tab bar (Home, Movies, TV, Anime,
+My List); there is no drawer. `layout.tsx` pads the page bottom to clear it.
 
 **Title pages** open with `TitleHero`: backdrop edge to edge, the title's own
 logo art when TMDB has one (typed title otherwise), a score ring and one facts

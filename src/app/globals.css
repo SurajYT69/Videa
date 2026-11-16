@@ -270,6 +270,10 @@
 @utility rail {
   display: flex;
   overflow-x: auto;
+  /* overflow-x: auto makes y scrollable too. Anything poking past the row (the
+     Top 10 numerals overflow ~37px) would then let the wheel nudge the whole
+     rail up and down instead of scrolling the page. */
+  overflow-y: hidden;
   /* Hitting the end of a rail must not turn into a browser back-swipe. */
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
