@@ -106,11 +106,13 @@ export function ThemeSwitch({ className }: { className?: string }) {
 
   useEffect(() => {
     const root = document.documentElement;
-    const sync = () => {
+    const sync = (flush: boolean) => {
       const next = readMode();
-      /* Synchronous, so the icon finishes re-rendering while the blob still
-         covers the page rather than during the fade. */
-      flushSync(() => setMode(next));
+      /* Synchronous on a flip, so the icon finishes re-rendering while the
+         blob still covers the page rather than during the fade. Not on mount:
+         flushSync inside an effect is an error, and nothing is covered then. */
+      if (flush) flushSync(() => setMode(next));
+      else setMode(next);
       document
         .querySelectorAll('meta[name="theme-color"]')
         .forEach((meta) => meta.setAttribute("content", GROUND[next]));
@@ -120,8 +122,8 @@ export function ThemeSwitch({ className }: { className?: string }) {
         /* Private mode or quota: the choice just won't persist. */
       }
     };
-    sync();
-    const observer = new MutationObserver(sync);
+    sync(false);
+    const observer = new MutationObserver(() => sync(true));
     observer.observe(root, { attributes: true, attributeFilter: ["data-mode"] });
     return () => observer.disconnect();
   }, []);
