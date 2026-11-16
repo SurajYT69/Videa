@@ -36,7 +36,7 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
         href={watchHref(item.type, item.tmdbId, item.season, item.episode)}
         className="block rounded-card"
       >
-        <div className="relative aspect-video overflow-hidden rounded-card bg-surface transition-shadow duration-300 group-hover:shadow-lift">
+        <div className="relative aspect-video overflow-hidden rounded-card bg-surface transition-shadow duration-200 ease-out-expo group-hover:shadow-lift">
           {src ? (
             <Image
               src={src}
@@ -53,10 +53,10 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
             </div>
           )}
 
-          <div className="scrim-media pointer-events-none absolute inset-x-0 bottom-0 h-1/2 opacity-70 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="scrim-media pointer-events-none absolute inset-x-0 bottom-0 h-1/2 opacity-70 transition-opacity duration-200 ease-out-expo group-hover:opacity-100" />
 
           <span className="pointer-events-none absolute inset-0 grid place-items-center">
-            <span className="grid size-14 scale-90 place-items-center rounded-full bg-fg text-ink opacity-0 shadow-lift transition duration-300 ease-out-expo group-hover:scale-100 group-hover:opacity-100">
+            <span className="grid size-14 scale-95 place-items-center rounded-full bg-fg text-ink opacity-0 shadow-lift transition-[opacity,transform] duration-200 ease-out-expo group-hover:scale-100 group-hover:opacity-100 group-has-[a:focus-visible]:scale-100 group-has-[a:focus-visible]:opacity-100">
               <Play weight="fill" className="size-5 translate-x-px" aria-hidden="true" />
             </span>
           </span>
@@ -91,9 +91,16 @@ export function ContinueWatchingCard({ item }: { item: ContinueWatchingItem }) {
       <button
         type="button"
         onClick={() => removeFromContinueWatching(item.type, item.tmdbId)}
-        className="absolute top-2 right-2 grid size-8 place-items-center rounded-full bg-ink/80 text-fg-2 opacity-0 transition duration-200 group-hover:opacity-100 hover:text-fg focus-visible:opacity-100"
+        title="Remove"
+        /*
+         * Styled like the poster panel's save button: a control on artwork,
+         * white over a dark film in both themes. Hidden until hover only where
+         * hover exists; on touch it stays visible, because an invisible button
+         * over the corner of the still would remove a title on a stray tap.
+         */
+        className="absolute top-2 right-2 grid size-9 place-items-center rounded-full border border-white/40 bg-black/40 text-white backdrop-blur-md transition-[opacity,transform,border-color] duration-150 ease-out-expo hover:border-white active:scale-[0.96] pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:group-focus-within:opacity-100"
       >
-        <X className="size-3.5" aria-hidden="true" />
+        <X weight="bold" className="size-3.5" aria-hidden="true" />
         <span className="sr-only">Remove {item.title} from Continue Watching</span>
       </button>
     </div>

@@ -21,13 +21,15 @@ export function CardSaveButton({ media }: { media: MediaItem }) {
       onClick={() => toggleFavorite(toStub(media))}
       aria-pressed={saved}
       title={label}
-      className={`grid size-9 place-items-center rounded-full border transition-colors duration-200 ${
+      className={`grid size-10 place-items-center rounded-full border transition-[transform,color,background-color,border-color] duration-150 ease-out-expo active:scale-[0.96] ${
         saved
           ? "border-accent bg-accent-soft text-accent"
           : "border-white/40 bg-black/40 text-white backdrop-blur-md hover:border-white"
       }`}
     >
-      <Glyph weight="bold" className="size-4" aria-hidden="true" />
+      {/* Keyed on the state so the new glyph fades in: the swap is the only
+          confirmation the click landed, and a hard cut reads as a flicker. */}
+      <Glyph key={String(saved)} weight="bold" className="size-4 animate-fade" aria-hidden="true" />
       <span className="sr-only">{label}</span>
     </button>
   );

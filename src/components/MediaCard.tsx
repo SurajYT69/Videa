@@ -18,6 +18,20 @@ type Props = {
   imageSrc?: string | null;
 };
 
+/*
+ * Hover panel reveal. Each line rises 6px and fades in, staggered 40ms, on the
+ * shared expo curve at 200ms; it leaves together and at once (the delays only
+ * apply while hovered), so sweeping the pointer across a rail never leaves a
+ * trail of half-open panels. Tailwind's `group-hover` is already gated to
+ * hover-capable pointers, so a tap on a phone never opens it. Keyboard focus
+ * reveals it too, without the stagger.
+ */
+const REVEAL =
+  "translate-y-1.5 opacity-0 transition-[opacity,transform] duration-200 ease-out-expo group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100";
+
+/** Press feedback; CardSaveButton carries the same classes. */
+const PRESS = "transition-[transform,color,background-color,border-color] duration-150 ease-out-expo active:scale-[0.96]";
+
 const CHIP =
   "absolute top-2 inline-flex items-center gap-1 rounded-mini bg-black/45 px-1.5 py-0.5 backdrop-blur-md font-mono text-xs text-white tabular-nums";
 
@@ -38,7 +52,7 @@ export function MediaCard({ media, sizes, priority, seasonCount, href, imageSrc 
       className="block rounded-card focus-visible:outline-offset-4"
     >
       {/* No resting shadow: eighteen of these in a grid reads as fog. */}
-      <div className="relative aspect-2/3 overflow-hidden rounded-card bg-surface transition-shadow duration-300 group-hover:shadow-lift">
+      <div className="relative aspect-2/3 overflow-hidden rounded-card bg-surface transition-shadow duration-200 ease-out-expo group-hover:shadow-lift">
         <Poster
           path={media.posterPath}
           title={media.title}
@@ -61,12 +75,12 @@ export function MediaCard({ media, sizes, priority, seasonCount, href, imageSrc 
           </span>
         )}
 
-        <div className="scrim-media pointer-events-none absolute inset-x-0 bottom-0 h-3/4 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100" />
+        <div className="scrim-media pointer-events-none absolute inset-x-0 bottom-0 h-3/4 opacity-0 transition-opacity duration-200 ease-out-expo group-hover:opacity-100 group-focus-within:opacity-100" />
 
         <div className="pointer-events-none absolute inset-0 rounded-card art-edge" />
       </div>
 
-      <h3 className="mt-3 line-clamp-1 text-sm font-medium text-fg-2 transition-colors duration-200 group-hover:text-fg">
+      <h3 className="mt-3 line-clamp-1 text-sm font-medium text-fg-2 transition-colors duration-200 ease-out-expo group-hover:text-fg">
         {media.title}
       </h3>
       <p className="meta mt-1.5 truncate">
@@ -77,14 +91,16 @@ export function MediaCard({ media, sizes, priority, seasonCount, href, imageSrc 
       {/* Hover panel over the poster: title, play, save, year and genre.
           A sibling of the link, because buttons cannot nest inside one. */}
       {actionable && (
-        <div className="pointer-events-none absolute inset-x-0 top-0 flex aspect-2/3 translate-y-2 flex-col justify-end gap-2.5 p-3 text-white opacity-0 transition duration-300 ease-out-expo group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
-          <p className="display line-clamp-2 text-base leading-tight">{media.title}</p>
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex aspect-2/3 flex-col justify-end gap-2.5 p-3 text-white">
+          <p className={`display line-clamp-2 text-base leading-tight ${REVEAL}`}>{media.title}</p>
           {/* Clickable only while shown, so a tap on a phone never hits a hidden button. */}
-          <div className="flex items-center gap-2 group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
+          <div
+            className={`flex items-center gap-2 group-hover:pointer-events-auto group-hover:delay-40 group-focus-within:pointer-events-auto ${REVEAL}`}
+          >
             <Link
               href={watchHref(media.type, media.tmdbId)}
               title="Play"
-              className="grid size-9 place-items-center rounded-full bg-fg text-ink shadow-soft"
+              className={`grid size-10 place-items-center rounded-full bg-fg text-ink shadow-soft ${PRESS}`}
             >
               {/* A right-pointing triangle is left-heavy; nudged right to read centred. */}
               <Play weight="fill" className="size-4 translate-x-px" aria-hidden="true" />
@@ -92,7 +108,7 @@ export function MediaCard({ media, sizes, priority, seasonCount, href, imageSrc 
             </Link>
             <CardSaveButton media={media} />
           </div>
-          <p className="truncate font-mono text-xs text-white/80">
+          <p className={`truncate font-mono text-xs text-white/80 group-hover:delay-80 ${REVEAL}`}>
             {metaLine(year(media.releaseDate), media.genres[0] ?? typeLabel(media.type))}
           </p>
         </div>

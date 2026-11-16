@@ -30,7 +30,7 @@ export function TrendingRail({
           <Link
             key={`${item.type}-${item.tmdbId}`}
             href={detailsHref(item.type, item.tmdbId)}
-            className="rail-item group relative aspect-video w-[280px] overflow-hidden rounded-card bg-surface sm:w-[360px] lg:w-[420px]"
+            className="rail-item group relative aspect-video w-[280px] overflow-hidden rounded-card bg-surface transition-shadow duration-200 ease-out-expo hover:shadow-lift sm:w-[360px] lg:w-[420px]"
           >
             {src ? (
               <Image
@@ -55,9 +55,11 @@ export function TrendingRail({
               </div>
             )}
 
-            <div className="scrim-media absolute inset-x-0 bottom-0 h-3/5 opacity-90 transition-opacity duration-300 group-hover:opacity-100" />
+            <div className="scrim-media absolute inset-x-0 bottom-0 h-3/5 opacity-90 transition-opacity duration-200 ease-out-expo group-hover:opacity-100" />
 
-            <span className="pointer-events-none absolute top-3 right-3 grid size-10 scale-90 place-items-center rounded-full bg-fg text-ink opacity-0 transition duration-300 ease-out-expo group-hover:scale-100 group-hover:opacity-100">
+            {/* Same reveal as MediaCard's panel: 200ms expo, from 95% not from
+                nothing, and on keyboard focus as well as hover. */}
+            <span className="pointer-events-none absolute top-3 right-3 grid size-10 scale-95 place-items-center rounded-full bg-fg text-ink opacity-0 shadow-soft transition-[opacity,transform] duration-200 ease-out-expo group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100">
               <Play weight="fill" className="size-4 translate-x-px" aria-hidden="true" />
             </span>
 

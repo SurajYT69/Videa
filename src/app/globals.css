@@ -394,7 +394,7 @@
   color: transparent;
   -webkit-text-stroke: 2px var(--color-line-strong);
   letter-spacing: -0.06em;
-  transition: -webkit-text-stroke-color 300ms;
+  transition: -webkit-text-stroke-color 200ms var(--ease-out-expo);
 
   @media (hover: hover) and (pointer: fine) {
     .group:hover & {

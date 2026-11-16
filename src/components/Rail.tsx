@@ -57,11 +57,28 @@ export function Rail({ label, children }: Props) {
   const nudge = (direction: -1 | 1) => {
     const el = ref.current;
     if (!el) return;
-    /* Just under a full screen, so one card always carries over as context. */
-    el.scrollBy({ left: direction * el.clientWidth * 0.82, behavior: "smooth" });
+    /* Just under a full screen, so one card always carries over as context.
+       `behavior: "smooth"` in JS ignores the reduced-motion CSS, so ask. */
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollBy({
+      left: direction * el.clientWidth * 0.82,
+      behavior: reduce ? "auto" : "smooth",
+    });
   };
 
   const scrollable = !(atStart && atEnd);
+
+  /*
+   * Scroll affordance: the content fades out across the gutter on whichever
+   * side still has more to show, and stops fading once that side has run out.
+   * A mask rather than an ink overlay, because rails sit on both the ground and
+   * the band, and an overlay would have to know which. Mask colours are alpha
+   * only, so `black` here means "opaque", not a colour. `--rail-gutter` is set
+   * on this element by the `rail-gutter` utility.
+   */
+  const mask = scrollable
+    ? `linear-gradient(to right, ${atStart ? "black" : "transparent"}, black var(--rail-gutter), black calc(100% - var(--rail-gutter)), ${atEnd ? "black" : "transparent"})`
+    : undefined;
 
   return (
     <div className="group/rail relative overflow-x-clip">
@@ -71,6 +88,7 @@ export function Rail({ label, children }: Props) {
         aria-label={label}
         tabIndex={0}
         className="rail rail-gutter gap-4 pb-2 md:gap-5"
+        style={{ maskImage: mask, WebkitMaskImage: mask }}
       >
         {children}
       </div>
@@ -113,12 +131,18 @@ function Arrow({
       onClick={onClick}
       aria-hidden={hidden}
       tabIndex={hidden ? -1 : 0}
-      className={`absolute top-[38%] z-10 hidden size-11 -translate-y-1/2 place-items-center glass-panel rounded-full text-fg-2 shadow-soft transition duration-200 hover:border-fg-3 hover:text-fg md:grid ${
+      /*
+       * Visible while the rail is hovered or holds keyboard focus. In: 200ms on
+       * the expo curve, sliding 4px in from its own edge. Out at the end of the
+       * row: same path back. Press scales to 96% for 150ms. No hover motion on
+       * the button itself; it is used tens of times a session.
+       */
+      className={`absolute top-[38%] z-10 hidden size-11 place-items-center glass-panel rounded-full text-fg-2 shadow-soft transition-[opacity,translate,scale,color,border-color] duration-200 ease-out-expo hover:border-fg-3 hover:text-fg active:scale-[0.96] active:duration-150 md:grid ${
         side === "left" ? "left-2 xl:left-4" : "right-2 xl:right-4"
       } ${
         hidden
-          ? "pointer-events-none opacity-0"
-          : "opacity-0 group-hover/rail:opacity-100 focus-visible:opacity-100"
+          ? `pointer-events-none -translate-y-1/2 opacity-0 ${side === "left" ? "-translate-x-1" : "translate-x-1"}`
+          : `-translate-y-1/2 opacity-0 ${side === "left" ? "-translate-x-1" : "translate-x-1"} group-hover/rail:translate-x-0 group-hover/rail:opacity-100 group-focus-within/rail:translate-x-0 group-focus-within/rail:opacity-100 focus-visible:translate-x-0 focus-visible:opacity-100`
       }`}
     >
       <Icon className="size-4" aria-hidden="true" />
